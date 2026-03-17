@@ -1,0 +1,33 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build folders
+bin/
+obj/
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+# ASP.NET build files
+*.dll
+*.exe
+*.pdb
+
+# Logs
+*.log
+
+# NuGet packages
+packages/
+*.nupkg
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# OS files
+.DS_Store
+Thumbs.db
