@@ -1,0 +1,173 @@
+@model GroupPhase
+
+@{
+    ViewData["Title"] = $"{Model.Name} - Group Phase Details";
+}
+
+<link rel="stylesheet" href="~/css/groupphases.css" asp-append-version="true" />
+
+<div class="groupphases-details-container">
+    <div class="back-navigation">
+        <a href="@Url.Action("Index", "GroupPhases")" class="back-link">
+            <span class="back-arrow">←</span>
+            Back to Groups
+        </a>
+    </div>
+
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="@Url.Action("Index", "GroupPhases")" class="breadcrumb-link">Groups</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">@Model.Name</span>
+        </nav>
+    </div>
+
+    <div class="groupphases-details-header">
+        <h1 class="groupphases-details-title">@Model.Name</h1>
+    </div>
+
+    <div class="groupphases-details-content">
+        <div class="group-overview-section">
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <span class="overview-label">Group Name</span>
+                    <span class="overview-value">@Model.Name</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Competition ID</span>
+                    <span class="overview-value">@Model.CompetitionId</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Teams in Group</span>
+                    <span class="overview-value">@Model.Teams.Count</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Matches in Group</span>
+                    <span class="overview-value">@Model.Matches.Count</span>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Teams != null && Model.Teams.Count > 0)
+        {
+            <div class="group-teams-section">
+                <h2 class="section-title">Teams in Group</h2>
+                <div class="table-container">
+                    <table class="teams-table">
+                        <thead>
+                            <tr>
+                                <th>Team Name</th>
+                                <th>Club</th>
+                                <th>Coach</th>
+                                <th>City</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var team in Model.Teams)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="team-name">@team.Name</span>
+                                    </td>
+                                    <td>
+                                        <span class="team-club">@team.Club</span>
+                                    </td>
+                                    <td>
+                                        <span class="team-coach">@team.CoachName</span>
+                                    </td>
+                                    <td>
+                                        <span class="team-city">@team.HomeCity</span>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Details", "Teams", new { id = team.Id })" class="view-link">View</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="group-teams-section">
+                <h2 class="section-title">Teams in Group</h2>
+                <div class="no-teams">
+                    <p class="no-teams-message">No teams are currently assigned to this group.</p>
+                </div>
+            </div>
+        }
+
+        @if (Model.Matches != null && Model.Matches.Count > 0)
+        {
+            <div class="group-matches-section">
+                <h2 class="section-title">Matches</h2>
+                <div class="table-container">
+                    <table class="matches-table">
+                        <thead>
+                            <tr>
+                                <th>Round</th>
+                                <th>Home Team</th>
+                                <th>Score</th>
+                                <th>Away Team</th>
+                                <th>Date/Time</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var match in Model.Matches.OrderBy(m => m.RoundNumber))
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="round-number">Round @match.RoundNumber</span>
+                                    </td>
+                                    <td>
+                                        <span class="match-team">
+                                            @{
+                                                var homeTeam = ViewBag.TeamRepository?.GetById(match.HomeTeamId);
+                                                <text>@(homeTeam?.Name ?? $"Team {match.HomeTeamId}")</text>
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="match-score">@match.HomeScore - @match.AwayScore</span>
+                                    </td>
+                                    <td>
+                                        <span class="match-team">
+                                            @{
+                                                var awayTeam = ViewBag.TeamRepository?.GetById(match.AwayTeamId);
+                                                <text>@(awayTeam?.Name ?? $"Team {match.AwayTeamId}")</text>
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="match-datetime">@match.Kickoff.ToString("MMM dd, HH:mm")</span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge status-@match.Status.ToString().ToLower()">@match.Status</span>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Details", "Matches", new { id = match.Id })" class="view-link">View</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="group-matches-section">
+                <h2 class="section-title">Matches</h2>
+                <div class="no-matches">
+                    <p class="no-matches-message">No matches have been scheduled for this group yet.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

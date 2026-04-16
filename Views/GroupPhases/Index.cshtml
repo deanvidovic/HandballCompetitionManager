@@ -1,0 +1,68 @@
+@model List<GroupPhase>
+
+@{
+    ViewData["Title"] = "Group Phases";
+}
+
+<link rel="stylesheet" href="~/css/groupphases.css" asp-append-version="true" />
+
+<div class="groupphases-container">
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">Groups</span>
+        </nav>
+    </div>
+
+    <div class="groupphases-header">
+        <h1 class="groupphases-title">Group Phases</h1>
+        <p class="groupphases-subtitle">View all group phases and their teams/matches</p>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">🎯</div>
+            <h2 class="empty-state-title">No Group Phases Available</h2>
+            <p class="empty-state-message">There are currently no group phases in the system.</p>
+        </div>
+    }
+    else
+    {
+        <div class="groupphases-grid">
+            @foreach (var groupPhase in Model)
+            {
+                <div class="groupphase-card">
+                    <div class="groupphase-card-header">
+                        <h2 class="groupphase-card-title">
+                            <a href="@Url.Action("Details", "GroupPhases", new { id = groupPhase.Id })" class="groupphase-card-link">
+                                @groupPhase.Name
+                            </a>
+                        </h2>
+                        <p class="groupphase-card-competition">Competition Group</p>
+                    </div>
+
+                    <div class="groupphase-card-content">
+                        <div class="groupphase-stats">
+                            <div class="groupphase-stat-item">
+                                <span class="groupphase-stat-label">Teams</span>
+                                <span class="groupphase-stat-value">@groupPhase.Teams.Count</span>
+                            </div>
+                            <div class="groupphase-stat-item">
+                                <span class="groupphase-stat-label">Matches</span>
+                                <span class="groupphase-stat-value">@groupPhase.Matches.Count</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="groupphase-card-footer">
+                        <a href="@Url.Action("Details", "GroupPhases", new { id = groupPhase.Id })" class="btn-view-details">
+                            View Group Details
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

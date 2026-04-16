@@ -1,0 +1,136 @@
+@model Competition
+
+@{
+    ViewData["Title"] = $"{Model.Name} - Competition Details";
+}
+
+<link rel="stylesheet" href="~/css/competitions.css" asp-append-version="true" />
+
+<div class="competitions-details-container">
+    <div class="back-navigation">
+        <a href="@Url.Action("Index", "Competitions")" class="back-link">
+            <span class="back-arrow">←</span>
+            Back to Competitions
+        </a>
+    </div>
+
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="@Url.Action("Index", "Competitions")" class="breadcrumb-link">Competitions</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">@Model.Name</span>
+        </nav>
+    </div>
+
+    <div class="competitions-details-header">
+        <h1 class="competitions-details-title">@Model.Name</h1>
+    </div>
+
+    <div class="competitions-details-content">
+        <div class="competition-overview-section">
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <span class="overview-label">Season</span>
+                    <span class="overview-value">@Model.Season</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">City</span>
+                    <span class="overview-value">@Model.City</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Start Date</span>
+                    <span class="overview-value">@Model.StartDate.ToString("MMM dd, yyyy")</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">End Date</span>
+                    <span class="overview-value">@Model.EndDate.ToString("MMM dd, yyyy")</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Participating Teams</span>
+                    <span class="overview-value">@Model.Teams.Count</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Group Phases</span>
+                    <span class="overview-value">@Model.Groups.Count</span>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Teams != null && Model.Teams.Count > 0)
+        {
+            <div class="competition-teams-section">
+                <h2 class="section-title">Participating Teams</h2>
+                <div class="teams-grid">
+                    @foreach (var team in Model.Teams)
+                    {
+                        <div class="team-card">
+                            <div class="team-card-header">
+                                <a href="@Url.Action("Details", "Teams", new { id = team.Id })" class="team-link">
+                                    <h3 class="team-name">@team.Name</h3>
+                                </a>
+                            </div>
+                            <div class="team-card-content">
+                                <div class="team-info-item">
+                                    <span class="info-label">Club</span>
+                                    <span class="info-value">@team.Club</span>
+                                </div>
+                                <div class="team-info-item">
+                                    <span class="info-label">Coach</span>
+                                    <span class="info-value">@team.CoachName</span>
+                                </div>
+                                <div class="team-info-item">
+                                    <span class="info-label">City</span>
+                                    <span class="info-value">@team.HomeCity</span>
+                                </div>
+                                <div class="team-info-item">
+                                    <span class="info-label">Players</span>
+                                    <span class="info-value">@team.Players.Count</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="competition-teams-section">
+                <h2 class="section-title">Participating Teams</h2>
+                <div class="no-teams">
+                    <p class="no-teams-message">No teams are currently participating in this competition.</p>
+                </div>
+            </div>
+        }
+
+        @if (Model.Groups != null && Model.Groups.Count > 0)
+        {
+            <div class="competition-groups-section">
+                <h2 class="section-title">Group Phases</h2>
+                <div class="groups-list">
+                    @foreach (var group in Model.Groups)
+                    {
+                        <div class="group-item">
+                            <div class="group-header">
+                                <a href="@Url.Action("Details", "GroupPhases", new { id = group.Id })" class="group-link">
+                                    <span class="group-name">@group.Name</span>
+                                </a>
+                                <span class="group-meta">@group.Teams.Count Teams / @group.Matches.Count Matches</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="competition-groups-section">
+                <h2 class="section-title">Group Phases</h2>
+                <div class="no-groups">
+                    <p class="no-groups-message">No group phases have been created for this competition yet.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

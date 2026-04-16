@@ -1,0 +1,79 @@
+@model List<Team>
+
+@{
+    ViewData["Title"] = "Teams";
+}
+
+<link rel="stylesheet" href="~/css/teams.css" asp-append-version="true" />
+
+<div class="teams-container">
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">Teams</span>
+        </nav>
+    </div>
+
+    <div class="teams-header">
+        <h1 class="teams-title">Handball Teams</h1>
+        <p class="teams-subtitle">Manage and view all competition teams</p>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <h2 class="empty-state-title">No Teams Available</h2>
+            <p class="empty-state-message">There are currently no teams in the system.</p>
+        </div>
+    }
+    else
+    {
+        <div class="teams-grid">
+            @foreach (var team in Model)
+            {
+                <div class="team-card">
+                    <div class="team-card-header">
+                        <h2 class="team-card-title">
+                            <a href="@Url.Action("Details", "Teams", new { id = team.Id })" class="team-card-link">
+                                @team.Name
+                            </a>
+                        </h2>
+                    </div>
+
+                    <div class="team-card-content">
+                        <div class="team-info-group">
+                            <div class="team-info-item">
+                                <span class="team-info-label">Club</span>
+                                <span class="team-info-value">@team.Club</span>
+                            </div>
+                            <div class="team-info-item">
+                                <span class="team-info-label">Coach</span>
+                                <span class="team-info-value">@team.CoachName</span>
+                            </div>
+                        </div>
+
+                        <div class="team-info-group">
+                            <div class="team-info-item">
+                                <span class="team-info-label">City</span>
+                                <span class="team-info-value">@team.HomeCity</span>
+                            </div>
+                            <div class="team-info-item">
+                                <span class="team-info-label">Founded</span>
+                                <span class="team-info-value">@team.FoundedYear</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-card-footer">
+                        <a href="@Url.Action("Details", "Teams", new { id = team.Id })" class="btn-view-details">
+                            View Details
+                            <span class="arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,99 @@
+@model Player
+
+@{
+    ViewData["Title"] = $"{Model.FullName} - Player Details";
+}
+
+<link rel="stylesheet" href="~/css/players.css" asp-append-version="true" />
+
+<div class="players-details-container">
+    <div class="back-navigation">
+        <a href="@Url.Action("Index", "Players")" class="back-link">
+            <span class="back-arrow">←</span>
+            Back to Players
+        </a>
+    </div>
+
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="@Url.Action("Index", "Players")" class="breadcrumb-link">Players</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">@Model.FullName</span>
+        </nav>
+    </div>
+
+    <div class="players-details-header">
+        <h1 class="players-details-title">@Model.FullName</h1>
+        <span class="position-badge-large">@Model.Position</span>
+    </div>
+
+    <div class="players-details-content">
+        <div class="player-overview-section">
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <span class="overview-label">Jersey Number</span>
+                    <span class="overview-value">@Model.JerseyNumber</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Position</span>
+                    <span class="overview-value">@Model.Position</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Birth Date</span>
+                    <span class="overview-value">@Model.BirthDate.ToString("MMM dd, yyyy")</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Goals Scored</span>
+                    <span class="overview-value stat-highlight">@Model.GoalsScored</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Assists</span>
+                    <span class="overview-value stat-highlight">@Model.Assists</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Age</span>
+                    <span class="overview-value">@((DateTime.Now.Year - Model.BirthDate.Year)) years</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="player-stats-section">
+            <h2 class="section-title">Player Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">⚽</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Goals</span>
+                        <span class="stat-number">@Model.GoalsScored</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Assists</span>
+                        <span class="stat-number">@Model.Assists</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👕</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Jersey</span>
+                        <span class="stat-number">@Model.JerseyNumber</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="player-team-section">
+            <h2 class="section-title">Team Assignment</h2>
+            <div class="team-assignment-card">
+                <div class="team-info">
+                    <span class="team-label">Assigned to</span>
+                    <span class="team-value">Team ID: @Model.TeamId</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

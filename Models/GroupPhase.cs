@@ -1,6 +1,6 @@
 namespace HandballCompetitionManager.Models;
 
-public class GroupPhaseGroup
+public class GroupPhase
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

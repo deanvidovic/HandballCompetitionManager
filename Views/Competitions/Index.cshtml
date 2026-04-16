@@ -1,0 +1,85 @@
+@model List<Competition>
+
+@{
+    ViewData["Title"] = "Competitions";
+}
+
+<link rel="stylesheet" href="~/css/competitions.css" asp-append-version="true" />
+
+<div class="competitions-container">
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">Competitions</span>
+        </nav>
+    </div>
+
+    <div class="competitions-header">
+        <h1 class="competitions-title">Handball Competitions</h1>
+        <p class="competitions-subtitle">Manage and view all handball competitions</p>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">🏆</div>
+            <h2 class="empty-state-title">No Competitions Available</h2>
+            <p class="empty-state-message">There are currently no competitions in the system.</p>
+        </div>
+    }
+    else
+    {
+        <div class="competitions-grid">
+            @foreach (var competition in Model)
+            {
+                var status = DateTime.Now < competition.StartDate ? "Upcoming" : 
+                             DateTime.Now > competition.EndDate ? "Finished" : "Active";
+                var statusClass = status == "Active" ? "status-active" : 
+                                  status == "Upcoming" ? "status-upcoming" : "status-finished";
+
+                <div class="competition-card">
+                    <div class="competition-card-header">
+                        <div class="competition-card-title-section">
+                            <h2 class="competition-card-title">
+                                <a href="@Url.Action("Details", "Competitions", new { id = competition.Id })" class="competition-card-link">
+                                    @competition.Name
+                                </a>
+                            </h2>
+                            <p class="competition-season">@competition.Season</p>
+                        </div>
+                        <span class="status-badge @statusClass">@status</span>
+                    </div>
+
+                    <div class="competition-card-content">
+                        <div class="competition-info-group">
+                            <div class="competition-info-item">
+                                <span class="competition-info-label">Start Date</span>
+                                <span class="competition-info-value">@competition.StartDate.ToString("dd MMM yyyy")</span>
+                            </div>
+                            <div class="competition-info-item">
+                                <span class="competition-info-label">End Date</span>
+                                <span class="competition-info-value">@competition.EndDate.ToString("dd MMM yyyy")</span>
+                            </div>
+                            <div class="competition-info-item">
+                                <span class="competition-info-label">City</span>
+                                <span class="competition-info-value">@competition.City</span>
+                            </div>
+                            <div class="competition-info-item">
+                                <span class="competition-info-label">Teams</span>
+                                <span class="competition-info-value">@competition.Teams.Count</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="competition-card-footer">
+                        <a href="@Url.Action("Details", "Competitions", new { id = competition.Id })" class="btn-view-details">
+                            View Details
+                            <span class="arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

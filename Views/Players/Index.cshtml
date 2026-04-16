@@ -1,0 +1,85 @@
+@model List<Player>
+
+@{
+    ViewData["Title"] = "Players";
+}
+
+<link rel="stylesheet" href="~/css/players.css" asp-append-version="true" />
+
+<div class="players-container">
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">Players</span>
+        </nav>
+    </div>
+
+    <div class="players-header">
+        <h1 class="players-title">Handball Players</h1>
+        <p class="players-subtitle">View all competition players and their statistics</p>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">👥</div>
+            <h2 class="empty-state-title">No Players Available</h2>
+            <p class="empty-state-message">There are currently no players in the system.</p>
+        </div>
+    }
+    else
+    {
+        <div class="players-grid">
+            @foreach (var player in Model.GroupBy(p => p.TeamId).SelectMany(g => g.OrderBy(p => p.JerseyNumber)))
+            {
+                <div class="player-card">
+                    <div class="player-card-header">
+                        <div class="player-jersey-badge">
+                            <span class="jersey-number">@player.JerseyNumber</span>
+                        </div>
+                        <div class="player-name-section">
+                            <h2 class="player-card-title">
+                                <a href="@Url.Action("Details", "Players", new { id = player.Id })" class="player-card-link">
+                                    @player.FullName
+                                </a>
+                            </h2>
+                            <span class="player-position-badge">@player.Position</span>
+                        </div>
+                    </div>
+
+                    <div class="player-card-content">
+                        <div class="player-info-group">
+                            <div class="player-info-item">
+                                <span class="player-info-label">Goals</span>
+                                <span class="player-info-value">@player.GoalsScored</span>
+                            </div>
+                            <div class="player-info-item">
+                                <span class="player-info-label">Assists</span>
+                                <span class="player-info-value">@player.Assists</span>
+                            </div>
+                        </div>
+
+                        <div class="player-info-group">
+                            <div class="player-info-item">
+                                <span class="player-info-label">Birth Year</span>
+                                <span class="player-info-value">@player.BirthDate.Year</span>
+                            </div>
+                            <div class="player-info-item">
+                                <span class="player-info-label">Age</span>
+                                <span class="player-info-value">@(DateTime.Now.Year - player.BirthDate.Year)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="player-card-footer">
+                        <a href="@Url.Action("Details", "Players", new { id = player.Id })" class="btn-view-details">
+                            View Details
+                            <span class="arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

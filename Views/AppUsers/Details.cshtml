@@ -1,0 +1,80 @@
+@model AppUser
+
+@{
+    ViewData["Title"] = $"{Model.DisplayName} - User Details";
+}
+
+<link rel="stylesheet" href="~/css/appusers.css" asp-append-version="true" />
+
+<div class="appusers-details-container">
+    <div class="back-navigation">
+        <a href="@Url.Action("Index", "AppUsers")" class="back-link">
+            <span class="back-arrow">←</span>
+            Back to Users
+        </a>
+    </div>
+
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="@Url.Action("Index", "AppUsers")" class="breadcrumb-link">App Users</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">@Model.DisplayName</span>
+        </nav>
+    </div>
+
+    <div class="appusers-details-header">
+        <h1 class="appusers-details-title">@Model.DisplayName</h1>
+        <span class="user-role-badge user-role-@Model.Role.ToString().ToLower()">
+            @Model.Role
+        </span>
+    </div>
+
+    <div class="appusers-details-content">
+        <div class="user-overview-section">
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <span class="overview-label">Username</span>
+                    <span class="overview-value">@Model.Username</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Email</span>
+                    <a href="mailto:@Model.Email" class="overview-email-link">@Model.Email</a>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Created</span>
+                    <span class="overview-value">@Model.CreatedAt.ToString("MMM dd, yyyy")</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Member Since</span>
+                    <span class="overview-value">@Model.CreatedAt.ToString("MMMM yyyy")</span>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.ManagedCompetitionIds != null && Model.ManagedCompetitionIds.Count > 0)
+        {
+            <div class="user-competitions-section">
+                <h2 class="section-title">Managed Competitions</h2>
+                <div class="competitions-tags">
+                    @foreach (var competitionId in Model.ManagedCompetitionIds)
+                    {
+                        <span class="competition-tag">
+                            Competition #@competitionId
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="user-competitions-section">
+                <h2 class="section-title">Managed Competitions</h2>
+                <div class="no-competitions">
+                    <p class="no-competitions-message">No competitions managed by this user.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

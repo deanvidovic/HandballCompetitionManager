@@ -1,0 +1,175 @@
+@model Match
+
+@{
+    ViewData["Title"] = $"Match Details - {ViewBag.HomeTeamName} vs {ViewBag.AwayTeamName}";
+}
+
+<link rel="stylesheet" href="~/css/matches.css" asp-append-version="true" />
+
+<div class="matches-details-container">
+    <div class="back-navigation">
+        <a href="@Url.Action("Index", "Matches")" class="back-link">
+            <span class="back-arrow">←</span>
+            Back to Matches
+        </a>
+    </div>
+
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="@Url.Action("Index", "Matches")" class="breadcrumb-link">Matches</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">Match Details</span>
+        </nav>
+    </div>
+
+    <div class="matches-details-header">
+        <h1 class="matches-details-title">
+            <span class="home-team">@ViewBag.HomeTeamName</span>
+            <span class="vs-separator">vs</span>
+            <span class="away-team">@ViewBag.AwayTeamName</span>
+        </h1>
+        <span class="status-badge-large status-@Model.Status.ToString().ToLower()">@Model.Status</span>
+    </div>
+
+    <div class="matches-details-content">
+        <div class="match-score-section">
+            <div class="score-card">
+                <div class="score-team home-team-score">
+                    <span class="score-team-name">@ViewBag.HomeTeamName</span>
+                    <span class="score-number">@Model.HomeScore</span>
+                </div>
+                <div class="score-divider">-</div>
+                <div class="score-team away-team-score">
+                    <span class="score-number">@Model.AwayScore</span>
+                    <span class="score-team-name">@ViewBag.AwayTeamName</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="match-overview-section">
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <span class="overview-label">Round</span>
+                    <span class="overview-value">Round @Model.RoundNumber</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Date</span>
+                    <span class="overview-value">@Model.Kickoff.ToString("dddd, MMM dd, yyyy")</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Time</span>
+                    <span class="overview-value">@Model.Kickoff.ToString("HH:mm")</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Venue</span>
+                    <span class="overview-value">@Model.MaintenanceHall</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Status</span>
+                    <span class="overview-value">
+                        <span class="status-badge status-@Model.Status.ToString().ToLower()">@Model.Status</span>
+                    </span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Group</span>
+                    <span class="overview-value">Group @Model.GroupId</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="match-teams-section">
+            <h2 class="section-title">Team Information</h2>
+            <div class="teams-comparison-grid">
+                <div class="team-comparison-card">
+                    <div class="team-comparison-header">
+                        <h3 class="team-comparison-name">@ViewBag.HomeTeamName</h3>
+                    </div>
+                    <div class="team-comparison-content">
+                        @{
+                            var homeTeam = ViewBag.TeamRepository?.GetById(Model.HomeTeamId);
+                            if (homeTeam != null)
+                            {
+                                <div class="team-info-item">
+                                    <span class="info-label">Club</span>
+                                    <span class="info-value">@homeTeam.Club</span>
+                                </div>
+                                <div class="team-info-item">
+                                    <span class="info-label">Coach</span>
+                                    <span class="info-value">@homeTeam.CoachName</span>
+                                </div>
+                                <div class="team-info-item">
+                                    <span class="info-label">City</span>
+                                    <span class="info-value">@homeTeam.HomeCity</span>
+                                </div>
+                                <div class="team-info-item">
+                                    <span class="info-label">Players</span>
+                                    <span class="info-value">@homeTeam.Players.Count</span>
+                                </div>
+                                <a href="@Url.Action("Details", "Teams", new { id = homeTeam.Id })" class="team-view-link">View Team Details</a>
+                            }
+                            else
+                            {
+                                <p class="info-placeholder">Team information not available</p>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="team-comparison-card">
+                    <div class="team-comparison-header">
+                        <h3 class="team-comparison-name">@ViewBag.AwayTeamName</h3>
+                    </div>
+                    <div class="team-comparison-content">
+                        @{
+                            var awayTeam = ViewBag.TeamRepository?.GetById(Model.AwayTeamId);
+                            if (awayTeam != null)
+                            {
+                                <div class="team-info-item">
+                                    <span class="info-label">Club</span>
+                                    <span class="info-value">@awayTeam.Club</span>
+                                </div>
+                                <div class="team-info-item">
+                                    <span class="info-label">Coach</span>
+                                    <span class="info-value">@awayTeam.CoachName</span>
+                                </div>
+                                <div class="team-info-item">
+                                    <span class="info-label">City</span>
+                                    <span class="info-value">@awayTeam.HomeCity</span>
+                                </div>
+                                <div class="team-info-item">
+                                    <span class="info-label">Players</span>
+                                    <span class="info-value">@awayTeam.Players.Count</span>
+                                </div>
+                                <a href="@Url.Action("Details", "Teams", new { id = awayTeam.Id })" class="team-view-link">View Team Details</a>
+                            }
+                            else
+                            {
+                                <p class="info-placeholder">Team information not available</p>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="match-metadata-section">
+            <h2 class="section-title">Match Metadata</h2>
+            <div class="metadata-grid">
+                <div class="metadata-card">
+                    <span class="metadata-label">Match ID</span>
+                    <span class="metadata-value">@Model.Id</span>
+                </div>
+                <div class="metadata-card">
+                    <span class="metadata-label">Competition ID</span>
+                    <span class="metadata-value">@Model.CompetitionId</span>
+                </div>
+                <div class="metadata-card">
+                    <span class="metadata-label">Group ID</span>
+                    <span class="metadata-value">@Model.GroupId</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

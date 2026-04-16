@@ -3,48 +3,94 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - HandballCompetitionManager</title>
+    <title>@ViewData["Title"] - Handball Competition Manager</title>
     <script type="importmap"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HandballCompetitionManager.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    @RenderSection("Styles", required: false)
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HandballCompetitionManager</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+<body class="dark-theme">
+
+    <nav class="navbar-global">
+        <div class="navbar-wrapper">
+            <a href="@Url.Action("Index", "Home")" class="logo">
+                <span class="logo-emoji">🏐</span>
+                <span class="logo-text">Handball Manager</span>
+            </a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Home")" class="nav-link" data-nav="home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Teams")" class="nav-link" data-nav="teams">Teams</a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Players")" class="nav-link" data-nav="players">Players</a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Competitions")" class="nav-link" data-nav="competitions">Competitions</a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "GroupPhases")" class="nav-link" data-nav="groupphases">Groups</a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Matches")" class="nav-link" data-nav="matches">Matches</a>
+                </li>
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "AppUsers")" class="nav-link" data-nav="appusers">Users</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - HandballCompetitionManager - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            // Mobile menu toggle
+            menuToggle.addEventListener('click', function () {
+                navMenu.classList.toggle('active');
+                menuToggle.setAttribute('aria-expanded', navMenu.classList.contains('active'));
+            });
+
+            // Close menu when nav link is clicked
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    navMenu.classList.remove('active');
+                    menuToggle.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            // Set active nav link based on current page
+            const currentController = '@ViewContext.RouteData.Values["controller"]?.ToString().ToLower() ?? "home"';
+            const navItems = document.querySelectorAll('.nav-link');
+
+            navItems.forEach(item => {
+                const navDataAttr = item.getAttribute('data-nav');
+                if (navDataAttr === currentController) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

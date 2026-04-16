@@ -1,8 +1,137 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Handball Competition Manager - Organize Your Tournaments";
+    Layout = null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar-header">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span class="brand-logo">🏐</span>
+                <span class="brand-text">Handball<br><small>Manager</small></span>
+            </div>
+            <nav class="navbar-actions">
+                <a href="#signin" class="btn-signin">Sign In</a>
+                <a href="#signup" class="btn-signup">Sign Up</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <h1 class="hero-title">Organize. Compete. Dominate.</h1>
+            <p class="hero-subtitle">The complete platform for managing handball tournaments, teams, and players with precision and ease.</p>
+            <a href="#signup" class="btn-hero-cta">Get Started Free</a>
+        </div>
+    </section>
+
+    <!-- Quote Section -->
+    <section class="quote-section">
+        <div class="quote-container">
+            <blockquote class="quote-text">
+                "Organizing tournaments is an art form that brings communities together and creates unforgettable memories on and off the court."
+            </blockquote>
+            <p class="quote-attribution">— Handball Competition Manager Team</p>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="features-container">
+            <h2 class="features-title">Powerful Features Built for Champions</h2>
+            <p class="features-subtitle">Everything you need to manage your handball competitions</p>
+            
+            <div class="features-grid">
+                <!-- Feature 1: Teams Management -->
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title">Teams Management</h3>
+                    <p class="feature-description">Create, organize, and manage multiple teams. Track team statistics, compositions, and competitive records all in one place.</p>
+                </div>
+
+                <!-- Feature 2: Player Roster -->
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍🦰</div>
+                    <h3 class="feature-title">Player Roster Management</h3>
+                    <p class="feature-description">Build comprehensive player profiles with positions, statistics, and performance metrics. Track individual progression and achievements.</p>
+                </div>
+
+                <!-- Feature 3: Match Scheduling -->
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3 class="feature-title">Match Scheduling</h3>
+                    <p class="feature-description">Intelligent scheduling system for organizing matches. Set dates, times, locations, and automatically manage tournament brackets.</p>
+                </div>
+
+                <!-- Feature 4: Group Phase Organization -->
+                <div class="feature-card">
+                    <div class="feature-icon">🔀</div>
+                    <h3 class="feature-title">Group Phase Organization</h3>
+                    <p class="feature-description">Structure tournaments with group phases. Automatically calculate standings, manage qualifications, and track all competitive details.</p>
+                </div>
+
+                <!-- Feature 5: Competition Management -->
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3 class="feature-title">Competition Management</h3>
+                    <p class="feature-description">Create and manage complete competitions from registration to finals. Handle multiple tournaments simultaneously with full control.</p>
+                </div>
+
+                <!-- Feature 6: Live Match Tracking -->
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Live Match Tracking</h3>
+                    <p class="feature-description">Track matches in real-time. Update scores, manage substitutions, and provide instant access to match statistics and standings.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2 class="cta-title">Ready to Organize Your Next Tournament?</h2>
+            <p class="cta-subtitle">Join organizations worldwide using Handball Competition Manager to run seamless tournaments</p>
+            <div class="cta-buttons">
+                <a href="#signup" class="btn-cta-primary">Start Your Free Account</a>
+                <a href="#learn" class="btn-cta-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Handball Competition Manager</h4>
+                    <p>The ultimate platform for organizing handball tournaments and competitions.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Handball Competition Manager. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

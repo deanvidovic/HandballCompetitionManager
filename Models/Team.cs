@@ -9,10 +9,6 @@ public class Team
     public string HomeCity { get; set; } = string.Empty;
     public int FoundedYear { get; set; }
     public string HomeArena { get; set; } = string.Empty;
-
-    // 1-N relation: one team has many players.
     public List<Player> Players { get; set; } = new();
-
-    // N-N relation with competitions.
     public List<Competition> Competitions { get; set; } = new();
 }

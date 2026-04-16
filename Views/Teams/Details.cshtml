@@ -1,0 +1,143 @@
+@model Team
+
+@{
+    ViewData["Title"] = $"{Model.Name} - Team Details";
+}
+
+<link rel="stylesheet" href="~/css/teams.css" asp-append-version="true" />
+
+<div class="teams-details-container">
+    <div class="back-navigation">
+        <a href="@Url.Action("Index", "Teams")" class="back-link">
+            <span class="back-arrow">←</span>
+            Back to Teams
+        </a>
+    </div>
+
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="@Url.Action("Index", "Teams")" class="breadcrumb-link">Teams</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">@Model.Name</span>
+        </nav>
+    </div>
+
+    <div class="teams-details-header">
+        <h1 class="teams-details-title">@Model.Name</h1>
+    </div>
+
+    <div class="teams-details-content">
+        <div class="team-overview-section">
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <span class="overview-label">Club</span>
+                    <span class="overview-value">@Model.Club</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Coach</span>
+                    <span class="overview-value">@Model.CoachName</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Home City</span>
+                    <span class="overview-value">@Model.HomeCity</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Founded</span>
+                    <span class="overview-value">@Model.FoundedYear</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Home Arena</span>
+                    <span class="overview-value">@Model.HomeArena</span>
+                </div>
+                <div class="overview-card">
+                    <span class="overview-label">Total Players</span>
+                    <span class="overview-value">@Model.Players.Count</span>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Players != null && Model.Players.Count > 0)
+        {
+            <div class="team-roster-section">
+                <h2 class="section-title">Players Roster</h2>
+                <div class="table-container">
+                    <table class="roster-table">
+                        <thead>
+                            <tr>
+                                <th>Jersey</th>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Goals</th>
+                                <th>Assists</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var player in Model.Players.OrderBy(p => p.JerseyNumber))
+                            {
+                                <tr>
+                                    <td class="jersey-cell">
+                                        <span class="jersey-number">@player.JerseyNumber</span>
+                                    </td>
+                                    <td>
+                                        <span class="player-name">@player.FullName</span>
+                                    </td>
+                                    <td>
+                                        <span class="position-badge">@player.Position</span>
+                                    </td>
+                                    <td>
+                                        <span class="stats-value">@player.GoalsScored</span>
+                                    </td>
+                                    <td>
+                                        <span class="stats-value">@player.Assists</span>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Details", "Players", new { id = player.Id })" class="view-link">View</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="team-roster-section">
+                <h2 class="section-title">Players Roster</h2>
+                <div class="no-roster">
+                    <p class="no-roster-message">No players assigned to this team yet.</p>
+                </div>
+            </div>
+        }
+
+        @if (Model.Competitions != null && Model.Competitions.Count > 0)
+        {
+            <div class="team-competitions-section">
+                <h2 class="section-title">Competitions</h2>
+                <div class="competitions-list">
+                    @foreach (var competition in Model.Competitions)
+                    {
+                        <div class="competition-item">
+                            <a href="@Url.Action("Details", "Competitions", new { id = competition.Id })" class="competition-link">
+                                <span class="competition-name">@competition.Name</span>
+                                <span class="competition-season">@competition.Season</span>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="team-competitions-section">
+                <h2 class="section-title">Competitions</h2>
+                <div class="no-competitions">
+                    <p class="no-competitions-message">This team is not participating in any competitions yet.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

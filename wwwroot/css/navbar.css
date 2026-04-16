@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --color-dark: #27374D;
+    --color-primary: #526D82;
+    --color-accent: #9DB2BF;
+    --color-light: #DDE6ED;
+    --color-white: #FFFFFF;
+    --color-shadow: rgba(39, 55, 77, 0.1);
+    --font-family: 'Josefin Sans', sans-serif;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Navbar Styles */
+.navbar-global {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: var(--color-dark);
+    box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+.navbar-global .navbar-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-family: var(--font-family);
+}
+
+.navbar-global .logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
+    color: var(--color-white);
+    font-size: 1.5rem;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.navbar-global .logo:hover {
+    color: var(--color-accent);
+}
+
+.navbar-global .logo-emoji {
+    font-size: 1.75rem;
+}
+
+.navbar-global .logo-text {
+    letter-spacing: -0.3px;
+}
+
+.navbar-global .nav-menu {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-global .nav-item {
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-global .nav-link {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-md);
+    color: var(--color-light);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: var(--transition);
+    border-bottom: 3px solid transparent;
+    position: relative;
+}
+
+.navbar-global .nav-link:hover {
+    color: var(--color-accent);
+    background-color: rgba(157, 178, 191, 0.1);
+}
+
+.navbar-global .nav-link.active {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+    background-color: rgba(157, 178, 191, 0.15);
+}
+
+/* Mobile Menu Toggle */
+.navbar-global .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--color-light);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    transition: var(--transition);
+}
+
+.navbar-global .menu-toggle:hover {
+    color: var(--color-accent);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar-global .navbar-wrapper {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .navbar-global .logo-text {
+        display: none;
+    }
+
+    .navbar-global .logo {
+        font-size: 1.25rem;
+    }
+
+    .navbar-global .logo-emoji {
+        font-size: 1.5rem;
+    }
+
+    .navbar-global .menu-toggle {
+        display: block;
+    }
+
+    .navbar-global .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background-color: var(--color-dark);
+        border-top: 1px solid var(--color-primary);
+        box-shadow: 0 4px 12px var(--color-shadow);
+        gap: 0;
+    }
+
+    .navbar-global .nav-menu.active {
+        display: flex;
+    }
+
+    .navbar-global .nav-item {
+        width: 100%;
+    }
+
+    .navbar-global .nav-link {
+        padding: var(--spacing-sm) var(--spacing-lg);
+        border-bottom: 1px solid var(--color-primary);
+        border-right: 3px solid transparent;
+    }
+
+    .navbar-global .nav-link:hover {
+        background-color: rgba(157, 178, 191, 0.15);
+    }
+
+    .navbar-global .nav-link.active {
+        background-color: rgba(157, 178, 191, 0.15);
+        border-right-color: var(--color-accent);
+        border-bottom-color: var(--color-primary);
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar-global .navbar-wrapper {
+        padding: var(--spacing-xs) var(--spacing-md);
+    }
+
+    .navbar-global .logo {
+        font-size: 1rem;
+    }
+
+    .navbar-global .logo-emoji {
+        font-size: 1.25rem;
+    }
+
+    .navbar-global .nav-link {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.9rem;
+    }
+}

@@ -1,0 +1,85 @@
+@model List<AppUser>
+
+@{
+    ViewData["Title"] = "App Users";
+}
+
+<link rel="stylesheet" href="~/css/appusers.css" asp-append-version="true" />
+
+<div class="appusers-container">
+    <div class="breadcrumb-section">
+        <nav class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">App Users</span>
+        </nav>
+    </div>
+
+    <div class="appusers-header">
+        <h1 class="appusers-title">App Users</h1>
+        <p class="appusers-subtitle">Manage and view all system users</p>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">👤</div>
+            <h2 class="empty-state-title">No Users Available</h2>
+            <p class="empty-state-message">There are currently no users in the system.</p>
+        </div>
+    }
+    else
+    {
+        <div class="appusers-grid">
+            @foreach (var user in Model)
+            {
+                <div class="user-card">
+                    <div class="user-card-header">
+                        <h2 class="user-card-title">
+                            <a href="@Url.Action("Details", "AppUsers", new { id = user.Id })" class="user-card-link">
+                                @user.DisplayName
+                            </a>
+                        </h2>
+                        <span class="user-role-badge user-role-@user.Role.ToString().ToLower()">
+                            @user.Role
+                        </span>
+                    </div>
+
+                    <div class="user-card-content">
+                        <div class="user-info-group">
+                            <div class="user-info-item">
+                                <span class="user-info-label">Username</span>
+                                <span class="user-info-value">@user.Username</span>
+                            </div>
+                        </div>
+
+                        <div class="user-info-group">
+                            <div class="user-info-item">
+                                <span class="user-info-label">Email</span>
+                                <a href="mailto:@user.Email" class="user-info-email">@user.Email</a>
+                            </div>
+                        </div>
+
+                        <div class="user-info-group">
+                            <div class="user-info-item">
+                                <span class="user-info-label">Created</span>
+                                <span class="user-info-value">@user.CreatedAt.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            <div class="user-info-item">
+                                <span class="user-info-label">Competitions</span>
+                                <span class="user-info-value">@user.ManagedCompetitionIds.Count</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-card-footer">
+                        <a href="@Url.Action("Details", "AppUsers", new { id = user.Id })" class="btn-view-details">
+                            View Details
+                            <span class="arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

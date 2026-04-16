@@ -1,9 +1,18 @@
 using HandballCompetitionManager.Models;
+using HandballCompetitionManager.Repositories.Mock;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register Mock Repositories for Lab 2 - ORDER MATTERS (dependencies first)
+builder.Services.AddSingleton<PlayerMockRepository>();
+builder.Services.AddSingleton<MatchMockRepository>();
+builder.Services.AddSingleton<TeamMockRepository>();
+builder.Services.AddSingleton<GroupPhaseMockRepository>();
+builder.Services.AddSingleton<CompetitionMockRepository>();
+builder.Services.AddSingleton<AppUserMockRepository>();
 
 var app = builder.Build();
 
@@ -235,7 +244,7 @@ static LabData BuildLabData()
         team.Competitions = competitions.Where(c => c.Teams.Any(t => t.Id == team.Id)).ToList();
     }
 
-    var groups = new List<GroupPhaseGroup>
+    var groups = new List<GroupPhase>
     {
         new() { Id = 1, Name = "Group A", CompetitionId = 1, Teams = teams.Where(t => t.Id is 1 or 2).ToList() },
         new() { Id = 2, Name = "Group B", CompetitionId = 1, Teams = teams.Where(t => t.Id == 3).ToList() },
@@ -342,6 +351,6 @@ public record LabData(
     List<Competition> Competitions,
     List<Team> Teams,
     List<Player> Players,
-    List<GroupPhaseGroup> Groups,
+    List<GroupPhase> Groups,
     List<Match> Matches,
     List<AppUser> Users);
