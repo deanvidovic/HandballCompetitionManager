@@ -1,17 +1,17 @@
 using HandballCompetitionManager.Models;
-using HandballCompetitionManager.Repositories.Mock;
+using HandballCompetitionManager.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HandballCompetitionManager.Controllers
 {
     public class GroupPhasesController : Controller
     {
-        private readonly GroupPhaseMockRepository _groupPhaseRepository;
-        private readonly CompetitionMockRepository _competitionRepository;
-        private readonly TeamMockRepository _teamRepository;
+        private readonly GroupPhaseRepository _groupPhaseRepository;
+        private readonly CompetitionRepository _competitionRepository;
+        private readonly TeamRepository _teamRepository;
         private readonly ILogger<GroupPhasesController> _logger;
 
-        public GroupPhasesController(GroupPhaseMockRepository groupPhaseRepository, CompetitionMockRepository competitionRepository, TeamMockRepository teamRepository, ILogger<GroupPhasesController> logger)
+        public GroupPhasesController(GroupPhaseRepository groupPhaseRepository, CompetitionRepository competitionRepository, TeamRepository teamRepository, ILogger<GroupPhasesController> logger)
         {
             _groupPhaseRepository = groupPhaseRepository;
             _competitionRepository = competitionRepository;

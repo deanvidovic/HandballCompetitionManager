@@ -1,15 +1,15 @@
 using HandballCompetitionManager.Models;
-using HandballCompetitionManager.Repositories.Mock;
+using HandballCompetitionManager.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HandballCompetitionManager.Controllers
 {
     public class AppUsersController : Controller
     {
-        private readonly AppUserMockRepository _appUserRepository;
+        private readonly AppUserRepository _appUserRepository;
         private readonly ILogger<AppUsersController> _logger;
 
-        public AppUsersController(AppUserMockRepository appUserRepository, ILogger<AppUsersController> logger)
+        public AppUsersController(AppUserRepository appUserRepository, ILogger<AppUsersController> logger)
         {
             _appUserRepository = appUserRepository;
             _logger = logger;

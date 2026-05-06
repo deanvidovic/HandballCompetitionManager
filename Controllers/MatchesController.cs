@@ -1,20 +1,20 @@
 using HandballCompetitionManager.Models;
-using HandballCompetitionManager.Repositories.Mock;
+using HandballCompetitionManager.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HandballCompetitionManager.Controllers
 {
     public class MatchesController : Controller
     {
-        private readonly MatchMockRepository _matchRepository;
-        private readonly TeamMockRepository _teamRepository;
-        private readonly GroupPhaseMockRepository _groupPhaseRepository;
+        private readonly MatchRepository _matchRepository;
+        private readonly TeamRepository _teamRepository;
+        private readonly GroupPhaseRepository _groupPhaseRepository;
         private readonly ILogger<MatchesController> _logger;
 
         public MatchesController(
-            MatchMockRepository matchRepository,
-            TeamMockRepository teamRepository,
-            GroupPhaseMockRepository groupPhaseRepository,
+            MatchRepository matchRepository,
+            TeamRepository teamRepository,
+            GroupPhaseRepository groupPhaseRepository,
             ILogger<MatchesController> logger)
         {
             _matchRepository = matchRepository;
@@ -63,6 +63,33 @@ namespace HandballCompetitionManager.Controllers
             ViewBag.TeamRepository = _teamRepository;
             
             return View(match);
+        }
+
+        [HttpGet]
+        [Route("matches/status/{status}")]
+        public IActionResult GetByStatus(string status)
+        {
+            _logger.LogInformation("Matches by status requested: {Status}", status);
+            
+            if (!Enum.TryParse<MatchStatus>(status, true, out var matchStatus))
+            {
+                _logger.LogWarning("Invalid match status: {Status}", status);
+                return BadRequest("Invalid match status. Valid values are: Scheduled, Live, Finished, Cancelled");
+            }
+
+            var matches = _matchRepository.GetByStatus(matchStatus).OrderBy(m => m.Kickoff).ToList();
+            
+            var teamNames = new Dictionary<int, string>();
+            foreach (var match in matches)
+            {
+                if (!teamNames.ContainsKey(match.HomeTeamId))
+                    teamNames[match.HomeTeamId] = _teamRepository.GetById(match.HomeTeamId)?.Name ?? $"Team {match.HomeTeamId}";
+                if (!teamNames.ContainsKey(match.AwayTeamId))
+                    teamNames[match.AwayTeamId] = _teamRepository.GetById(match.AwayTeamId)?.Name ?? $"Team {match.AwayTeamId}";
+            }
+            
+            ViewBag.TeamNames = teamNames;
+            return View("Index", matches);
         }
     }
 }

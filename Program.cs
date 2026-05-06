@@ -1,12 +1,29 @@
 using HandballCompetitionManager.Models;
+using HandballCompetitionManager.Repositories;
 using HandballCompetitionManager.Repositories.Mock;
+using HandballCompetitionManager.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Register EF DbContext for Lab 3
+builder.Services.AddDbContext<HandballDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("HandballDbContext")));
+
+// Register EF Repositories for Lab 3
+builder.Services.AddScoped<PlayerRepository>();
+builder.Services.AddScoped<MatchRepository>();
+builder.Services.AddScoped<TeamRepository>();
+builder.Services.AddScoped<GroupPhaseRepository>();
+builder.Services.AddScoped<CompetitionRepository>();
+builder.Services.AddScoped<AppUserRepository>();
+
 // Register Mock Repositories for Lab 2 - ORDER MATTERS (dependencies first)
+// Kept for compatibility while controllers are migrated to EF
 builder.Services.AddSingleton<PlayerMockRepository>();
 builder.Services.AddSingleton<MatchMockRepository>();
 builder.Services.AddSingleton<TeamMockRepository>();
@@ -64,7 +81,7 @@ static LabData BuildLabData()
             Email = "tm.zagreb@hcm.local",
             Role = UserRole.TournamentManager,
             CreatedAt = new DateTime(2026, 1, 15),
-            ManagedCompetitionIds = new List<int> { 1, 2 }
+            ManagedCompetitions = new List<Competition>()
         },
         new()
         {
@@ -74,7 +91,7 @@ static LabData BuildLabData()
             Email = "coach.metalac@hcm.local",
             Role = UserRole.Coach,
             CreatedAt = new DateTime(2026, 2, 1),
-            ManagedCompetitionIds = new List<int> { 1 }
+            ManagedCompetitions = new List<Competition>()
         },
         new()
         {
@@ -322,7 +339,7 @@ static void RunLabQueries(LabData data)
         {
             Manager = u.DisplayName,
             ManagedCompetitions = data.Competitions
-                .Where(c => u.ManagedCompetitionIds.Contains(c.Id) || c.Administrators.Any(a => a.Id == u.Id))
+                .Where(c => c.Administrators.Any(a => a.Id == u.Id))
                 .Select(c => c.Name)
                 .ToList()
         })

@@ -43,6 +43,10 @@
                     <a href="mailto:@Model.Email" class="overview-email-link">@Model.Email</a>
                 </div>
                 <div class="overview-card">
+                    <span class="overview-label">Date of Birth</span>
+                    <span class="overview-value">@Model.DateOfBirth.ToString("MMM dd, yyyy")</span>
+                </div>
+                <div class="overview-card">
                     <span class="overview-label">Created</span>
                     <span class="overview-value">@Model.CreatedAt.ToString("MMM dd, yyyy")</span>
                 </div>
@@ -53,15 +57,15 @@
             </div>
         </div>
 
-        @if (Model.ManagedCompetitionIds != null && Model.ManagedCompetitionIds.Count > 0)
+        @if (Model.ManagedCompetitions != null && Model.ManagedCompetitions.Count > 0)
         {
             <div class="user-competitions-section">
                 <h2 class="section-title">Managed Competitions</h2>
                 <div class="competitions-tags">
-                    @foreach (var competitionId in Model.ManagedCompetitionIds)
+                    @foreach (var competition in Model.ManagedCompetitions)
                     {
                         <span class="competition-tag">
-                            Competition #@competitionId
+                            @competition.Name
                         </span>
                     }
                 </div>

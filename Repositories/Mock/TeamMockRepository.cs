@@ -27,7 +27,7 @@ public class TeamMockRepository
                 FoundedYear = 2010,
                 HomeArena = "Pabellon Mladost",
                 Players = playerRepo.GetByTeamId(1),
-                Competitions = new()
+                Competitions = new List<Competition>()
             },
             new Team
             {
@@ -39,7 +39,7 @@ public class TeamMockRepository
                 FoundedYear = 2005,
                 HomeArena = "Gradski vrt",
                 Players = playerRepo.GetByTeamId(2),
-                Competitions = new()
+                Competitions = new List<Competition>()
             },
             new Team
             {
@@ -51,7 +51,7 @@ public class TeamMockRepository
                 FoundedYear = 2008,
                 HomeArena = "Poljud Arena",
                 Players = playerRepo.GetByTeamId(3),
-                Competitions = new()
+                Competitions = new List<Competition>()
             },
             new Team
             {
@@ -62,8 +62,8 @@ public class TeamMockRepository
                 HomeCity = "Osijek",
                 FoundedYear = 2012,
                 HomeArena = "Gradski vrt",
-                Players = new(),
-                Competitions = new()
+                Players = new List<Player>(),
+                Competitions = new List<Competition>()
             },
             new Team
             {
@@ -74,8 +74,8 @@ public class TeamMockRepository
                 HomeCity = "Zadar",
                 FoundedYear = 2009,
                 HomeArena = "Zaro",
-                Players = new(),
-                Competitions = new()
+                Players = new List<Player>(),
+                Competitions = new List<Competition>()
             }
         };
     }

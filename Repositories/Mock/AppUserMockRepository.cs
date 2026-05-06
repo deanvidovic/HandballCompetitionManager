@@ -23,7 +23,7 @@ public class AppUserMockRepository
                 Email = "ivan.horvat@handball.hr",
                 Role = UserRole.Coach,
                 CreatedAt = new DateTime(2023, 1, 15),
-                ManagedCompetitionIds = new() { 1 }
+                ManagedCompetitions = new List<Competition>()
             },
             new AppUser
             {
@@ -33,7 +33,7 @@ public class AppUserMockRepository
                 Email = "marko.milic@handball.hr",
                 Role = UserRole.Coach,
                 CreatedAt = new DateTime(2023, 2, 20),
-                ManagedCompetitionIds = new() { 2 }
+                ManagedCompetitions = new List<Competition>()
             },
             new AppUser
             {
@@ -43,7 +43,7 @@ public class AppUserMockRepository
                 Email = "ante.antic@handball.hr",
                 Role = UserRole.Coach,
                 CreatedAt = new DateTime(2023, 3, 10),
-                ManagedCompetitionIds = new() { 1, 3 }
+                ManagedCompetitions = new List<Competition>()
             },
             new AppUser
             {
@@ -53,7 +53,7 @@ public class AppUserMockRepository
                 Email = "ana.kovacevic@handball.hr",
                 Role = UserRole.Admin,
                 CreatedAt = new DateTime(2022, 6, 1),
-                ManagedCompetitionIds = new() { 1, 2, 3, 4 }
+                ManagedCompetitions = new List<Competition>()
             },
             new AppUser
             {
@@ -63,7 +63,7 @@ public class AppUserMockRepository
                 Email = "petar.novak@handball.hr",
                 Role = UserRole.TournamentManager,
                 CreatedAt = new DateTime(2023, 4, 5),
-                ManagedCompetitionIds = new() { 2, 3 }
+                ManagedCompetitions = new List<Competition>()
             },
             new AppUser
             {
@@ -73,7 +73,7 @@ public class AppUserMockRepository
                 Email = "drago.horvat@handball.hr",
                 Role = UserRole.Coach,
                 CreatedAt = new DateTime(2023, 5, 12),
-                ManagedCompetitionIds = new() { 4 }
+                ManagedCompetitions = new List<Competition>()
             },
             new AppUser
             {
@@ -83,7 +83,7 @@ public class AppUserMockRepository
                 Email = "jure.horvat@handball.hr",
                 Role = UserRole.Coach,
                 CreatedAt = new DateTime(2023, 7, 8),
-                ManagedCompetitionIds = new() { 3 }
+                ManagedCompetitions = new List<Competition>()
             },
             new AppUser
             {
@@ -93,7 +93,7 @@ public class AppUserMockRepository
                 Email = "vesna.sekulic@handball.hr",
                 Role = UserRole.TournamentManager,
                 CreatedAt = new DateTime(2023, 8, 22),
-                ManagedCompetitionIds = new() { 1, 4 }
+                ManagedCompetitions = new List<Competition>()
             }
         };
     }

@@ -1,16 +1,16 @@
 using HandballCompetitionManager.Models;
-using HandballCompetitionManager.Repositories.Mock;
+using HandballCompetitionManager.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HandballCompetitionManager.Controllers
 {
     public class TeamsController : Controller
     {
-        private readonly TeamMockRepository _teamRepository;
-        private readonly PlayerMockRepository _playerRepository;
+        private readonly TeamRepository _teamRepository;
+        private readonly PlayerRepository _playerRepository;
         private readonly ILogger<TeamsController> _logger;
 
-        public TeamsController(TeamMockRepository teamRepository, PlayerMockRepository playerRepository, ILogger<TeamsController> logger)
+        public TeamsController(TeamRepository teamRepository, PlayerRepository playerRepository, ILogger<TeamsController> logger)
         {
             _teamRepository = teamRepository;
             _playerRepository = playerRepository;
@@ -38,6 +38,15 @@ namespace HandballCompetitionManager.Controllers
             }
 
             return View(team);
+        }
+
+        [HttpGet]
+        [Route("teams/city/{city}")]
+        public IActionResult GetByCity(string city)
+        {
+            _logger.LogInformation("Teams by city requested: {City}", city);
+            var teams = _teamRepository.GetByCity(city);
+            return View("Index", teams);
         }
     }
 }

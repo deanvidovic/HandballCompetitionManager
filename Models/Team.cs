@@ -1,7 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace HandballCompetitionManager.Models;
 
 public class Team
 {
+    [Key]
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Club { get; set; } = string.Empty;
@@ -9,6 +13,7 @@ public class Team
     public string HomeCity { get; set; } = string.Empty;
     public int FoundedYear { get; set; }
     public string HomeArena { get; set; } = string.Empty;
-    public List<Player> Players { get; set; } = new();
-    public List<Competition> Competitions { get; set; } = new();
+    public virtual ICollection<Player> Players { get; set; } = new List<Player>();
+    public virtual ICollection<Competition> Competitions { get; set; } = new List<Competition>();
+    public virtual ICollection<GroupPhase> GroupPhases { get; set; } = new List<GroupPhase>();
 }

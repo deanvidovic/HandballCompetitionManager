@@ -6,9 +6,9 @@ public class CompetitionMockRepository
 {
     private readonly TeamMockRepository _teamRepository;
     private readonly GroupPhaseMockRepository _groupRepository;
-    private List<Competition> _competitions = new();
+    private List<Competition> _competitions;
 
-    public CompetitionMockRepository(TeamMockRepository? teamRepository = null, GroupPhaseMockRepository? groupRepository = null)
+    public CompetitionMockRepository(TeamMockRepository teamRepository = null, GroupPhaseMockRepository groupRepository = null)
     {
         _teamRepository = teamRepository ?? new TeamMockRepository();
         _groupRepository = groupRepository ?? new GroupPhaseMockRepository();
@@ -32,7 +32,7 @@ public class CompetitionMockRepository
                 City = "Zagreb",
                 Teams = new List<Team> { teamRepo.GetById(1), teamRepo.GetById(2), teamRepo.GetById(3), teamRepo.GetById(4), teamRepo.GetById(5) }.Where(t => t != null).ToList(),
                 Groups = groupRepo.GetByCompetitionId(1),
-                Administrators = new()
+                Administrators = new List<AppUser>()
             },
             new Competition
             {
@@ -44,7 +44,7 @@ public class CompetitionMockRepository
                 City = "Zagreb",
                 Teams = new List<Team> { teamRepo.GetById(1), teamRepo.GetById(2), teamRepo.GetById(3), teamRepo.GetById(4) }.Where(t => t != null).ToList(),
                 Groups = groupRepo.GetByCompetitionId(2),
-                Administrators = new()
+                Administrators = new List<AppUser>()
             },
             new Competition
             {
@@ -56,7 +56,7 @@ public class CompetitionMockRepository
                 City = "Split",
                 Teams = new List<Team> { teamRepo.GetById(2), teamRepo.GetById(3), teamRepo.GetById(4) }.Where(t => t != null).ToList(),
                 Groups = groupRepo.GetByCompetitionId(3),
-                Administrators = new()
+                Administrators = new List<AppUser>()
             },
             new Competition
             {
@@ -68,7 +68,7 @@ public class CompetitionMockRepository
                 City = "Rijeka",
                 Teams = new List<Team> { teamRepo.GetById(1), teamRepo.GetById(5) }.Where(t => t != null).ToList(),
                 Groups = groupRepo.GetByCompetitionId(4),
-                Administrators = new()
+                Administrators = new List<AppUser>()
             }
         };
     }
