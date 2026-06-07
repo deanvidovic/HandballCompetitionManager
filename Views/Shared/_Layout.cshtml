@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/variables.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HandballCompetitionManager.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -38,9 +40,6 @@
                     <a href="@Url.Action("Index", "Competitions")" class="nav-link" data-nav="competitions">Competitions</a>
                 </li>
                 <li class="nav-item">
-                    <a href="@Url.Action("Index", "GroupPhases")" class="nav-link" data-nav="groupphases">Groups</a>
-                </li>
-                <li class="nav-item">
                     <a href="@Url.Action("Index", "Matches")" class="nav-link" data-nav="matches">Matches</a>
                 </li>
                 <li class="nav-item">
@@ -55,9 +54,55 @@
             @RenderBody()
         </main>
     </div>
+
+    <aside class="app-notification" role="status" aria-live="polite" hidden data-app-notification>
+        <span class="app-notification-icon" aria-hidden="true">
+            <i class="fas fa-check" data-app-notification-icon></i>
+        </span>
+        <span class="app-notification-text" data-app-notification-text></span>
+    </aside>
+
+    <div class="app-confirm-modal" id="deleteConfirmModal" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle" aria-describedby="deleteConfirmMessage" hidden data-delete-confirm-modal>
+        <div class="app-confirm-backdrop" data-delete-confirm-cancel></div>
+        <section class="app-confirm-panel">
+            <header class="app-confirm-header">
+                <div class="app-confirm-icon" aria-hidden="true">
+                    <i class="fas fa-trash-can"></i>
+                </div>
+                <div>
+                    <p class="app-confirm-eyebrow">Confirm delete</p>
+                    <h2 class="app-confirm-title" id="deleteConfirmTitle">Delete item?</h2>
+                </div>
+            </header>
+            <p class="app-confirm-message" id="deleteConfirmMessage" data-delete-confirm-message>This action cannot be undone.</p>
+            <footer class="app-confirm-actions">
+                <button type="button" class="btn app-confirm-cancel" data-delete-confirm-cancel>Cancel</button>
+                <button type="button" class="btn app-confirm-delete" data-delete-confirm-submit>Delete</button>
+            </footer>
+        </section>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @if (TempData["SuccessNotification"] is string successNotification)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                window.AppNotifications?.success(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(successNotification)));
+            });
+        </script>
+    }
+
+    @if (TempData["ErrorNotification"] is string errorNotification)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                window.AppNotifications?.error(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(errorNotification)));
+            });
+        </script>
+    }
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {

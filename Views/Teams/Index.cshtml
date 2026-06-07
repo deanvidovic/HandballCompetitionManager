@@ -2,6 +2,11 @@
 
 @{
     ViewData["Title"] = "Teams";
+    ViewData["SearchTitle"] = "Search teams";
+    ViewData["SearchLabel"] = "Search";
+    ViewData["SearchPlaceholder"] = "Search by team name, coach, city, or arena";
+    ViewData["SearchHint"] = "Use keywords to narrow the team list.";
+    ViewData["SearchSectionLabel"] = "Team search";
 }
 
 <link rel="stylesheet" href="~/css/teams.css" asp-append-version="true" />
@@ -16,64 +21,146 @@
     </div>
 
     <div class="teams-header">
-        <h1 class="teams-title">Handball Teams</h1>
-        <p class="teams-subtitle">Manage and view all competition teams</p>
+        <div class="header-content">
+            <h1 class="teams-title">Handball Teams</h1>
+            <p class="teams-subtitle">Manage and view all competition teams</p>
+        </div>
+        <button type="button" class="btn btn-create" data-team-modal-open aria-haspopup="dialog" aria-controls="createTeamModal">
+            <span class="btn-icon" aria-hidden="true">+</span>
+            Create Team
+        </button>
     </div>
+
+    <section class="competition-search" aria-label="@ViewData["SearchSectionLabel"]">
+        <form class="competition-search-form" asp-action="Index" asp-controller="Teams" method="get" data-search-form="teams">
+            <div class="search-header">
+                <div>
+                    <h2 class="search-title">@ViewData["SearchTitle"]</h2>
+                    <p class="search-subtitle">@ViewData["SearchHint"]</p>
+                </div>
+            </div>
+            <div class="search-input-group">
+                <label class="search-label" for="teamSearch">@ViewData["SearchLabel"]</label>
+                <div class="search-input-wrapper">
+                    <span class="search-icon" aria-hidden="true">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </span>
+                    <input type="search" id="teamSearch" name="query" value="@ViewData["Query"]" class="search-input" placeholder="@ViewData["SearchPlaceholder"]" autocomplete="off" data-autocomplete-url="@Url.Action("Autocomplete", "Teams")" />
+                </div>
+            </div>
+        </form>
+    </section>
 
     @if (Model == null || Model.Count == 0)
     {
         <div class="empty-state">
-            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-icon">🏆</div>
             <h2 class="empty-state-title">No Teams Available</h2>
             <p class="empty-state-message">There are currently no teams in the system.</p>
         </div>
     }
     else
     {
-        <div class="teams-grid">
+        <div class="teams-list">
             @foreach (var team in Model)
             {
-                <div class="team-card">
-                    <div class="team-card-header">
-                        <h2 class="team-card-title">
-                            <a href="@Url.Action("Details", "Teams", new { id = team.Id })" class="team-card-link">
-                                @team.Name
-                            </a>
-                        </h2>
-                    </div>
-
-                    <div class="team-card-content">
-                        <div class="team-info-group">
-                            <div class="team-info-item">
-                                <span class="team-info-label">Club</span>
-                                <span class="team-info-value">@team.Club</span>
+                <div class="team-list-item">
+                    <a href="@Url.Action("Details", "Teams", new { id = team.Id })" class="team-main-link">
+                        <div class="team-info">
+                            <h2 class="team-name">@team.Name</h2>
+                            <p class="team-city">@team.HomeCity</p>
+                        </div>
+                        <div class="team-details">
+                            <div class="team-detail-item">
+                                <span class="team-detail-label">Coach</span>
+                                <span class="team-detail-value">@team.CoachName</span>
                             </div>
-                            <div class="team-info-item">
-                                <span class="team-info-label">Coach</span>
-                                <span class="team-info-value">@team.CoachName</span>
+                            <div class="team-detail-item">
+                                <span class="team-detail-label">Founded</span>
+                                <span class="team-detail-value">@team.FoundedYear</span>
                             </div>
                         </div>
-
-                        <div class="team-info-group">
-                            <div class="team-info-item">
-                                <span class="team-info-label">City</span>
-                                <span class="team-info-value">@team.HomeCity</span>
-                            </div>
-                            <div class="team-info-item">
-                                <span class="team-info-label">Founded</span>
-                                <span class="team-info-value">@team.FoundedYear</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="team-card-footer">
-                        <a href="@Url.Action("Details", "Teams", new { id = team.Id })" class="btn-view-details">
-                            View Details
-                            <span class="arrow">→</span>
-                        </a>
+                    </a>
+                    <div class="team-actions">
+                        <button type="button" class="btn btn-edit" data-edit-team data-edit-url="@Url.Action("Edit", "Teams")" data-id="@team.Id" data-name="@team.Name" data-home-city="@team.HomeCity" data-home-arena="@team.HomeArena" data-coach-name="@team.CoachName" data-founded-year="@team.FoundedYear">Edit</button>
+                        <form asp-action="Delete" asp-controller="Teams" method="post" class="delete-form" data-delete-form data-delete-name="@team.Name">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@team.Id" />
+                            <button type="submit" class="btn btn-delete">Delete</button>
+                        </form>
                     </div>
                 </div>
             }
         </div>
     }
 </div>
+
+<div class="team-modal" id="createTeamModal" role="dialog" aria-modal="true" aria-labelledby="createTeamTitle" hidden data-team-modal>
+    <div class="team-modal-backdrop" data-team-modal-close></div>
+    <section class="team-modal-panel" aria-describedby="createTeamDescription">
+        <header class="team-modal-header">
+            <div>
+                <p class="team-modal-eyebrow">New team</p>
+                <h2 class="team-modal-title" id="createTeamTitle">Create Team</h2>
+                <p class="team-modal-description" id="createTeamDescription">Add the main team details now. Saving will be connected when the backend CRUD flow is added.</p>
+            </div>
+            <button type="button" class="team-modal-close" data-team-modal-close aria-label="Close create team form">
+                <i class="fas fa-xmark" aria-hidden="true"></i>
+            </button>
+        </header>
+
+        <form class="team-create-form" asp-action="Create" asp-controller="Teams" method="post" data-team-create-form>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="0" data-edit-id />
+            <div class="team-form-grid">
+                <div class="team-form-field" data-team-field="Name">
+                    <label class="team-form-label" for="teamName">Team name</label>
+                    <input class="team-form-input" id="teamName" name="Name" type="text" autocomplete="organization" placeholder="RK Zagreb" required minlength="3" maxlength="120" data-validate-field="Name" aria-describedby="teamNameValidation" />
+                    <span class="team-validation-message" id="teamNameValidation" data-validation-message-for="Name" aria-live="polite"></span>
+                </div>
+
+                <div class="team-form-field" data-team-field="HomeCity">
+                    <label class="team-form-label" for="teamCity">Home city</label>
+                    <input class="team-form-input" id="teamCity" name="HomeCity" type="text" autocomplete="address-level2" placeholder="Zagreb" required minlength="3" maxlength="80" data-validate-field="HomeCity" aria-describedby="teamCityValidation" />
+                    <span class="team-validation-message" id="teamCityValidation" data-validation-message-for="HomeCity" aria-live="polite"></span>
+                </div>
+
+                <div class="team-form-field" data-team-field="HomeArena">
+                    <label class="team-form-label" for="teamArena">Home arena</label>
+                    <input class="team-form-input" id="teamArena" name="HomeArena" type="text" autocomplete="off" placeholder="Arena Zagreb" required minlength="4" maxlength="120" data-validate-field="HomeArena" aria-describedby="teamArenaValidation" />
+                    <span class="team-validation-message" id="teamArenaValidation" data-validation-message-for="HomeArena" aria-live="polite"></span>
+                </div>
+
+                <div class="team-form-field" data-team-field="CoachName">
+                    <label class="team-form-label" for="teamCoach">Coach</label>
+                    <div class="team-coach-autocomplete" data-coach-autocomplete>
+                        <input class="team-form-input" id="teamCoach" name="CoachName" type="text" autocomplete="off" placeholder="Start typing a coach name" data-coach-input data-coach-autocomplete-url="@Url.Action("CoachAutocomplete", "Teams")" data-validate-field="CoachName" aria-autocomplete="list" aria-expanded="false" aria-controls="coachAutocompleteResults" aria-describedby="teamCoachValidation" required maxlength="120" />
+                        <button type="button" class="team-coach-clear" data-coach-clear aria-label="Remove selected coach" hidden>
+                            <i class="fas fa-xmark" aria-hidden="true"></i>
+                        </button>
+                        <div class="team-coach-results" id="coachAutocompleteResults" role="listbox" hidden data-coach-results></div>
+                    </div>
+                    <span class="team-validation-message" id="teamCoachValidation" data-validation-message-for="CoachName" aria-live="polite"></span>
+                </div>
+
+                <div class="team-form-field" data-team-field="FoundedYear">
+                    <label class="team-form-label" for="teamFoundedYear">Founded year</label>
+                    <input class="team-form-input" id="teamFoundedYear" name="FoundedYear" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="1992" required data-validate-field="FoundedYear" aria-describedby="teamFoundedYearValidation" />
+                    <span class="team-validation-message" id="teamFoundedYearValidation" data-validation-message-for="FoundedYear" aria-live="polite"></span>
+                </div>
+            </div>
+
+            <div class="team-form-status" role="status" data-team-form-status hidden></div>
+
+            <footer class="team-modal-actions">
+                <button type="button" class="btn btn-secondary team-modal-secondary" data-team-modal-close>Cancel</button>
+                <button type="submit" class="btn btn-create team-modal-submit">Save Team</button>
+            </footer>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/teams.js" asp-append-version="true"></script>
+}
+

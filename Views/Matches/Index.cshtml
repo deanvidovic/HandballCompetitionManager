@@ -2,11 +2,15 @@
 
 @{
     ViewData["Title"] = "Matches";
+    ViewData["SearchTitle"] = "Search matches";
+    ViewData["SearchLabel"] = "Search";
+    ViewData["SearchPlaceholder"] = "Search by team, venue, round, or status";
+    ViewData["SearchHint"] = "Use keywords to narrow the match dashboard.";
+    ViewData["SearchSectionLabel"] = "Match search";
 
-    var liveMatches = Model?.Where(m => m.Status.ToString() == "Live").ToList() ?? new();
-    var upcomingMatches = Model?.Where(m => m.Status.ToString() == "Scheduled").ToList() ?? new();
-    var finishedMatches = Model?.Where(m => m.Status.ToString() == "Finished").ToList() ?? new();
-
+    var liveMatches = Model?.Where(m => m.Status.ToString() == "Live").OrderBy(m => m.Kickoff).ToList() ?? new();
+    var upcomingMatches = Model?.Where(m => m.Status.ToString() == "Scheduled").OrderBy(m => m.Kickoff).ToList() ?? new();
+    var finishedMatches = Model?.Where(m => m.Status.ToString() == "Finished").OrderByDescending(m => m.Kickoff).ToList() ?? new();
     var teamNames = (Dictionary<int, string>)ViewBag.TeamNames ?? new Dictionary<int, string>();
 }
 
@@ -14,7 +18,7 @@
 
 <div class="matches-container">
     <div class="breadcrumb-section">
-        <nav class="breadcrumb-nav">
+        <nav class="breadcrumb-nav" aria-label="Breadcrumb">
             <a href="/" class="breadcrumb-link">Home</a>
             <span class="breadcrumb-separator">/</span>
             <span class="breadcrumb-current">Matches</span>
@@ -22,207 +26,212 @@
     </div>
 
     <div class="matches-header">
-        <h1 class="matches-title">Match Dashboard</h1>
-        <p class="matches-subtitle">Track all handball matches and their results</p>
+        <div class="header-content">
+            <h1 class="matches-title">Match Dashboard</h1>
+            <p class="matches-subtitle">Track all handball matches and their results</p>
+        </div>
     </div>
+
+    <section class="competition-search" aria-label="@ViewData["SearchSectionLabel"]">
+        <form class="competition-search-form" asp-action="Index" asp-controller="Matches" method="get" data-search-form="matches">
+            <div class="search-header">
+                <div>
+                    <h2 class="search-title">@ViewData["SearchTitle"]</h2>
+                    <p class="search-subtitle">@ViewData["SearchHint"]</p>
+                </div>
+            </div>
+            <div class="search-input-group">
+                <label class="search-label" for="matchSearch">@ViewData["SearchLabel"]</label>
+                <div class="search-input-wrapper">
+                    <span class="search-icon" aria-hidden="true">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </span>
+                    <input type="search" id="matchSearch" name="query" value="@ViewData["Query"]" class="search-input" placeholder="@ViewData["SearchPlaceholder"]" autocomplete="off" data-autocomplete-url="@Url.Action("Autocomplete", "Matches")" />
+                </div>
+            </div>
+        </form>
+    </section>
 
     @if (Model == null || Model.Count == 0)
     {
         <div class="empty-state">
-            <div class="empty-state-icon">⚽</div>
+            <div class="empty-state-icon">0</div>
             <h2 class="empty-state-title">No Matches Available</h2>
             <p class="empty-state-message">There are currently no matches scheduled in the system.</p>
         </div>
     }
     else
     {
-        <div class="match-sections">
+        <div class="match-sections match-list-layout">
             @if (liveMatches.Count > 0)
             {
-                <div class="match-section">
+                <section class="match-section match-list-section" aria-labelledby="liveMatchesTitle">
                     <div class="section-header">
-                        <span class="section-icon">🔴</span>
-                        <h2 class="section-title">Live Matches</h2>
+                        <h2 id="liveMatchesTitle" class="section-title">Live Matches</h2>
                         <span class="section-count">@liveMatches.Count</span>
                     </div>
-
-                    <div class="matches-grid">
-                        @foreach (var match in liveMatches.OrderBy(m => m.Kickoff))
+                    @foreach (var competitionGroup in liveMatches.GroupBy(m => m.Competition?.Name ?? $"Competition {m.CompetitionId}"))
+                    {
+                        <div class="match-competition-group">
+                            <div class="match-competition-header">
+                                <h3 class="match-competition-title">@competitionGroup.Key</h3>
+                                <button type="button" class="match-competition-toggle" aria-expanded="true" aria-label="Collapse @competitionGroup.Key matches" data-match-group-toggle>
+                                    <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="matches-grid match-list">
+                        @foreach (var match in competitionGroup)
                         {
                             var homeTeamName = teamNames.ContainsKey(match.HomeTeamId) ? teamNames[match.HomeTeamId] : $"Team {match.HomeTeamId}";
                             var awayTeamName = teamNames.ContainsKey(match.AwayTeamId) ? teamNames[match.AwayTeamId] : $"Team {match.AwayTeamId}";
 
-                            <div class="match-card">
-                                <div class="match-card-header">
-                                    <div class="match-time-info">
-                                        <span class="match-time-label">Kickoff</span>
-                                        <span class="match-kickoff">@match.Kickoff.ToString("HH:mm")</span>
-                                    </div>
-                                    <div class="match-status-badge status-live">
-                                        <span class="live-indicator"></span>
-                                        LIVE
-                                    </div>
+                            <a href="@Url.Action("Details", "Matches", new { id = match.Id })" class="match-card match-list-item match-main-link">
+                                <div class="match-time-info">
+                                    <span class="match-time-label">Kickoff</span>
+                                    <span class="match-kickoff">@match.Kickoff.ToString("HH:mm")</span>
+                                    <span class="match-status-badge status-live"><span class="live-indicator"></span>Live</span>
                                 </div>
-
-                                <div class="match-content">
-                                    <div class="match-teams">
-                                        <div class="team-column">
-                                            <div class="team-name">@homeTeamName</div>
-                                        </div>
-                                        <div class="score-display">
-                                            <span class="score-value">@match.HomeScore</span>
-                                            <span class="score-separator">-</span>
-                                            <span class="score-value">@match.AwayScore</span>
-                                        </div>
-                                        <div class="team-column">
-                                            <div class="team-name">@awayTeamName</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="match-info">
-                                        <div class="match-info-item">
-                                            <span class="match-info-label">Venue</span>
-                                            <span class="match-venue">📍 @match.MaintenanceHall</span>
-                                        </div>
-                                        <div class="match-info-item">
-                                            <span class="match-info-label">Round</span>
-                                            <span class="match-info-value">Round @match.RoundNumber</span>
-                                        </div>
-                                    </div>
+                                <div class="match-teams">
+                                    <span class="team-name">@homeTeamName</span>
+                                    <span class="score-display">
+                                        <span class="score-value">@match.HomeScore</span>
+                                        <span class="score-separator">-</span>
+                                        <span class="score-value">@match.AwayScore</span>
+                                    </span>
+                                    <span class="team-name">@awayTeamName</span>
                                 </div>
-
-                                <a href="@Url.Action("Details", "Matches", new { id = match.Id })" class="btn-view-details">
-                                    View Match Details
-                                </a>
-                            </div>
+                                <div class="match-info">
+                                    @if (match.RoundNumber > 0)
+                                    {
+                                        <span class="match-info-label">Round @match.RoundNumber</span>
+                                    }
+                                </div>
+                            </a>
                         }
-                    </div>
-                </div>
+                            </div>
+                        </div>
+                    }
+                </section>
             }
 
             @if (upcomingMatches.Count > 0)
             {
-                <div class="match-section">
+                <section class="match-section match-list-section" aria-labelledby="upcomingMatchesTitle">
                     <div class="section-header">
-                        <span class="section-icon">📅</span>
-                        <h2 class="section-title">Upcoming Matches</h2>
+                        <h2 id="upcomingMatchesTitle" class="section-title">Upcoming Matches</h2>
                         <span class="section-count">@upcomingMatches.Count</span>
                     </div>
-
-                    <div class="matches-grid">
-                        @foreach (var match in upcomingMatches.OrderBy(m => m.Kickoff).Take(6))
+                    @foreach (var competitionGroup in upcomingMatches.GroupBy(m => m.Competition?.Name ?? $"Competition {m.CompetitionId}"))
+                    {
+                        <div class="match-competition-group">
+                            <div class="match-competition-header">
+                                <h3 class="match-competition-title">@competitionGroup.Key</h3>
+                                <button type="button" class="match-competition-toggle" aria-expanded="true" aria-label="Collapse @competitionGroup.Key matches" data-match-group-toggle>
+                                    <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="matches-grid match-list">
+                        @foreach (var match in competitionGroup)
                         {
                             var homeTeamName = teamNames.ContainsKey(match.HomeTeamId) ? teamNames[match.HomeTeamId] : $"Team {match.HomeTeamId}";
                             var awayTeamName = teamNames.ContainsKey(match.AwayTeamId) ? teamNames[match.AwayTeamId] : $"Team {match.AwayTeamId}";
 
-                            <div class="match-card">
-                                <div class="match-card-header">
-                                    <div class="match-time-info">
-                                        <span class="match-time-label">Kickoff</span>
-                                        <span class="match-kickoff">@match.Kickoff.ToString("dd MMM HH:mm")</span>
-                                    </div>
-                                    <div class="match-status-badge status-scheduled">
-                                        SCHEDULED
-                                    </div>
+                            <a href="@Url.Action("Details", "Matches", new { id = match.Id })" class="match-card match-list-item match-main-link">
+                                <div class="match-time-info">
+                                    <span class="match-time-label">Kickoff</span>
+                                    <span class="match-kickoff">@match.Kickoff.ToString("dd MMM HH:mm")</span>
+                                    <span class="match-status-badge status-scheduled">Scheduled</span>
                                 </div>
-
-                                <div class="match-content">
-                                    <div class="match-teams">
-                                        <div class="team-column">
-                                            <div class="team-name">@homeTeamName</div>
-                                        </div>
-                                        <div class="score-display">
-                                            <span class="score-label">vs</span>
-                                        </div>
-                                        <div class="team-column">
-                                            <div class="team-name">@awayTeamName</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="match-info">
-                                        <div class="match-info-item">
-                                            <span class="match-info-label">Venue</span>
-                                            <span class="match-venue">📍 @match.MaintenanceHall</span>
-                                        </div>
-                                        <div class="match-info-item">
-                                            <span class="match-info-label">Round</span>
-                                            <span class="match-info-value">Round @match.RoundNumber</span>
-                                        </div>
-                                    </div>
+                                <div class="match-teams">
+                                    <span class="team-name">@homeTeamName</span>
+                                    <span class="score-display">
+                                        <span class="score-label">vs</span>
+                                    </span>
+                                    <span class="team-name">@awayTeamName</span>
                                 </div>
-
-                                <a href="@Url.Action("Details", "Matches", new { id = match.Id })" class="btn-view-details">
-                                    View Match Details
-                                </a>
-                            </div>
+                                <div class="match-info">
+                                    @if (match.RoundNumber > 0)
+                                    {
+                                        <span class="match-info-label">Round @match.RoundNumber</span>
+                                    }
+                                </div>
+                            </a>
                         }
-                    </div>
-                </div>
+                            </div>
+                        </div>
+                    }
+                </section>
             }
 
             @if (finishedMatches.Count > 0)
             {
-                <div class="match-section">
+                <section class="match-section match-list-section" aria-labelledby="finishedMatchesTitle">
                     <div class="section-header">
-                        <span class="section-icon">✅</span>
-                        <h2 class="section-title">Finished Matches</h2>
+                        <h2 id="finishedMatchesTitle" class="section-title">Finished Matches</h2>
                         <span class="section-count">@finishedMatches.Count</span>
                     </div>
-
-                    <div class="matches-grid">
-                        @foreach (var match in finishedMatches.OrderByDescending(m => m.Kickoff).Take(6))
+                    @foreach (var competitionGroup in finishedMatches.GroupBy(m => m.Competition?.Name ?? $"Competition {m.CompetitionId}"))
+                    {
+                        <div class="match-competition-group">
+                            <div class="match-competition-header">
+                                <h3 class="match-competition-title">@competitionGroup.Key</h3>
+                                <button type="button" class="match-competition-toggle" aria-expanded="true" aria-label="Collapse @competitionGroup.Key matches" data-match-group-toggle>
+                                    <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="matches-grid match-list">
+                        @foreach (var match in competitionGroup)
                         {
                             var homeTeamName = teamNames.ContainsKey(match.HomeTeamId) ? teamNames[match.HomeTeamId] : $"Team {match.HomeTeamId}";
                             var awayTeamName = teamNames.ContainsKey(match.AwayTeamId) ? teamNames[match.AwayTeamId] : $"Team {match.AwayTeamId}";
-                            var winner = match.HomeScore > match.AwayScore ? "home" : 
-                                        match.AwayScore > match.HomeScore ? "away" : "draw";
 
-                            <div class="match-card">
-                                <div class="match-card-header">
-                                    <div class="match-time-info">
-                                        <span class="match-time-label">Played</span>
-                                        <span class="match-kickoff">@match.Kickoff.ToString("dd MMM")</span>
-                                    </div>
-                                    <div class="match-status-badge status-finished">
-                                        FINISHED
-                                    </div>
+                            <a href="@Url.Action("Details", "Matches", new { id = match.Id })" class="match-card match-list-item match-main-link">
+                                <div class="match-time-info">
+                                    <span class="match-time-label">Played</span>
+                                    <span class="match-kickoff">@match.Kickoff.ToString("dd MMM")</span>
+                                    <span class="match-status-badge status-finished">Finished</span>
                                 </div>
-
-                                <div class="match-content">
-                                    <div class="match-teams">
-                                        <div class="team-column">
-                                            <div class="team-name">@homeTeamName</div>
-                                        </div>
-                                        <div class="score-display">
-                                            <span class="score-value">@match.HomeScore</span>
-                                            <span class="score-separator">-</span>
-                                            <span class="score-value">@match.AwayScore</span>
-                                        </div>
-                                        <div class="team-column">
-                                            <div class="team-name">@awayTeamName</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="match-info">
-                                        <div class="match-info-item">
-                                            <span class="match-info-label">Venue</span>
-                                            <span class="match-venue">📍 @match.MaintenanceHall</span>
-                                        </div>
-                                        <div class="match-info-item">
-                                            <span class="match-info-label">Round</span>
-                                            <span class="match-info-value">Round @match.RoundNumber</span>
-                                        </div>
-                                    </div>
+                                <div class="match-teams">
+                                    <span class="team-name">@homeTeamName</span>
+                                    <span class="score-display">
+                                        <span class="score-value">@match.HomeScore</span>
+                                        <span class="score-separator">-</span>
+                                        <span class="score-value">@match.AwayScore</span>
+                                    </span>
+                                    <span class="team-name">@awayTeamName</span>
                                 </div>
-
-                                <a href="@Url.Action("Details", "Matches", new { id = match.Id })" class="btn-view-details">
-                                    View Match Details
-                                </a>
-                            </div>
+                                <div class="match-info">
+                                    @if (match.RoundNumber > 0)
+                                    {
+                                        <span class="match-info-label">Round @match.RoundNumber</span>
+                                    }
+                                </div>
+                            </a>
                         }
-                    </div>
-                </div>
+                            </div>
+                        </div>
+                    }
+                </section>
             }
         </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-match-group-toggle]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var group = button.closest('.match-competition-group');
+                    if (!group) {
+                        return;
+                    }
+
+                    var isCollapsed = group.classList.toggle('is-collapsed');
+                    button.setAttribute('aria-expanded', (!isCollapsed).toString());
+                    button.setAttribute('aria-label', isCollapsed ? 'Expand matches' : 'Collapse matches');
+                });
+            });
+        });
+    </script>
+}

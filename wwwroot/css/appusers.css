@@ -1,28 +1,5 @@
+@import url('variables.css');
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap');
-
-:root {
-    --color-dark: #27374D;
-    --color-primary: #526D82;
-    --color-accent: #9DB2BF;
-    --color-light: #DDE6ED;
-    --color-white: #FFFFFF;
-    --color-background: #F8F9FA;
-    --color-border: #E0E6ED;
-    --color-shadow: rgba(39, 55, 77, 0.1);
-    --color-shadow-hover: rgba(39, 55, 77, 0.15);
-    --color-admin: #E74C3C;
-    --color-manager: #3498DB;
-    --color-coach: #27AE60;
-    --color-guest: #95A5A6;
-    --font-family: 'Josefin Sans', sans-serif;
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 1rem;
-    --spacing-md: 1.5rem;
-    --spacing-lg: 2rem;
-    --spacing-xl: 3rem;
-    --border-radius: 12px;
-    --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
 
 body {
     font-family: var(--font-family);
@@ -71,12 +48,15 @@ body {
 }
 
 .appusers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: var(--spacing-xl);
-    text-align: center;
+    text-align: left;
 }
 
 .appusers-title {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 700;
     color: var(--color-dark);
     margin: 0;
@@ -86,180 +66,498 @@ body {
 .appusers-subtitle {
     font-size: 1.1rem;
     color: var(--color-primary);
-    margin-top: var(--spacing-sm);
-    font-weight: 300;
+    margin-top: var(--spacing-xs);
+    font-weight: 400;
     letter-spacing: 0.3px;
 }
 
-/* AppUsers Grid Layout */
-.appusers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-lg);
+.appusers-header .btn-create {
+    border: 0;
+    cursor: pointer;
 }
 
-/* User Card */
-.user-card {
-    background-color: var(--color-white);
+/* Competition Search */
+.competition-search {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg);
     border-radius: var(--border-radius);
-    box-shadow: 0 2px 8px var(--color-shadow);
-    transition: var(--transition);
+    background: linear-gradient(135deg, var(--color-dark) 0%, #1f2b3c 100%);
+    color: var(--color-light);
+    border: 1px solid rgba(157, 178, 191, 0.25);
+    box-shadow: 0 12px 30px rgba(39, 55, 77, 0.2);
+}
+
+.competition-search-form {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    border-left: 4px solid var(--color-primary);
+    gap: var(--spacing-md);
 }
 
-.user-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 24px var(--color-shadow-hover);
-    border-left-color: var(--color-dark);
-}
-
-.user-card-header {
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
-    background: linear-gradient(135deg, var(--color-light) 0%, rgba(157, 178, 191, 0.3) 100%);
-    border-bottom: 1px solid var(--color-border);
+.search-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
-}
-
-.user-card-title {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--color-dark);
-    flex-grow: 1;
-}
-
-.user-card-link {
-    color: var(--color-dark);
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.user-card-link:hover {
-    color: var(--color-primary);
-}
-
-.user-role-badge {
-    display: inline-block;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    white-space: nowrap;
-}
-
-.user-role-admin {
-    background-color: var(--color-admin);
-    color: var(--color-white);
-}
-
-.user-role-tournamentmanager {
-    background-color: var(--color-manager);
-    color: var(--color-white);
-}
-
-.user-role-coach {
-    background-color: var(--color-coach);
-    color: var(--color-white);
-}
-
-.user-role-guest {
-    background-color: var(--color-guest);
-    color: var(--color-white);
-}
-
-.user-card-content {
-    padding: var(--spacing-md);
-    flex-grow: 1;
-}
-
-.user-info-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    align-items: center;
     gap: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
 }
 
-.user-info-group:last-child {
-    margin-bottom: 0;
+.search-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-light);
+    letter-spacing: 0.2px;
 }
 
-.user-info-item {
+.search-subtitle {
+    margin: 0;
+    font-size: 0.95rem;
+    color: rgba(221, 230, 237, 0.8);
+}
+
+.search-input-group {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
 }
 
-.user-info-label {
-    font-size: 0.75rem;
+.search-label {
+    font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--color-accent);
 }
 
-.user-info-value {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--color-dark);
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
-.user-info-email {
+.search-icon {
+    position: absolute;
+    left: var(--spacing-sm);
+    color: rgba(221, 230, 237, 0.75);
+    font-size: 0.95rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.85rem 0.9rem 0.85rem 2.6rem;
+    border-radius: 10px;
+    border: 1px solid rgba(157, 178, 191, 0.35);
+    background-color: rgba(221, 230, 237, 0.08);
+    color: var(--color-light);
     font-size: 1rem;
-    font-weight: 500;
-    color: var(--color-primary);
-    text-decoration: none;
     transition: var(--transition);
-    word-break: break-word;
 }
 
-.user-info-email:hover {
-    color: var(--color-dark);
-    text-decoration: underline;
+.search-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(157, 178, 191, 0.25);
 }
 
-.user-card-footer {
+.search-input::placeholder {
+    color: rgba(221, 230, 237, 0.55);
+}
+
+@media (max-width: 720px) {
+    .search-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* AppUsers List Layout */
+.appusers-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.appuser-list-item {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px var(--color-shadow);
+    transition: var(--transition);
+    border-left: 4px solid var(--color-primary);
+}
+
+.appuser-list-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px var(--color-shadow-hover);
+    border-left-color: var(--color-dark);
+}
+
+.appuser-main-link {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 2fr 3fr 1fr;
+    align-items: center;
     padding: var(--spacing-md);
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--border-radius);
+}
+
+.appuser-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.appuser-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--color-dark);
+    margin: 0;
+}
+
+.appuser-email {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-accent);
+    margin-top: 4px;
+}
+
+.appuser-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+}
+
+.appuser-detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.appuser-detail-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+    margin-bottom: 4px;
+}
+
+.appuser-detail-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-dark);
+}
+
+.appuser-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-md);
+}
+
+.appuser-role {
+    justify-self: center;
+}
+
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.role-admin {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #EF4444;
+}
+
+.role-user {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #3B82F6;
+}
+
+.role-tournamentmanager {
+    background-color: rgba(82, 109, 130, 0.18);
+    color: var(--color-primary);
+}
+
+.role-coach {
+    background-color: rgba(16, 185, 129, 0.16);
+    color: #047857;
+}
+
+.role-guest {
+    background-color: rgba(107, 114, 128, 0.16);
+    color: #4B5563;
+}
+
+/* Create AppUser Modal */
+.appuser-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: grid;
+    place-items: center;
+    padding: var(--spacing-md);
+}
+
+.appuser-modal[hidden] {
+    display: none;
+}
+
+.appuser-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(39, 55, 77, 0.58);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    animation: appUserModalBackdropIn 220ms ease forwards;
+}
+
+.appuser-modal-panel {
+    position: relative;
+    width: min(760px, 100%);
+    max-height: min(88vh, 740px);
+    overflow-y: auto;
+    scrollbar-width: none;
+    border: 1px solid rgba(157, 178, 191, 0.35);
+    border-radius: var(--border-radius);
+    background: var(--color-white);
+    box-shadow: 0 24px 70px rgba(39, 55, 77, 0.28);
+    transform: translateY(22px) scale(0.97);
+    opacity: 0;
+    animation: appUserModalPanelIn 260ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.appuser-modal-panel::-webkit-scrollbar {
+    display: none;
+}
+
+.appuser-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+    background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-primary) 100%);
+    color: var(--color-light);
+}
+
+.appuser-modal-eyebrow {
+    margin: 0 0 6px;
+    color: var(--color-accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.appuser-modal-title {
+    margin: 0;
+    color: var(--color-light);
+    font-size: 1.85rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.appuser-modal-description {
+    max-width: 560px;
+    margin: var(--spacing-xs) 0 0;
+    color: rgba(221, 230, 237, 0.84);
+    font-size: 0.98rem;
+    font-weight: 500;
+}
+
+.appuser-modal-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(221, 230, 237, 0.34);
+    border-radius: 8px;
+    background: rgba(221, 230, 237, 0.08);
+    color: var(--color-light);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.appuser-modal-close:hover,
+.appuser-modal-close:focus-visible {
+    background: rgba(221, 230, 237, 0.18);
+    transform: translateY(-2px);
+}
+
+.appuser-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+}
+
+.appuser-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
+}
+
+.appuser-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.appuser-form-field-wide {
+    grid-column: 1 / -1;
+}
+
+.appuser-form-label {
+    color: var(--color-primary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.appuser-form-input {
+    width: 100%;
+    min-height: 46px;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-background);
+    color: var(--color-dark);
+    font: inherit;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.appuser-form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: var(--color-white);
+    box-shadow: 0 0 0 3px rgba(157, 178, 191, 0.28);
+}
+
+.appuser-form-input::placeholder {
+    color: rgba(82, 109, 130, 0.55);
+}
+
+.appuser-form-field.has-error .appuser-form-input {
+    border-color: rgba(185, 28, 28, 0.62);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.appuser-form-field.has-error .app-date-picker-trigger,
+.appuser-form-field.has-error .app-date-picker-trigger:focus-visible,
+.appuser-form-field.has-error .appuser-form-input:focus {
+    border-color: #B91C1C;
+    background: rgba(239, 68, 68, 0.08);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.16);
+}
+
+.appuser-form-field.has-valid .app-date-picker-trigger,
+.appuser-form-field.has-valid .appuser-form-input {
+    border-color: rgba(82, 109, 130, 0.5);
+}
+
+.appuser-validation-message {
+    min-height: 1rem;
+    color: #B91C1C;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.appuser-validation-message:empty {
+    display: none;
+}
+
+.appuser-form-status {
+    padding: var(--spacing-sm);
+    border: 1px solid rgba(82, 109, 130, 0.18);
+    border-radius: 8px;
+    background: rgba(221, 230, 237, 0.55);
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.appuser-form-status.is-success {
+    border-color: rgba(16, 185, 129, 0.35);
+    background: rgba(16, 185, 129, 0.12);
+    color: #047857;
+}
+
+.appuser-form-status.is-error {
+    border-color: rgba(239, 68, 68, 0.32);
+    background: rgba(239, 68, 68, 0.1);
+    color: #B91C1C;
+}
+
+.appuser-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+    padding-top: var(--spacing-md);
     border-top: 1px solid var(--color-border);
 }
 
-.btn-view-details {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    text-decoration: none;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: var(--transition);
-    border: 2px solid var(--color-primary);
+.appuser-modal-actions .btn {
+    border: 0;
     cursor: pointer;
 }
 
-.btn-view-details:hover {
-    background-color: var(--color-dark);
-    border-color: var(--color-dark);
-    transform: translateX(4px);
+.appuser-modal-actions .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.68;
+    transform: none;
 }
 
-.arrow {
-    transition: transform 0.3s ease;
+.appuser-modal-secondary {
+    background: var(--color-light);
+    color: var(--color-primary);
 }
 
-.btn-view-details:hover .arrow {
-    transform: translateX(4px);
+.appuser-modal-secondary:hover {
+    background: var(--color-accent);
+    color: var(--color-dark);
 }
+
+body.appuser-modal-open {
+    overflow: hidden;
+}
+
+@keyframes appUserModalBackdropIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes appUserModalPanelIn {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .appuser-modal-backdrop,
+    .appuser-modal-panel {
+        animation-duration: 1ms;
+    }
+}
+
 
 /* Empty State */
 .empty-state {
@@ -290,7 +588,7 @@ body {
 
 /* AppUsers Details Page */
 .appusers-details-container {
-    max-width: 1200px;
+    max-width: 1180px;
     margin: 0 auto;
     padding: var(--spacing-xl) var(--spacing-md);
 }
@@ -322,173 +620,275 @@ body {
     transform: translateX(-4px);
 }
 
-.appusers-details-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: var(--spacing-xl) var(--spacing-md);
+.appusers-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-primary) 100%);
+    color: var(--color-light);
+    box-shadow: 0 16px 36px rgba(39, 55, 77, 0.22);
 }
 
-.appusers-details-header {
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-lg);
-    border-bottom: 2px solid var(--color-light);
+.details-identity {
     display: flex;
     align-items: center;
+    gap: var(--spacing-md);
+    min-width: 0;
+}
+
+.user-avatar {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    gap: var(--spacing-lg);
-    text-align: center;
+    flex: 0 0 76px;
+    width: 76px;
+    height: 76px;
+    border: 2px solid rgba(221, 230, 237, 0.36);
+    border-radius: 50%;
+    background: rgba(221, 230, 237, 0.12);
+    color: var(--color-light);
+    font-size: 2.1rem;
+    font-weight: 700;
+}
+
+.details-eyebrow {
+    margin: 0 0 4px;
+    color: var(--color-accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .appusers-details-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--color-dark);
     margin: 0;
+    color: var(--color-light);
+    font-size: 2.35rem;
+    font-weight: 700;
+    line-height: 1.05;
 }
 
-/* AppUsers Details Content */
+.appusers-details-email {
+    display: inline-block;
+    margin-top: 8px;
+    color: rgba(221, 230, 237, 0.84);
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.appusers-details-email:hover {
+    color: var(--color-light);
+    text-decoration: underline;
+}
+
+.details-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.details-back-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid rgba(221, 230, 237, 0.34);
+    border-radius: 8px;
+    color: var(--color-light);
+    font-weight: 700;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.details-back-link:hover {
+    background: rgba(221, 230, 237, 0.12);
+    color: var(--color-light);
+    transform: translateY(-2px);
+}
+
 .appusers-details-content {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: var(--spacing-xl);
 }
 
-/* Overview Section */
-.user-overview-section {
-    background-color: var(--color-white);
-    border-radius: var(--border-radius);
+.user-overview-section,
+.user-competitions-section {
     padding: var(--spacing-lg);
-    box-shadow: 0 2px 8px var(--color-shadow);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background: var(--color-white);
+    box-shadow: 0 8px 24px var(--color-shadow);
+}
+
+.section-heading-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.section-title {
+    margin: 0;
+    color: var(--color-dark);
+    font-size: 1.45rem;
+    font-weight: 700;
+}
+
+.section-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    min-height: 30px;
+    padding: 0 var(--spacing-xs);
+    border-radius: 8px;
+    background: var(--color-light);
+    color: var(--color-primary);
+    font-weight: 700;
 }
 
 .overview-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--spacing-lg);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-md);
 }
 
 .overview-card {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: 6px;
+    min-height: 104px;
     padding: var(--spacing-md);
-    background: linear-gradient(135deg, var(--color-light) 0%, rgba(157, 178, 191, 0.2) 100%);
-    border-radius: 8px;
     border-left: 4px solid var(--color-primary);
-    transition: var(--transition);
-}
-
-.overview-card:hover {
-    transform: translateY(-4px);
-    border-left-color: var(--color-dark);
+    border-radius: 10px;
+    background: var(--color-light);
 }
 
 .overview-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
+    color: var(--color-primary);
+    font-size: 0.78rem;
+    font-weight: 700;
     letter-spacing: 1px;
-    color: var(--color-accent);
+    text-transform: uppercase;
 }
 
-.overview-value {
-    font-size: 1.1rem;
-    font-weight: 600;
+.overview-value,
+.overview-email-link {
     color: var(--color-dark);
+    font-size: 1.08rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
 }
 
 .overview-email-link {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--color-primary);
     text-decoration: none;
-    transition: var(--transition);
-    word-break: break-word;
 }
 
 .overview-email-link:hover {
-    color: var(--color-dark);
+    color: var(--color-primary);
     text-decoration: underline;
 }
 
-/* Competitions Section */
-.user-competitions-section {
-    background-color: var(--color-white);
-    border-radius: var(--border-radius);
-    padding: var(--spacing-lg);
-    box-shadow: 0 2px 8px var(--color-shadow);
+.managed-competitions-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
 }
 
-.section-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-dark);
-    margin: 0 0 var(--spacing-lg);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 2px solid var(--color-light);
-}
-
-.competitions-tags {
+.managed-competition-card {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-}
-
-.competition-tag {
-    display: inline-block;
-    padding: var(--spacing-xs) var(--spacing-md);
-    background-color: linear-gradient(135deg, var(--color-light) 0%, rgba(157, 178, 191, 0.2) 100%);
-    border: 1px solid var(--color-accent);
-    border-radius: 6px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--color-dark);
+    flex-direction: column;
+    gap: 6px;
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-accent);
+    border-radius: 10px;
+    background: var(--color-background);
+    text-decoration: none;
     transition: var(--transition);
 }
 
-.competition-tag:hover {
-    background-color: var(--color-accent);
-    color: var(--color-white);
+.managed-competition-card:hover {
+    border-left-color: var(--color-primary);
+    box-shadow: 0 8px 18px var(--color-shadow-hover);
+    transform: translateY(-3px);
+}
+
+.managed-competition-name {
+    color: var(--color-dark);
+    font-size: 1.08rem;
+    font-weight: 700;
+}
+
+.managed-competition-meta {
+    color: var(--color-primary);
+    font-size: 0.95rem;
+    font-weight: 600;
 }
 
 .no-competitions {
     padding: var(--spacing-lg);
+    border: 2px dashed var(--color-border);
+    border-radius: 10px;
+    background: var(--color-background);
     text-align: center;
-    background-color: var(--color-background);
-    border-radius: 8px;
-    border: 1px solid var(--color-border);
 }
 
 .no-competitions-message {
-    font-size: 1rem;
-    color: var(--color-accent);
     margin: 0;
-    font-weight: 500;
+    color: var(--color-primary);
+    font-size: 1rem;
+    font-weight: 600;
 }
 
-/* Responsive Design */
+@media (max-width: 900px) {
+    .appusers-details-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .details-header-actions {
+        justify-content: flex-start;
+    }
+
+    .overview-grid,
+    .managed-competitions-list {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 768px) {
-    .appusers-container {
-        padding: var(--spacing-lg) var(--spacing-sm);
-    }
-
-    .appusers-title {
-        font-size: 2rem;
-    }
-
-    .appusers-grid {
+    .appuser-form-grid {
         grid-template-columns: 1fr;
     }
 
-    .appusers-details-header {
-        flex-direction: column;
+    .appuser-modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .appuser-modal-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 560px) {
+    .details-identity {
         align-items: flex-start;
+        flex-direction: column;
     }
 
     .appusers-details-title {
-        font-size: 1.75rem;
-    }
-
-    .overview-grid {
-        grid-template-columns: 1fr;
+        font-size: 1.9rem;
     }
 }

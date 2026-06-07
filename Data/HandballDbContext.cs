@@ -82,11 +82,11 @@ public class HandballDbContext : DbContext
 
         // Seed Teams
         modelBuilder.Entity<Team>().HasData(
-            new Team { Id = 1, Name = "Zagreb Handball", Club = "Zagreb HC", CoachName = "Coach Horvat", HomeCity = "Zagreb", FoundedYear = 2005, HomeArena = "Arena Zagreb" },
-            new Team { Id = 2, Name = "Split Warriors", Club = "Split HC", CoachName = "Coach Vukovic", HomeCity = "Split", FoundedYear = 2008, HomeArena = "Gradski Vrt" },
-            new Team { Id = 3, Name = "Rijeka Sharks", Club = "Rijeka HC", CoachName = "Coach Ivanovic", HomeCity = "Rijeka", FoundedYear = 2003, HomeArena = "Mladost Arena" },
-            new Team { Id = 4, Name = "Osijek Titans", Club = "Osijek HC", CoachName = "Coach Grgic", HomeCity = "Osijek", FoundedYear = 2010, HomeArena = "Gradski Vrt Osijek" },
-            new Team { Id = 5, Name = "Zadar Eagles", Club = "Zadar HC", CoachName = "Coach Milic", HomeCity = "Zadar", FoundedYear = 2006, HomeArena = "Zadar Arena" }
+            new Team { Id = 1, Name = "Zagreb Handball", CoachName = "Coach Horvat", HomeCity = "Zagreb", FoundedYear = 2005, HomeArena = "Arena Zagreb" },
+            new Team { Id = 2, Name = "Split Warriors", CoachName = "Coach Vukovic", HomeCity = "Split", FoundedYear = 2008, HomeArena = "Gradski Vrt" },
+            new Team { Id = 3, Name = "Rijeka Sharks", CoachName = "Coach Ivanovic", HomeCity = "Rijeka", FoundedYear = 2003, HomeArena = "Mladost Arena" },
+            new Team { Id = 4, Name = "Osijek Titans", CoachName = "Coach Grgic", HomeCity = "Osijek", FoundedYear = 2010, HomeArena = "Gradski Vrt Osijek" },
+            new Team { Id = 5, Name = "Zadar Eagles", CoachName = "Coach Milic", HomeCity = "Zadar", FoundedYear = 2006, HomeArena = "Zadar Arena" }
         );
 
         // Seed Players

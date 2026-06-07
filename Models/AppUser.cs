@@ -13,5 +13,6 @@ public class AppUser
     public UserRole Role { get; set; }
     public DateTime DateOfBirth { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
     public virtual ICollection<Competition> ManagedCompetitions { get; set; } = new List<Competition>();
 }

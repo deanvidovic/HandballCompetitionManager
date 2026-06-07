@@ -1,0 +1,588 @@
+@import url('variables.css');
+
+.app-notification {
+    position: fixed;
+    right: var(--spacing-lg);
+    top: calc(76px + var(--spacing-lg));
+    z-index: 1100;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: min(360px, calc(100vw - 2rem));
+    padding: 0.95rem 1rem;
+    border: 1px solid rgba(157, 178, 191, 0.38);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 8px;
+    background: var(--color-white);
+    color: var(--color-dark);
+    box-shadow: 0 18px 42px rgba(39, 55, 77, 0.22);
+    opacity: 0;
+    transform: translateX(34px) translateY(-8px) scale(0.96);
+    pointer-events: none;
+}
+
+.app-notification[hidden] {
+    display: none;
+}
+
+.app-notification.is-success {
+    border-left-color: var(--color-success);
+}
+
+.app-notification.is-error {
+    border-left-color: var(--color-error);
+}
+
+.app-notification.is-visible {
+    animation: appNotificationIn 520ms cubic-bezier(0.18, 0.9, 0.24, 1.14) forwards;
+}
+
+.app-notification.is-leaving {
+    animation: appNotificationOut 480ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.app-notification-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    color: var(--color-white);
+    font-size: 0.95rem;
+}
+
+.app-notification.is-success .app-notification-icon {
+    background: linear-gradient(135deg, #047857 0%, var(--color-success) 100%);
+}
+
+.app-notification.is-error .app-notification-icon {
+    background: linear-gradient(135deg, #B91C1C 0%, var(--color-error) 100%);
+}
+
+.app-notification-text {
+    color: var(--color-dark);
+    font-size: 0.98rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+@keyframes appNotificationIn {
+    0% {
+        opacity: 0;
+        transform: translateX(34px) translateY(-8px) scale(0.96);
+    }
+
+    72% {
+        opacity: 1;
+        transform: translateX(-5px) translateY(0) scale(1.01);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) translateY(0) scale(1);
+    }
+}
+
+@keyframes appNotificationOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0) translateY(0) scale(1);
+    }
+
+    45% {
+        opacity: 0.75;
+        transform: translateX(8px) translateY(2px) scale(0.99);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(30px) translateY(8px) scale(0.97);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-notification.is-visible,
+    .app-notification.is-leaving {
+        animation-duration: 1ms;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-notification {
+        right: var(--spacing-sm);
+        top: calc(62px + var(--spacing-lg));
+        width: calc(100vw - 2rem);
+    }
+}
+
+.app-confirm-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1090;
+    display: grid;
+    place-items: center;
+    padding: var(--spacing-md);
+}
+
+.app-confirm-modal[hidden] {
+    display: none;
+}
+
+.app-confirm-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(39, 55, 77, 0.58);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    animation: appConfirmBackdropIn 220ms ease forwards;
+}
+
+.app-confirm-panel {
+    position: relative;
+    width: min(430px, 100%);
+    padding: var(--spacing-lg);
+    border: 1px solid rgba(157, 178, 191, 0.35);
+    border-radius: var(--border-radius);
+    background: var(--color-white);
+    box-shadow: 0 24px 70px rgba(39, 55, 77, 0.28);
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+    animation: appConfirmPanelIn 260ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.app-confirm-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.app-confirm-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--color-error);
+    font-size: 1.25rem;
+}
+
+.app-confirm-eyebrow {
+    margin: 0 0 4px;
+    color: var(--color-accent);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.app-confirm-title {
+    margin: 0;
+    color: var(--color-dark);
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.app-confirm-message {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.app-confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.app-confirm-cancel,
+.app-confirm-delete {
+    border: 0;
+    cursor: pointer;
+}
+
+.app-confirm-cancel {
+    background: var(--color-light);
+    color: var(--color-primary);
+}
+
+.app-confirm-cancel:hover {
+    background: var(--color-accent);
+    color: var(--color-dark);
+    transform: translateY(-2px);
+}
+
+.app-confirm-delete {
+    background: var(--color-error);
+    color: var(--color-white);
+}
+
+.app-confirm-delete:hover {
+    background: #B91C1C;
+    color: var(--color-white);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 10px 22px rgba(239, 68, 68, 0.22);
+}
+
+body.app-confirm-open {
+    overflow: hidden;
+}
+
+@keyframes appConfirmBackdropIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes appConfirmPanelIn {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-confirm-backdrop,
+    .app-confirm-panel {
+        animation-duration: 1ms;
+    }
+}
+
+@media (max-width: 520px) {
+    .app-confirm-actions {
+        flex-direction: column-reverse;
+    }
+
+    .app-confirm-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.app-date-picker {
+    position: relative;
+}
+
+.app-date-picker-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    width: 100%;
+    min-height: 46px;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-background);
+    color: var(--color-dark);
+    font: inherit;
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.app-date-picker-trigger:hover,
+.app-date-picker-trigger:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    background: var(--color-white);
+    box-shadow: 0 0 0 3px rgba(157, 178, 191, 0.28);
+}
+
+.app-date-picker-display {
+    color: var(--color-dark);
+    font-weight: 600;
+}
+
+.app-date-picker-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
+    z-index: 35;
+    min-width: min(292px, calc(100vw - 2rem));
+    padding: 0.7rem;
+    border: 1px solid rgba(157, 178, 191, 0.45);
+    border-radius: 8px;
+    background: var(--color-white);
+    box-shadow: 0 18px 44px rgba(39, 55, 77, 0.2);
+    animation: appDatePickerIn 180ms ease forwards;
+}
+
+.app-date-picker-panel[hidden] {
+    display: none;
+}
+
+.app-date-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+    margin-bottom: 0.65rem;
+    padding: 0.65rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-primary) 100%);
+    color: var(--color-light);
+}
+
+.app-date-picker-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 76px;
+    gap: 5px;
+    flex: 1;
+    color: var(--color-light);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.app-date-picker-select-label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.app-date-picker-select-label span {
+    color: rgba(221, 230, 237, 0.72);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.app-date-picker-select-label select {
+    width: 100%;
+    min-height: 28px;
+    padding: 0.25rem 0.35rem;
+    border: 1px solid rgba(221, 230, 237, 0.26);
+    border-radius: 8px;
+    background: rgba(221, 230, 237, 0.1);
+    color: var(--color-light);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.app-date-picker-select-label select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(157, 178, 191, 0.18);
+}
+
+.app-date-picker-select-label option {
+    background: var(--color-white);
+    color: var(--color-dark);
+}
+
+.app-date-picker-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(221, 230, 237, 0.28);
+    border-radius: 8px;
+    background: rgba(221, 230, 237, 0.08);
+    color: var(--color-light);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.app-date-picker-nav:hover,
+.app-date-picker-nav:focus-visible {
+    outline: none;
+    background: rgba(221, 230, 237, 0.18);
+    transform: translateY(-1px);
+}
+
+.app-date-picker-weekdays,
+.app-date-picker-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.app-date-picker-weekdays {
+    margin-bottom: 4px;
+}
+
+.app-date-picker-weekdays span {
+    color: var(--color-primary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.app-date-picker-day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    min-width: 0;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: var(--color-background);
+    color: var(--color-dark);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.app-date-picker-day:hover,
+.app-date-picker-day:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    background: var(--color-light);
+    transform: translateY(-1px);
+}
+
+.app-date-picker-day.is-today {
+    border-color: var(--color-accent);
+    color: var(--color-primary);
+}
+
+.app-date-picker-day.is-selected {
+    border-color: var(--color-dark);
+    background: var(--color-dark);
+    color: var(--color-white);
+}
+
+.app-date-picker-day.is-empty {
+    background: transparent;
+}
+
+.app-date-picker-time {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.65rem;
+    margin-top: 0.65rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.app-date-picker-time-label {
+    color: var(--color-primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.app-date-picker-time-controls {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    flex: 1;
+}
+
+.app-date-picker-time-control {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.app-date-picker-time-control span {
+    color: var(--color-accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.app-date-picker-time-control select {
+    width: 100%;
+    min-height: 32px;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-background);
+    color: var(--color-dark);
+    font: inherit;
+    font-weight: 700;
+}
+
+.app-date-picker-time-control select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(157, 178, 191, 0.24);
+}
+
+.app-date-picker-time-separator {
+    padding-bottom: 9px;
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+.app-date-picker-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.65rem;
+    margin-top: 0.65rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.app-date-picker-today,
+.app-date-picker-done {
+    min-height: 32px;
+    padding: 0.45rem 0.7rem;
+    border: 0;
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.app-date-picker-today {
+    background: var(--color-light);
+    color: var(--color-primary);
+}
+
+.app-date-picker-done {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.app-date-picker-today:hover,
+.app-date-picker-done:hover {
+    transform: translateY(-1px);
+}
+
+@keyframes appDatePickerIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 520px) {
+    .app-date-picker-panel {
+        right: auto;
+        left: 0;
+        min-width: min(292px, calc(100vw - 2rem));
+    }
+}

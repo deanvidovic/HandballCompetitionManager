@@ -15,22 +15,49 @@ public class PlayerRepository
 
     public List<Player> GetAll()
     {
-        return _context.Players.Include(p => p.Team).ToList();
+        return _context.Players
+            .Where(p => p.DeletedAt == null)
+            .Include(p => p.Team)
+            .ToList();
+    }
+
+    public List<Player> Search(string? query)
+    {
+        var players = _context.Players
+            .Where(p => p.DeletedAt == null)
+            .Include(p => p.Team)
+            .ToList();
+
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return players;
+        }
+
+        var trimmedQuery = query.Trim();
+        return players.Where(p =>
+            p.FullName.Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ||
+            p.Position.ToString().Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ||
+            p.JerseyNumber.ToString().Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ||
+            (p.Team?.Name.Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ?? false))
+            .ToList();
     }
 
     public Player? GetById(int id)
     {
-        return _context.Players.Include(p => p.Team).FirstOrDefault(p => p.Id == id);
+        return _context.Players
+            .Where(p => p.DeletedAt == null)
+            .Include(p => p.Team)
+            .FirstOrDefault(p => p.Id == id);
     }
 
     public List<Player> GetByTeamId(int teamId)
     {
-        return _context.Players.Where(p => p.TeamId == teamId).ToList();
+        return _context.Players.Where(p => p.DeletedAt == null && p.TeamId == teamId).ToList();
     }
 
     public List<Player> GetByPosition(PlayerPosition position)
     {
-        return _context.Players.Where(p => p.Position == position).ToList();
+        return _context.Players.Where(p => p.DeletedAt == null && p.Position == position).ToList();
     }
 
     public void Add(Player player)
@@ -50,7 +77,7 @@ public class PlayerRepository
         var player = GetById(id);
         if (player != null)
         {
-            _context.Players.Remove(player);
+            player.DeletedAt = DateTime.UtcNow;
             _context.SaveChanges();
         }
     }

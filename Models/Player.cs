@@ -19,5 +19,6 @@ public class Player
     
     public int GoalsScored { get; set; }
     public int Assists { get; set; }
+    public DateTime? DeletedAt { get; set; }
     public string FullName => $"{FirstName} {LastName}";
 }

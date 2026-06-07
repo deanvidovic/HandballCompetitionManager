@@ -16,8 +16,9 @@ public class GroupPhaseRepository
     public List<GroupPhase> GetAll()
     {
         return _context.GroupPhases
+            .Where(g => g.Competition != null && g.Competition.DeletedAt == null)
             .Include(g => g.Competition)
-            .Include(g => g.Teams)
+            .Include(g => g.Teams.Where(t => t.DeletedAt == null))
             .Include(g => g.Matches)
             .ToList();
     }
@@ -25,8 +26,9 @@ public class GroupPhaseRepository
     public GroupPhase? GetById(int id)
     {
         return _context.GroupPhases
+            .Where(g => g.Competition != null && g.Competition.DeletedAt == null)
             .Include(g => g.Competition)
-            .Include(g => g.Teams)
+            .Include(g => g.Teams.Where(t => t.DeletedAt == null))
             .Include(g => g.Matches)
             .FirstOrDefault(g => g.Id == id);
     }
@@ -34,8 +36,8 @@ public class GroupPhaseRepository
     public List<GroupPhase> GetByCompetitionId(int competitionId)
     {
         return _context.GroupPhases
-            .Where(g => g.CompetitionId == competitionId)
-            .Include(g => g.Teams)
+            .Where(g => g.CompetitionId == competitionId && g.Competition != null && g.Competition.DeletedAt == null)
+            .Include(g => g.Teams.Where(t => t.DeletedAt == null))
             .Include(g => g.Matches)
             .ToList();
     }

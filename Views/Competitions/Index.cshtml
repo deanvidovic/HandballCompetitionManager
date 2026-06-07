@@ -2,6 +2,26 @@
 
 @{
     ViewData["Title"] = "Competitions";
+    ViewData["SearchTitle"] = "Search competitions";
+    ViewData["SearchLabel"] = "Search";
+    ViewData["SearchPlaceholder"] = "Search by name, city, or season";
+    ViewData["SearchHint"] = "Use keywords to narrow the competition list.";
+    ViewData["SearchSectionLabel"] = "Competition search";
+    ViewData["FilterLabel"] = "Quick filters";
+    ViewData["FilterChipsLabel"] = "Competition status filters";
+    ViewData["FilterAll"] = "All";
+    ViewData["FilterActive"] = "Active";
+    ViewData["FilterUpcoming"] = "Upcoming";
+    ViewData["FilterFinished"] = "Finished";
+    ViewData["FilterSeasonLabel"] = "Season";
+    ViewData["FilterSeasonPlaceholder"] = "Select season";
+    ViewData["FilterSeasonCurrent"] = "Current season";
+    ViewData["FilterSeasonPast"] = "Past seasons";
+    ViewData["FilterSeasonFuture"] = "Future seasons";
+    ViewData["SearchCta"] = "Search";
+    ViewData["ResetCta"] = "Reset";
+    ViewData["SearchCtaAria"] = "Submit competition search";
+    ViewData["ResetCtaAria"] = "Reset competition search filters";
 }
 
 <link rel="stylesheet" href="~/css/competitions.css" asp-append-version="true" />
@@ -16,9 +36,35 @@
     </div>
 
     <div class="competitions-header">
-        <h1 class="competitions-title">Handball Competitions</h1>
-        <p class="competitions-subtitle">Manage and view all handball competitions</p>
+        <div class="header-content">
+            <h1 class="competitions-title">Handball Competitions</h1>
+            <p class="competitions-subtitle">Manage and view all handball competitions</p>
+        </div>
+        <button type="button" class="btn btn-create" data-competition-modal-open aria-haspopup="dialog" aria-controls="createCompetitionModal">
+            <span class="btn-icon" aria-hidden="true">+</span>
+            Create Competition
+        </button>
     </div>
+
+    <section class="competition-search" aria-label="@ViewData["SearchSectionLabel"]">
+        <form class="competition-search-form" asp-action="Index" asp-controller="Competitions" method="get" data-search-form="competitions">
+            <div class="search-header">
+                <div>
+                    <h2 class="search-title">@ViewData["SearchTitle"]</h2>
+                    <p class="search-subtitle">@ViewData["SearchHint"]</p>
+                </div>
+            </div>
+            <div class="search-input-group">
+                <label class="search-label" for="competitionSearch">@ViewData["SearchLabel"]</label>
+                <div class="search-input-wrapper">
+                    <span class="search-icon" aria-hidden="true">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </span>
+                    <input type="search" id="competitionSearch" name="query" value="@ViewData["Query"]" class="search-input" placeholder="@ViewData["SearchPlaceholder"]" autocomplete="off" data-autocomplete-url="@Url.Action("Autocomplete", "Competitions")" />
+                </div>
+            </div>
+        </form>
+    </section>
 
     @if (Model == null || Model.Count == 0)
     {
@@ -30,56 +76,129 @@
     }
     else
     {
-        <div class="competitions-grid">
+        <div class="competitions-list">
             @foreach (var competition in Model)
             {
-                var status = DateTime.Now < competition.StartDate ? "Upcoming" : 
+                var status = DateTime.Now < competition.StartDate ? "Upcoming" :
                              DateTime.Now > competition.EndDate ? "Finished" : "Active";
-                var statusClass = status == "Active" ? "status-active" : 
+                var statusClass = status == "Active" ? "status-active" :
                                   status == "Upcoming" ? "status-upcoming" : "status-finished";
 
-                <div class="competition-card">
-                    <div class="competition-card-header">
-                        <div class="competition-card-title-section">
-                            <h2 class="competition-card-title">
-                                <a href="@Url.Action("Details", "Competitions", new { id = competition.Id })" class="competition-card-link">
-                                    @competition.Name
-                                </a>
-                            </h2>
+                <div class="competition-list-item">
+                    <a href="@Url.Action("Details", "Competitions", new { id = competition.Id })" class="competition-main-link">
+                        <div class="competition-info">
+                            <h2 class="competition-name">@competition.Name</h2>
                             <p class="competition-season">@competition.Season</p>
                         </div>
-                        <span class="status-badge @statusClass">@status</span>
-                    </div>
-
-                    <div class="competition-card-content">
-                        <div class="competition-info-group">
-                            <div class="competition-info-item">
-                                <span class="competition-info-label">Start Date</span>
-                                <span class="competition-info-value">@competition.StartDate.ToString("dd MMM yyyy")</span>
+                        <div class="competition-details">
+                            <div class="competition-detail-item">
+                                <span class="competition-detail-label">City</span>
+                                <span class="competition-detail-value">@competition.City</span>
                             </div>
-                            <div class="competition-info-item">
-                                <span class="competition-info-label">End Date</span>
-                                <span class="competition-info-value">@competition.EndDate.ToString("dd MMM yyyy")</span>
+                            <div class="competition-detail-item">
+                                <span class="competition-detail-label">Dates</span>
+                                <span class="competition-detail-value">@competition.StartDate.ToString("dd MMM") - @competition.EndDate.ToString("dd MMM yyyy")</span>
                             </div>
-                            <div class="competition-info-item">
-                                <span class="competition-info-label">City</span>
-                                <span class="competition-info-value">@competition.City</span>
-                            </div>
-                            <div class="competition-info-item">
-                                <span class="competition-info-label">Teams</span>
-                                <span class="competition-info-value">@competition.Teams.Count</span>
+                            <div class="competition-detail-item">
+                                <span class="competition-detail-label">Teams</span>
+                                <span class="competition-detail-value">@competition.Teams.Count</span>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="competition-card-footer">
-                        <a href="@Url.Action("Details", "Competitions", new { id = competition.Id })" class="btn-view-details">
-                            View Details
-                            <span class="arrow">→</span>
-                        </a>
+                        <div class="competition-status">
+                            <span class="status-badge @statusClass">@status</span>
+                        </div>
+                    </a>
+                    <div class="competition-actions">
+                        <button type="button" class="btn btn-edit" data-edit-competition data-edit-url="@Url.Action("Edit", "Competitions")" data-id="@competition.Id" data-name="@competition.Name" data-season="@competition.Season" data-city="@competition.City" data-start-date="@competition.StartDate.ToString("yyyy-MM-dd")" data-end-date="@competition.EndDate.ToString("yyyy-MM-dd")">Edit</button>
+                        <form asp-action="Delete" asp-controller="Competitions" method="post" class="delete-form" data-delete-form data-delete-name="@competition.Name">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@competition.Id" />
+                            <button type="submit" class="btn btn-delete">Delete</button>
+                        </form>
                     </div>
                 </div>
             }
         </div>
     }
 </div>
+
+<div class="competition-modal" id="createCompetitionModal" role="dialog" aria-modal="true" aria-labelledby="createCompetitionTitle" hidden data-competition-modal>
+    <div class="competition-modal-backdrop" data-competition-modal-close></div>
+    <section class="competition-modal-panel" aria-describedby="createCompetitionDescription">
+        <header class="competition-modal-header">
+            <div>
+                <p class="competition-modal-eyebrow">New competition</p>
+                <h2 class="competition-modal-title" id="createCompetitionTitle">Create Competition</h2>
+                <p class="competition-modal-description" id="createCompetitionDescription">Add competition identity, season, location, and schedule dates.</p>
+            </div>
+            <button type="button" class="competition-modal-close" data-competition-modal-close aria-label="Close create competition form">
+                <i class="fas fa-xmark" aria-hidden="true"></i>
+            </button>
+        </header>
+
+        <form class="competition-create-form" asp-action="Create" asp-controller="Competitions" method="post" data-competition-create-form>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="0" data-edit-id />
+            <div class="competition-form-grid">
+                <div class="competition-form-field" data-competition-field="Name">
+                    <label class="competition-form-label" for="competitionName">Competition name</label>
+                    <input class="competition-form-input" id="competitionName" name="Name" type="text" autocomplete="off" placeholder="Croatian Handball Cup" required minlength="3" maxlength="120" data-competition-validate-field="Name" aria-describedby="competitionNameValidation" />
+                    <span class="competition-validation-message" id="competitionNameValidation" data-competition-validation-message-for="Name" aria-live="polite"></span>
+                </div>
+
+                <div class="competition-form-field" data-competition-field="Season">
+                    <label class="competition-form-label" for="competitionSeason">Season</label>
+                    <input class="competition-form-input" id="competitionSeason" name="Season" type="text" autocomplete="off" placeholder="2025/2026" required minlength="9" maxlength="9" pattern="\d{4}/\d{4}" data-competition-validate-field="Season" aria-describedby="competitionSeasonValidation" />
+                    <span class="competition-validation-message" id="competitionSeasonValidation" data-competition-validation-message-for="Season" aria-live="polite"></span>
+                </div>
+
+                <div class="competition-form-field" data-competition-field="City">
+                    <label class="competition-form-label" for="competitionCity">City</label>
+                    <input class="competition-form-input" id="competitionCity" name="City" type="text" autocomplete="address-level2" placeholder="Zagreb" required minlength="3" maxlength="80" data-competition-validate-field="City" aria-describedby="competitionCityValidation" />
+                    <span class="competition-validation-message" id="competitionCityValidation" data-competition-validation-message-for="City" aria-live="polite"></span>
+                </div>
+
+                <div class="competition-form-field" data-competition-field="StartDate">
+                    <label class="competition-form-label" for="competitionStartDate">Start date</label>
+                    @await Html.PartialAsync("_DateTimePicker", new HandballCompetitionManager.ViewModels.DateTimePickerViewModel
+                    {
+                        Name = "StartDate",
+                        Id = "competitionStartDate",
+                        Label = "Start date",
+                        Placeholder = "Select start date",
+                        DescribedBy = "competitionStartDateValidation",
+                        Required = true,
+                        ValidationField = "StartDate"
+                    })
+                    <span class="competition-validation-message" id="competitionStartDateValidation" data-competition-validation-message-for="StartDate" aria-live="polite"></span>
+                </div>
+
+                <div class="competition-form-field" data-competition-field="EndDate">
+                    <label class="competition-form-label" for="competitionEndDate">End date</label>
+                    @await Html.PartialAsync("_DateTimePicker", new HandballCompetitionManager.ViewModels.DateTimePickerViewModel
+                    {
+                        Name = "EndDate",
+                        Id = "competitionEndDate",
+                        Label = "End date",
+                        Placeholder = "Select end date",
+                        DescribedBy = "competitionEndDateValidation",
+                        Required = true,
+                        ValidationField = "EndDate"
+                    })
+                    <span class="competition-validation-message" id="competitionEndDateValidation" data-competition-validation-message-for="EndDate" aria-live="polite"></span>
+                </div>
+            </div>
+
+            <div class="competition-form-status" role="status" data-competition-form-status hidden></div>
+
+            <footer class="competition-modal-actions">
+                <button type="button" class="btn btn-secondary competition-modal-secondary" data-competition-modal-close>Cancel</button>
+                <button type="submit" class="btn btn-create competition-modal-submit">Save Competition</button>
+            </footer>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/competitions.js" asp-append-version="true"></script>
+}

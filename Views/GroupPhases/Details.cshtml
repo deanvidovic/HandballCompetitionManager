@@ -1,16 +1,16 @@
 @model GroupPhase
 
 @{
-    ViewData["Title"] = $"{Model.Name} - Group Phase Details";
+    ViewData["Title"] = $"{Model.Name} - Competition Bracket Group";
 }
 
 <link rel="stylesheet" href="~/css/groupphases.css" asp-append-version="true" />
 
 <div class="groupphases-details-container">
     <div class="back-navigation">
-        <a href="@Url.Action("Index", "GroupPhases")" class="back-link">
+        <a href="@Url.Action("Details", "Competitions", new { id = Model.CompetitionId })" class="back-link">
             <span class="back-arrow">←</span>
-            Back to Groups
+            Back to Competition
         </a>
     </div>
 
@@ -18,7 +18,11 @@
         <nav class="breadcrumb-nav">
             <a href="/" class="breadcrumb-link">Home</a>
             <span class="breadcrumb-separator">/</span>
-            <a href="@Url.Action("Index", "GroupPhases")" class="breadcrumb-link">Groups</a>
+            <a href="@Url.Action("Index", "Competitions")" class="breadcrumb-link">Competitions</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="@Url.Action("Details", "Competitions", new { id = Model.CompetitionId })" class="breadcrumb-link">
+                @(Model.Competition?.Name ?? "Competition")
+            </a>
             <span class="breadcrumb-separator">/</span>
             <span class="breadcrumb-current">@Model.Name</span>
         </nav>
@@ -32,7 +36,7 @@
         <div class="group-overview-section">
             <div class="overview-grid">
                 <div class="overview-card">
-                    <span class="overview-label">Group Name</span>
+                    <span class="overview-label">Bracket Group</span>
                     <span class="overview-value">@Model.Name</span>
                 </div>
                 <div class="overview-card">
@@ -59,7 +63,6 @@
                         <thead>
                             <tr>
                                 <th>Team Name</th>
-                                <th>Club</th>
                                 <th>Coach</th>
                                 <th>City</th>
                                 <th>Action</th>
@@ -71,9 +74,6 @@
                                 <tr>
                                     <td>
                                         <span class="team-name">@team.Name</span>
-                                    </td>
-                                    <td>
-                                        <span class="team-club">@team.Club</span>
                                     </td>
                                     <td>
                                         <span class="team-coach">@team.CoachName</span>

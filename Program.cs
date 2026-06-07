@@ -110,7 +110,6 @@ static LabData BuildLabData()
         {
             Id = 1,
             Name = "RK Metalac",
-            Club = "Metalac",
             CoachName = "Ivan Horvat",
             HomeCity = "Zagreb",
             FoundedYear = 1965,
@@ -120,7 +119,6 @@ static LabData BuildLabData()
         {
             Id = 2,
             Name = "RK Medvescak",
-            Club = "Medvescak",
             CoachName = "Luka Gajic",
             HomeCity = "Zagreb",
             FoundedYear = 1973,
@@ -130,7 +128,6 @@ static LabData BuildLabData()
         {
             Id = 3,
             Name = "RK Sisak",
-            Club = "Sisak",
             CoachName = "Petar Radic",
             HomeCity = "Sisak",
             FoundedYear = 1980,
@@ -140,7 +137,6 @@ static LabData BuildLabData()
         {
             Id = 4,
             Name = "RK Vukovar",
-            Club = "Vukovar",
             CoachName = "Marko Kolar",
             HomeCity = "Vukovar",
             FoundedYear = 1979,
@@ -150,7 +146,6 @@ static LabData BuildLabData()
         {
             Id = 5,
             Name = "RK Split",
-            Club = "Split",
             CoachName = "Josip Marin",
             HomeCity = "Split",
             FoundedYear = 1958,
@@ -160,7 +155,6 @@ static LabData BuildLabData()
         {
             Id = 6,
             Name = "RK Zadar",
-            Club = "Zadar",
             CoachName = "Ante Klaric",
             HomeCity = "Zadar",
             FoundedYear = 1969,
@@ -170,7 +164,6 @@ static LabData BuildLabData()
         {
             Id = 7,
             Name = "RK Osijek",
-            Club = "Osijek",
             CoachName = "Dario Bulat",
             HomeCity = "Osijek",
             FoundedYear = 1970,
@@ -180,7 +173,6 @@ static LabData BuildLabData()
         {
             Id = 8,
             Name = "RK Karlovac",
-            Club = "Karlovac",
             CoachName = "Tomislav Knez",
             HomeCity = "Karlovac",
             FoundedYear = 1975,
@@ -190,7 +182,6 @@ static LabData BuildLabData()
         {
             Id = 9,
             Name = "RK Porec",
-            Club = "Porec",
             CoachName = "Nino Peric",
             HomeCity = "Porec",
             FoundedYear = 1984,

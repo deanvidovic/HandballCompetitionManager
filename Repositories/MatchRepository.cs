@@ -16,6 +16,10 @@ public class MatchRepository
     public List<Match> GetAll()
     {
         return _context.Matches
+            .Where(m =>
+                m.Competition != null && m.Competition.DeletedAt == null &&
+                m.HomeTeam != null && m.HomeTeam.DeletedAt == null &&
+                m.AwayTeam != null && m.AwayTeam.DeletedAt == null)
             .Include(m => m.Competition)
             .Include(m => m.GroupPhase)
             .Include(m => m.HomeTeam)
@@ -23,9 +27,42 @@ public class MatchRepository
             .ToList();
     }
 
+    public List<Match> Search(string? query)
+    {
+        var matches = _context.Matches
+            .Where(m =>
+                m.Competition != null && m.Competition.DeletedAt == null &&
+                m.HomeTeam != null && m.HomeTeam.DeletedAt == null &&
+                m.AwayTeam != null && m.AwayTeam.DeletedAt == null)
+            .Include(m => m.Competition)
+            .Include(m => m.GroupPhase)
+            .Include(m => m.HomeTeam)
+            .Include(m => m.AwayTeam)
+            .ToList();
+
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return matches;
+        }
+
+        var trimmedQuery = query.Trim();
+        return matches.Where(m =>
+            m.Status.ToString().Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ||
+            m.MaintenanceHall.Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ||
+            m.RoundNumber.ToString().Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ||
+            (m.HomeTeam?.Name.Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            (m.AwayTeam?.Name.Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            (m.Competition?.Name.Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ?? false))
+            .ToList();
+    }
+
     public Match? GetById(int id)
     {
         return _context.Matches
+            .Where(m =>
+                m.Competition != null && m.Competition.DeletedAt == null &&
+                m.HomeTeam != null && m.HomeTeam.DeletedAt == null &&
+                m.AwayTeam != null && m.AwayTeam.DeletedAt == null)
             .Include(m => m.Competition)
             .Include(m => m.GroupPhase)
             .Include(m => m.HomeTeam)
@@ -36,7 +73,11 @@ public class MatchRepository
     public List<Match> GetByCompetitionId(int competitionId)
     {
         return _context.Matches
-            .Where(m => m.CompetitionId == competitionId)
+            .Where(m =>
+                m.CompetitionId == competitionId &&
+                m.Competition != null && m.Competition.DeletedAt == null &&
+                m.HomeTeam != null && m.HomeTeam.DeletedAt == null &&
+                m.AwayTeam != null && m.AwayTeam.DeletedAt == null)
             .Include(m => m.HomeTeam)
             .Include(m => m.AwayTeam)
             .ToList();
@@ -45,7 +86,11 @@ public class MatchRepository
     public List<Match> GetByGroupId(int groupId)
     {
         return _context.Matches
-            .Where(m => m.GroupId == groupId)
+            .Where(m =>
+                m.GroupId == groupId &&
+                m.Competition != null && m.Competition.DeletedAt == null &&
+                m.HomeTeam != null && m.HomeTeam.DeletedAt == null &&
+                m.AwayTeam != null && m.AwayTeam.DeletedAt == null)
             .Include(m => m.HomeTeam)
             .Include(m => m.AwayTeam)
             .ToList();
@@ -54,7 +99,11 @@ public class MatchRepository
     public List<Match> GetByTeamId(int teamId)
     {
         return _context.Matches
-            .Where(m => m.HomeTeamId == teamId || m.AwayTeamId == teamId)
+            .Where(m =>
+                (m.HomeTeamId == teamId || m.AwayTeamId == teamId) &&
+                m.Competition != null && m.Competition.DeletedAt == null &&
+                m.HomeTeam != null && m.HomeTeam.DeletedAt == null &&
+                m.AwayTeam != null && m.AwayTeam.DeletedAt == null)
             .Include(m => m.HomeTeam)
             .Include(m => m.AwayTeam)
             .ToList();
@@ -63,7 +112,11 @@ public class MatchRepository
     public List<Match> GetByStatus(MatchStatus status)
     {
         return _context.Matches
-            .Where(m => m.Status == status)
+            .Where(m =>
+                m.Status == status &&
+                m.Competition != null && m.Competition.DeletedAt == null &&
+                m.HomeTeam != null && m.HomeTeam.DeletedAt == null &&
+                m.AwayTeam != null && m.AwayTeam.DeletedAt == null)
             .Include(m => m.HomeTeam)
             .Include(m => m.AwayTeam)
             .ToList();

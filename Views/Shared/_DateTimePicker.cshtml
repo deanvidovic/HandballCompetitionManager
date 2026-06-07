@@ -1,0 +1,82 @@
+@model HandballCompetitionManager.ViewModels.DateTimePickerViewModel
+
+@{
+    var pickerId = string.IsNullOrWhiteSpace(Model.Id) ? Model.Name : Model.Id;
+    var validationField = string.IsNullOrWhiteSpace(Model.ValidationField) ? Model.Name : Model.ValidationField;
+    var describedBy = Model.DescribedBy ?? $"{pickerId}Validation";
+    var mode = Model.IncludeTime ? "datetime" : "date";
+}
+
+<div class="app-date-picker" data-app-date-picker data-date-picker-mode="@mode">
+    @if (Model.Required)
+    {
+        <input type="hidden" id="@pickerId" name="@Model.Name" value="@Model.Value" data-date-picker-value data-player-validate-field="@validationField" data-competition-validate-field="@validationField" data-appuser-validate-field="@validationField" required />
+    }
+    else
+    {
+        <input type="hidden" id="@pickerId" name="@Model.Name" value="@Model.Value" data-date-picker-value data-player-validate-field="@validationField" data-competition-validate-field="@validationField" data-appuser-validate-field="@validationField" />
+    }
+    <button type="button"
+            class="app-date-picker-trigger"
+            data-date-picker-trigger
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="@($"{pickerId}Panel")"
+            aria-describedby="@describedBy">
+        <span class="app-date-picker-display" data-date-picker-display>@(Model.Placeholder ?? "Select date")</span>
+        <i class="fas fa-calendar-days" aria-hidden="true"></i>
+    </button>
+    <section class="app-date-picker-panel" id="@($"{pickerId}Panel")" data-date-picker-panel role="dialog" aria-label="@Model.Label" hidden>
+        <header class="app-date-picker-header">
+            <button type="button" class="app-date-picker-nav" data-date-picker-prev aria-label="Previous month">
+                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <div class="app-date-picker-heading" data-date-picker-heading>
+                <label class="app-date-picker-select-label" for="@($"{pickerId}Month")">
+                    <span>Month</span>
+                    <select id="@($"{pickerId}Month")" data-date-picker-month></select>
+                </label>
+                <label class="app-date-picker-select-label" for="@($"{pickerId}Year")">
+                    <span>Year</span>
+                    <select id="@($"{pickerId}Year")" data-date-picker-year></select>
+                </label>
+            </div>
+            <button type="button" class="app-date-picker-nav" data-date-picker-next aria-label="Next month">
+                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            </button>
+        </header>
+        <div class="app-date-picker-weekdays" data-date-picker-weekdays></div>
+        <div class="app-date-picker-days" data-date-picker-days></div>
+        @if (Model.IncludeTime)
+        {
+            <div class="app-date-picker-time">
+                <span class="app-date-picker-time-label">Time</span>
+                <div class="app-date-picker-time-controls" data-date-picker-time>
+                    <label class="app-date-picker-time-control" for="@($"{pickerId}Hour")">
+                        <span>Hour</span>
+                        <select id="@($"{pickerId}Hour")" data-date-picker-hour>
+                            @for (var hour = 0; hour < 24; hour++)
+                            {
+                                <option value="@hour.ToString("00")">@hour.ToString("00")</option>
+                            }
+                        </select>
+                    </label>
+                    <span class="app-date-picker-time-separator">:</span>
+                    <label class="app-date-picker-time-control" for="@($"{pickerId}Minute")">
+                        <span>Minute</span>
+                        <select id="@($"{pickerId}Minute")" data-date-picker-minute>
+                            @for (var minute = 0; minute < 60; minute += 5)
+                            {
+                                <option value="@minute.ToString("00")">@minute.ToString("00")</option>
+                            }
+                        </select>
+                    </label>
+                </div>
+            </div>
+        }
+        <footer class="app-date-picker-actions">
+            <button type="button" class="app-date-picker-today" data-date-picker-today>Today</button>
+            <button type="button" class="app-date-picker-done" data-date-picker-done>Done</button>
+        </footer>
+    </section>
+</div>

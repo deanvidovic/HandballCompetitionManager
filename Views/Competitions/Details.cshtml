@@ -1,7 +1,9 @@
-@model Competition
+@model HandballCompetitionManager.ViewModels.CompetitionDetailsViewModel
 
 @{
     ViewData["Title"] = $"{Model.Name} - Competition Details";
+    var competitionNotification = TempData["CompetitionNotification"] as string;
+    var competitionErrorNotification = TempData["CompetitionErrorNotification"] as string;
 }
 
 <link rel="stylesheet" href="~/css/competitions.css" asp-append-version="true" />
@@ -49,19 +51,51 @@
                 </div>
                 <div class="overview-card">
                     <span class="overview-label">Participating Teams</span>
-                    <span class="overview-value">@Model.Teams.Count</span>
+                    <span class="overview-value">@Model.TeamCount</span>
                 </div>
                 <div class="overview-card">
-                    <span class="overview-label">Group Phases</span>
-                    <span class="overview-value">@Model.Groups.Count</span>
+                    <span class="overview-label">Bracket Groups</span>
+                    <span class="overview-value">@Model.GroupCount</span>
                 </div>
             </div>
         </div>
 
-        @if (Model.Teams != null && Model.Teams.Count > 0)
-        {
-            <div class="competition-teams-section">
-                <h2 class="section-title">Participating Teams</h2>
+        <div class="competition-teams-section">
+            <div class="competition-teams-header">
+                <div>
+                    <h2 class="section-title">Participating Teams</h2>
+                    <p class="competition-teams-subtitle">Add only teams that are free during this competition period.</p>
+                </div>
+            </div>
+
+            <form class="competition-add-team-form" asp-action="AddTeam" asp-controller="Competitions" method="post" data-competition-add-team-form>
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="CompetitionId" />
+                <div class="competition-add-team-layout">
+                    <div class="competition-add-team-field">
+                        <label class="competition-form-label" for="competitionTeamSearch">Available team</label>
+                        <div class="competition-team-autocomplete" data-competition-team-autocomplete>
+                            <input class="competition-form-input" id="competitionTeamSearch" type="text" autocomplete="off" placeholder="Search available teams" data-competition-team-input data-competition-team-autocomplete-url="@Url.Action("AvailableTeamsAutocomplete", "Competitions", new { competitionId = Model.CompetitionId })" aria-autocomplete="list" aria-expanded="false" aria-controls="competitionTeamResults" aria-describedby="competitionAddTeamValidation" />
+                            <div class="competition-team-results" id="competitionTeamResults" role="listbox" hidden data-competition-team-results></div>
+                        </div>
+                        <div class="competition-selected-teams" data-competition-selected-teams>
+                            <p class="competition-selected-teams-empty" data-competition-selected-teams-empty>No teams selected yet.</p>
+                        </div>
+                        <span class="competition-validation-message" asp-validation-for="AddTeamIds"></span>
+                    </div>
+                    <button type="submit" class="btn btn-create competition-add-team-submit" @(Model.AvailableTeams.Count == 0 ? "disabled" : "")>
+                        <span class="btn-icon" aria-hidden="true">+</span>
+                        Add Teams
+                    </button>
+                </div>
+                @if (Model.AvailableTeams.Count == 0)
+                {
+                    <p class="competition-add-team-note">No teams are available for @Model.StartDate.ToString("MMM dd, yyyy") - @Model.EndDate.ToString("MMM dd, yyyy").</p>
+                }
+            </form>
+
+            @if (Model.Teams != null && Model.Teams.Count > 0)
+            {
                 <div class="teams-grid">
                     @foreach (var team in Model.Teams)
                     {
@@ -70,12 +104,16 @@
                                 <a href="@Url.Action("Details", "Teams", new { id = team.Id })" class="team-link">
                                     <h3 class="team-name">@team.Name</h3>
                                 </a>
+                                <form asp-action="RemoveTeam" asp-controller="Competitions" method="post" class="competition-remove-team-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="competitionId" value="@Model.CompetitionId" />
+                                    <input type="hidden" name="teamId" value="@team.Id" />
+                                    <button type="submit" class="competition-remove-team-button" aria-label="Remove @team.Name from competition">
+                                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="team-card-content">
-                                <div class="team-info-item">
-                                    <span class="info-label">Club</span>
-                                    <span class="info-value">@team.Club</span>
-                                </div>
                                 <div class="team-info-item">
                                     <span class="info-label">Coach</span>
                                     <span class="info-value">@team.CoachName</span>
@@ -86,51 +124,140 @@
                                 </div>
                                 <div class="team-info-item">
                                     <span class="info-label">Players</span>
-                                    <span class="info-value">@team.Players.Count</span>
+                                    <span class="info-value">@team.PlayerCount</span>
                                 </div>
                             </div>
                         </div>
                     }
                 </div>
-            </div>
-        }
-        else
-        {
-            <div class="competition-teams-section">
-                <h2 class="section-title">Participating Teams</h2>
+            }
+            else
+            {
                 <div class="no-teams">
                     <p class="no-teams-message">No teams are currently participating in this competition.</p>
                 </div>
-            </div>
-        }
+            }
+        </div>
 
-        @if (Model.Groups != null && Model.Groups.Count > 0)
-        {
-            <div class="competition-groups-section">
-                <h2 class="section-title">Group Phases</h2>
-                <div class="groups-list">
+        <div class="competition-bracket-section">
+            <div class="competition-bracket-header">
+                <div>
+                    <h2 class="section-title">@Model.BracketSectionTitle</h2>
+                    <p class="competition-bracket-subtitle">@Model.BracketRuleMessage</p>
+                </div>
+                <form asp-action="GenerateBracket" asp-controller="Competitions" method="post" class="competition-bracket-generate-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="competitionId" value="@Model.CompetitionId" />
+                    <button type="submit" class="btn btn-create competition-bracket-generate" @(Model.CanGenerateBracket ? "" : "disabled")>
+                        <span class="btn-icon" aria-hidden="true">↻</span>
+                        Randomize Bracket
+                    </button>
+                </form>
+            </div>
+
+            @if (Model.Groups != null && Model.Groups.Count > 0)
+            {
+                <div class="bracket-layout">
+                    <div class="groups-list bracket-groups-list">
                     @foreach (var group in Model.Groups)
                     {
-                        <div class="group-item">
+                        var groupPanelId = $"bracketGroupTeams{group.Id}";
+                        <div class="group-item bracket-group-item">
                             <div class="group-header">
                                 <a href="@Url.Action("Details", "GroupPhases", new { id = group.Id })" class="group-link">
                                     <span class="group-name">@group.Name</span>
                                 </a>
-                                <span class="group-meta">@group.Teams.Count Teams / @group.Matches.Count Matches</span>
+                                <div class="bracket-group-actions">
+                                    <span class="group-meta">@group.TeamCount Teams / @group.MatchCount Matches</span>
+                                    <button type="button" class="bracket-group-toggle" data-bracket-group-toggle aria-expanded="false" aria-controls="@groupPanelId">
+                                        <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="bracket-group-teams" id="@groupPanelId" hidden data-bracket-group-panel>
+                                @foreach (var team in group.Teams)
+                                {
+                                    <a href="@Url.Action("Details", "Teams", new { id = team.Id })" class="bracket-group-team">
+                                        <span>@team.Name</span>
+                                        <small>@team.HomeCity</small>
+                                    </a>
+                                }
                             </div>
                         </div>
                     }
+                    </div>
                 </div>
-            </div>
-        }
-        else
-        {
-            <div class="competition-groups-section">
-                <h2 class="section-title">Group Phases</h2>
+                <div class="competition-knockout-visual">
+                    <div class="competition-knockout-visual-header">
+                        <span class="competition-knockout-label">Knockout phase</span>
+                        <h3>@Model.KnockoutStartLabel</h3>
+                    </div>
+                    @if (Model.Groups.Count == 2)
+                    {
+                        <div class="knockout-board is-semi-final">
+                            <div class="knockout-column">
+                                <span class="knockout-column-title">Semi-finals</span>
+                                <div class="knockout-match"><span>@Model.Groups[0].Name #1</span><span>@Model.Groups[1].Name #2</span></div>
+                                <div class="knockout-match"><span>@Model.Groups[1].Name #1</span><span>@Model.Groups[0].Name #2</span></div>
+                            </div>
+                            <div class="knockout-connector" aria-hidden="true"></div>
+                            <div class="knockout-column">
+                                <span class="knockout-column-title">Final</span>
+                                <div class="knockout-match is-final"><span>Semi-final winner</span><span>Semi-final winner</span></div>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.Groups.Count == 4)
+                    {
+                        <div class="knockout-board is-quarter-final">
+                            <div class="knockout-column">
+                                <span class="knockout-column-title">Quarter finals</span>
+                                <div class="knockout-match"><span>@Model.Groups[0].Name #1</span><span>@Model.Groups[1].Name #2</span></div>
+                                <div class="knockout-match"><span>@Model.Groups[1].Name #1</span><span>@Model.Groups[0].Name #2</span></div>
+                                <div class="knockout-match"><span>@Model.Groups[2].Name #1</span><span>@Model.Groups[3].Name #2</span></div>
+                                <div class="knockout-match"><span>@Model.Groups[3].Name #1</span><span>@Model.Groups[2].Name #2</span></div>
+                            </div>
+                            <div class="knockout-connector" aria-hidden="true"></div>
+                            <div class="knockout-column">
+                                <span class="knockout-column-title">Semi-finals</span>
+                                <div class="knockout-match"><span>Quarter-final winner</span><span>Quarter-final winner</span></div>
+                                <div class="knockout-match"><span>Quarter-final winner</span><span>Quarter-final winner</span></div>
+                            </div>
+                            <div class="knockout-connector" aria-hidden="true"></div>
+                            <div class="knockout-column">
+                                <span class="knockout-column-title">Final</span>
+                                <div class="knockout-match is-final"><span>Semi-final winner</span><span>Semi-final winner</span></div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="knockout-empty-state">
+                            <p>Generate a complete supported bracket to preview knockout slots.</p>
+                        </div>
+                    }
+                    <p class="competition-knockout-note">Teams are placed into knockout slots after group standings are calculated.</p>
+                </div>
+            }
+            else
+            {
                 <div class="no-groups">
-                    <p class="no-groups-message">No group phases have been created for this competition yet.</p>
+                    <p class="no-groups-message">@Model.NoGroupsMessage</p>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 </div>
+
+@if (!string.IsNullOrWhiteSpace(competitionNotification))
+{
+    <div data-competition-notification="@competitionNotification" hidden></div>
+}
+@if (!string.IsNullOrWhiteSpace(competitionErrorNotification))
+{
+    <div data-competition-error-notification="@competitionErrorNotification" hidden></div>
+}
+
+@section Scripts {
+    <script src="~/js/competitions.js" asp-append-version="true"></script>
+}

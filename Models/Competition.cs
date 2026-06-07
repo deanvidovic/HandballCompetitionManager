@@ -12,6 +12,7 @@ public class Competition
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public string City { get; set; } = string.Empty;
+    public DateTime? DeletedAt { get; set; }
     public virtual ICollection<Team> Teams { get; set; } = new List<Team>();
     public virtual ICollection<GroupPhase> Groups { get; set; } = new List<GroupPhase>();
     public virtual ICollection<AppUser> Administrators { get; set; } = new List<AppUser>();

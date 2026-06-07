@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = $"{Model.DisplayName} - User Details";
+    var roleClass = Model.Role == UserRole.Admin ? "role-admin" : "role-user";
 }
 
 <link rel="stylesheet" href="~/css/appusers.css" asp-append-version="true" />
@@ -9,13 +10,13 @@
 <div class="appusers-details-container">
     <div class="back-navigation">
         <a href="@Url.Action("Index", "AppUsers")" class="back-link">
-            <span class="back-arrow">←</span>
+            <span class="back-arrow">&larr;</span>
             Back to Users
         </a>
     </div>
 
     <div class="breadcrumb-section">
-        <nav class="breadcrumb-nav">
+        <nav class="breadcrumb-nav" aria-label="Breadcrumb">
             <a href="/" class="breadcrumb-link">Home</a>
             <span class="breadcrumb-separator">/</span>
             <a href="@Url.Action("Index", "AppUsers")" class="breadcrumb-link">App Users</a>
@@ -24,61 +25,80 @@
         </nav>
     </div>
 
-    <div class="appusers-details-header">
-        <h1 class="appusers-details-title">@Model.DisplayName</h1>
-        <span class="user-role-badge user-role-@Model.Role.ToString().ToLower()">
-            @Model.Role
-        </span>
-    </div>
-
-    <div class="appusers-details-content">
-        <div class="user-overview-section">
-            <div class="overview-grid">
-                <div class="overview-card">
-                    <span class="overview-label">Username</span>
-                    <span class="overview-value">@Model.Username</span>
-                </div>
-                <div class="overview-card">
-                    <span class="overview-label">Email</span>
-                    <a href="mailto:@Model.Email" class="overview-email-link">@Model.Email</a>
-                </div>
-                <div class="overview-card">
-                    <span class="overview-label">Date of Birth</span>
-                    <span class="overview-value">@Model.DateOfBirth.ToString("MMM dd, yyyy")</span>
-                </div>
-                <div class="overview-card">
-                    <span class="overview-label">Created</span>
-                    <span class="overview-value">@Model.CreatedAt.ToString("MMM dd, yyyy")</span>
-                </div>
-                <div class="overview-card">
-                    <span class="overview-label">Member Since</span>
-                    <span class="overview-value">@Model.CreatedAt.ToString("MMMM yyyy")</span>
-                </div>
+    <header class="appusers-details-header">
+        <div class="details-identity">
+            <div class="user-avatar" aria-hidden="true">
+                @Model.DisplayName.Substring(0, 1).ToUpper()
+            </div>
+            <div>
+                <p class="details-eyebrow">User profile</p>
+                <h1 class="appusers-details-title">@Model.DisplayName</h1>
+                <a href="mailto:@Model.Email" class="appusers-details-email">@Model.Email</a>
             </div>
         </div>
+        <div class="details-header-actions">
+            <span class="role-badge @roleClass">@Model.Role</span>
+            <a href="@Url.Action("Index", "AppUsers")" class="details-back-link">Back to Users</a>
+        </div>
+    </header>
 
-        @if (Model.ManagedCompetitions != null && Model.ManagedCompetitions.Count > 0)
-        {
-            <div class="user-competitions-section">
-                <h2 class="section-title">Managed Competitions</h2>
-                <div class="competitions-tags">
+    <main class="appusers-details-content">
+        <section class="user-overview-section" aria-labelledby="profileOverviewTitle">
+            <div class="section-heading-row">
+                <h2 id="profileOverviewTitle" class="section-title">Profile Overview</h2>
+            </div>
+            <div class="overview-grid">
+                <article class="overview-card">
+                    <span class="overview-label">Username</span>
+                    <span class="overview-value">@Model.Username</span>
+                </article>
+                <article class="overview-card">
+                    <span class="overview-label">Email</span>
+                    <a href="mailto:@Model.Email" class="overview-email-link">@Model.Email</a>
+                </article>
+                <article class="overview-card">
+                    <span class="overview-label">Date of Birth</span>
+                    <span class="overview-value">@Model.DateOfBirth.ToString("MMM dd, yyyy")</span>
+                </article>
+                <article class="overview-card">
+                    <span class="overview-label">Created</span>
+                    <span class="overview-value">@Model.CreatedAt.ToString("MMM dd, yyyy")</span>
+                </article>
+                <article class="overview-card">
+                    <span class="overview-label">Member Since</span>
+                    <span class="overview-value">@Model.CreatedAt.ToString("MMMM yyyy")</span>
+                </article>
+                <article class="overview-card">
+                    <span class="overview-label">Managed Competitions</span>
+                    <span class="overview-value">@(Model.ManagedCompetitions?.Count ?? 0)</span>
+                </article>
+            </div>
+        </section>
+
+        <section class="user-competitions-section" aria-labelledby="managedCompetitionsTitle">
+            <div class="section-heading-row">
+                <h2 id="managedCompetitionsTitle" class="section-title">Managed Competitions</h2>
+                <span class="section-count">@(Model.ManagedCompetitions?.Count ?? 0)</span>
+            </div>
+
+            @if (Model.ManagedCompetitions != null && Model.ManagedCompetitions.Count > 0)
+            {
+                <div class="managed-competitions-list">
                     @foreach (var competition in Model.ManagedCompetitions)
                     {
-                        <span class="competition-tag">
-                            @competition.Name
-                        </span>
+                        <a href="@Url.Action("Details", "Competitions", new { id = competition.Id })" class="managed-competition-card">
+                            <span class="managed-competition-name">@competition.Name</span>
+                            <span class="managed-competition-meta">@competition.City - @competition.Season</span>
+                        </a>
                     }
                 </div>
-            </div>
-        }
-        else
-        {
-            <div class="user-competitions-section">
-                <h2 class="section-title">Managed Competitions</h2>
+            }
+            else
+            {
                 <div class="no-competitions">
                     <p class="no-competitions-message">No competitions managed by this user.</p>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </section>
+    </main>
 </div>

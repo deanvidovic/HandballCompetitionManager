@@ -2,6 +2,11 @@
 
 @{
     ViewData["Title"] = "App Users";
+    ViewData["SearchTitle"] = "Search app users";
+    ViewData["SearchLabel"] = "Search";
+    ViewData["SearchPlaceholder"] = "Search by display name, username, email, or role";
+    ViewData["SearchHint"] = "Use keywords to narrow the app user list.";
+    ViewData["SearchSectionLabel"] = "App user search";
 }
 
 <link rel="stylesheet" href="~/css/appusers.css" asp-append-version="true" />
@@ -16,70 +21,159 @@
     </div>
 
     <div class="appusers-header">
-        <h1 class="appusers-title">App Users</h1>
-        <p class="appusers-subtitle">Manage and view all system users</p>
+        <div class="header-content">
+            <h1 class="appusers-title">Handball AppUsers</h1>
+            <p class="appusers-subtitle">Manage and view all handball appusers</p>
+        </div>
+        <button type="button" class="btn btn-create" data-appuser-modal-open aria-haspopup="dialog" aria-controls="createAppUserModal">
+            <span class="btn-icon" aria-hidden="true">+</span>
+            Create AppUser
+        </button>
     </div>
+
+    <section class="competition-search" aria-label="@ViewData["SearchSectionLabel"]">
+        <form class="competition-search-form" asp-action="Index" asp-controller="AppUsers" method="get" data-search-form="appusers">
+            <div class="search-header">
+                <div>
+                    <h2 class="search-title">@ViewData["SearchTitle"]</h2>
+                    <p class="search-subtitle">@ViewData["SearchHint"]</p>
+                </div>
+            </div>
+            <div class="search-input-group">
+                <label class="search-label" for="appUserSearch">@ViewData["SearchLabel"]</label>
+                <div class="search-input-wrapper">
+                    <span class="search-icon" aria-hidden="true">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </span>
+                    <input type="search" id="appUserSearch" name="query" value="@ViewData["Query"]" class="search-input" placeholder="@ViewData["SearchPlaceholder"]" autocomplete="off" data-autocomplete-url="@Url.Action("Autocomplete", "AppUsers")" />
+                </div>
+            </div>
+        </form>
+    </section>
 
     @if (Model == null || Model.Count == 0)
     {
         <div class="empty-state">
-            <div class="empty-state-icon">👤</div>
-            <h2 class="empty-state-title">No Users Available</h2>
-            <p class="empty-state-message">There are currently no users in the system.</p>
+            <div class="empty-state-icon">🏆</div>
+            <h2 class="empty-state-title">No AppUsers Available</h2>
+            <p class="empty-state-message">There are currently no appusers in the system.</p>
         </div>
     }
     else
     {
-        <div class="appusers-grid">
-            @foreach (var user in Model)
+        <div class="appusers-list">
+            @foreach (var appuser in Model)
             {
-                <div class="user-card">
-                    <div class="user-card-header">
-                        <h2 class="user-card-title">
-                            <a href="@Url.Action("Details", "AppUsers", new { id = user.Id })" class="user-card-link">
-                                @user.DisplayName
-                            </a>
-                        </h2>
-                        <span class="user-role-badge user-role-@user.Role.ToString().ToLower()">
-                            @user.Role
-                        </span>
-                    </div>
+                var roleClass = $"role-{appuser.Role.ToString().ToLowerInvariant()}";
 
-                    <div class="user-card-content">
-                        <div class="user-info-group">
-                            <div class="user-info-item">
-                                <span class="user-info-label">Username</span>
-                                <span class="user-info-value">@user.Username</span>
+                <div class="appuser-list-item">
+                    <a href="@Url.Action("Details", "AppUsers", new { id = appuser.Id })" class="appuser-main-link">
+                        <div class="appuser-info">
+                            <h2 class="appuser-name">@appuser.DisplayName</h2>
+                            <p class="appuser-email">@appuser.Email</p>
+                        </div>
+                        <div class="appuser-details">
+                            <div class="appuser-detail-item">
+                                <span class="appuser-detail-label">Username</span>
+                                <span class="appuser-detail-value">@appuser.Username</span>
+                            </div>
+                            <div class="appuser-detail-item">
+                                <span class="appuser-detail-label">Created At</span>
+                                <span class="appuser-detail-value">@appuser.CreatedAt.ToString("dd MMM yyyy")</span>
                             </div>
                         </div>
-
-                        <div class="user-info-group">
-                            <div class="user-info-item">
-                                <span class="user-info-label">Email</span>
-                                <a href="mailto:@user.Email" class="user-info-email">@user.Email</a>
-                            </div>
+                        <div class="appuser-role">
+                            <span class="role-badge @roleClass">@appuser.Role</span>
                         </div>
-
-                        <div class="user-info-group">
-                            <div class="user-info-item">
-                                <span class="user-info-label">Created</span>
-                                <span class="user-info-value">@user.CreatedAt.ToString("MMM dd, yyyy")</span>
-                            </div>
-                            <div class="user-info-item">
-                                <span class="user-info-label">Competitions</span>
-                                <span class="user-info-value">@user.ManagedCompetitions.Count</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="user-card-footer">
-                        <a href="@Url.Action("Details", "AppUsers", new { id = user.Id })" class="btn-view-details">
-                            View Details
-                            <span class="arrow">→</span>
-                        </a>
+                    </a>
+                    <div class="appuser-actions">
+                        <button type="button" class="btn btn-edit" data-edit-appuser data-edit-url="@Url.Action("Edit", "AppUsers")" data-id="@appuser.Id" data-username="@appuser.Username" data-display-name="@appuser.DisplayName" data-email="@appuser.Email" data-role="@appuser.Role" data-date-of-birth="@appuser.DateOfBirth.ToString("yyyy-MM-dd")">Edit</button>
+                        <form asp-action="Delete" asp-controller="AppUsers" method="post" class="delete-form" data-delete-form data-delete-name="@appuser.DisplayName">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@appuser.Id" />
+                            <button type="submit" class="btn btn-delete">Delete</button>
+                        </form>
                     </div>
                 </div>
             }
         </div>
     }
 </div>
+
+<div class="appuser-modal" id="createAppUserModal" role="dialog" aria-modal="true" aria-labelledby="createAppUserTitle" hidden data-appuser-modal>
+    <div class="appuser-modal-backdrop" data-appuser-modal-close></div>
+    <section class="appuser-modal-panel" aria-describedby="createAppUserDescription">
+        <header class="appuser-modal-header">
+            <div>
+                <p class="appuser-modal-eyebrow">New app user</p>
+                <h2 class="appuser-modal-title" id="createAppUserTitle">Create AppUser</h2>
+                <p class="appuser-modal-description" id="createAppUserDescription">Add a new account profile with identity, role, and date of birth.</p>
+            </div>
+            <button type="button" class="appuser-modal-close" data-appuser-modal-close aria-label="Close create app user form">
+                <i class="fas fa-xmark" aria-hidden="true"></i>
+            </button>
+        </header>
+
+        <form class="appuser-create-form" asp-action="Create" asp-controller="AppUsers" method="post" data-appuser-create-form>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="0" data-edit-id />
+            <div class="appuser-form-grid">
+                <div class="appuser-form-field" data-appuser-field="Username">
+                    <label class="appuser-form-label" for="appUserUsername">Username</label>
+                    <input class="appuser-form-input" id="appUserUsername" name="Username" type="text" autocomplete="username" placeholder="coach.mamic" required minlength="3" maxlength="80" data-appuser-validate-field="Username" aria-describedby="appUserUsernameValidation" />
+                    <span class="appuser-validation-message" id="appUserUsernameValidation" data-appuser-validation-message-for="Username" aria-live="polite"></span>
+                </div>
+
+                <div class="appuser-form-field" data-appuser-field="DisplayName">
+                    <label class="appuser-form-label" for="appUserDisplayName">Display name</label>
+                    <input class="appuser-form-input" id="appUserDisplayName" name="DisplayName" type="text" autocomplete="name" placeholder="Lino Cervar" required minlength="3" maxlength="120" data-appuser-validate-field="DisplayName" aria-describedby="appUserDisplayNameValidation" />
+                    <span class="appuser-validation-message" id="appUserDisplayNameValidation" data-appuser-validation-message-for="DisplayName" aria-live="polite"></span>
+                </div>
+
+                <div class="appuser-form-field" data-appuser-field="Email">
+                    <label class="appuser-form-label" for="appUserEmail">Email</label>
+                    <input class="appuser-form-input" id="appUserEmail" name="Email" type="email" autocomplete="email" placeholder="lino@example.com" required maxlength="160" data-appuser-validate-field="Email" aria-describedby="appUserEmailValidation" />
+                    <span class="appuser-validation-message" id="appUserEmailValidation" data-appuser-validation-message-for="Email" aria-live="polite"></span>
+                </div>
+
+                <div class="appuser-form-field" data-appuser-field="Role">
+                    <label class="appuser-form-label" for="appUserRole">Role</label>
+                    <select class="appuser-form-input" id="appUserRole" name="Role" required data-appuser-validate-field="Role" aria-describedby="appUserRoleValidation">
+                        <option value="">Select role</option>
+                        @foreach (var role in Enum.GetValues<UserRole>())
+                        {
+                            <option value="@role">@role</option>
+                        }
+                    </select>
+                    <span class="appuser-validation-message" id="appUserRoleValidation" data-appuser-validation-message-for="Role" aria-live="polite"></span>
+                </div>
+
+                <div class="appuser-form-field" data-appuser-field="DateOfBirth">
+                    <label class="appuser-form-label" for="appUserDateOfBirth">Date of birth</label>
+                    @await Html.PartialAsync("_DateTimePicker", new HandballCompetitionManager.ViewModels.DateTimePickerViewModel
+                    {
+                        Name = "DateOfBirth",
+                        Id = "appUserDateOfBirth",
+                        Label = "Date of birth",
+                        Placeholder = "Select date of birth",
+                        DescribedBy = "appUserDateOfBirthValidation",
+                        Required = true,
+                        ValidationField = "DateOfBirth"
+                    })
+                    <span class="appuser-validation-message" id="appUserDateOfBirthValidation" data-appuser-validation-message-for="DateOfBirth" aria-live="polite"></span>
+                </div>
+            </div>
+
+            <div class="appuser-form-status" role="status" data-appuser-form-status hidden></div>
+
+            <footer class="appuser-modal-actions">
+                <button type="button" class="btn btn-secondary appuser-modal-secondary" data-appuser-modal-close>Cancel</button>
+                <button type="submit" class="btn btn-create appuser-modal-submit">Save AppUser</button>
+            </footer>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/appusers.js" asp-append-version="true"></script>
+}

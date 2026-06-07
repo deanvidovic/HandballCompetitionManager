@@ -26,15 +26,12 @@
 
     <div class="teams-details-header">
         <h1 class="teams-details-title">@Model.Name</h1>
+        <p class="teams-details-subtitle">@Model.HomeCity</p>
     </div>
 
     <div class="teams-details-content">
         <div class="team-overview-section">
             <div class="overview-grid">
-                <div class="overview-card">
-                    <span class="overview-label">Club</span>
-                    <span class="overview-value">@Model.Club</span>
-                </div>
                 <div class="overview-card">
                     <span class="overview-label">Coach</span>
                     <span class="overview-value">@Model.CoachName</span>
@@ -53,7 +50,7 @@
                 </div>
                 <div class="overview-card">
                     <span class="overview-label">Total Players</span>
-                    <span class="overview-value">@Model.Players.Count</span>
+                    <span class="overview-value">@(Model.Players?.Count ?? 0)</span>
                 </div>
             </div>
         </div>

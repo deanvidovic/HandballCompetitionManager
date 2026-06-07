@@ -9,25 +9,29 @@ namespace HandballCompetitionManager.Controllers
         private readonly MatchRepository _matchRepository;
         private readonly TeamRepository _teamRepository;
         private readonly GroupPhaseRepository _groupPhaseRepository;
+        private readonly CompetitionRepository _competitionRepository;
         private readonly ILogger<MatchesController> _logger;
 
         public MatchesController(
             MatchRepository matchRepository,
             TeamRepository teamRepository,
             GroupPhaseRepository groupPhaseRepository,
+            CompetitionRepository competitionRepository,
             ILogger<MatchesController> logger)
         {
             _matchRepository = matchRepository;
             _teamRepository = teamRepository;
             _groupPhaseRepository = groupPhaseRepository;
+            _competitionRepository = competitionRepository;
             _logger = logger;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string? query)
         {
             _logger.LogInformation("Matches Index page requested");
-            var matches = _matchRepository.GetAll().OrderBy(m => m.Kickoff).ToList();
+            ViewData["Query"] = query;
+            var matches = _matchRepository.Search(query).OrderBy(m => m.Kickoff).ToList();
             
             // Build a dictionary of team names for view
             var teamNames = new Dictionary<int, string>();
@@ -44,6 +48,22 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpGet]
+        public IActionResult Autocomplete(string? query)
+        {
+            var suggestions = _matchRepository.Search(query)
+                .OrderBy(m => m.Kickoff)
+                .Take(8)
+                .Select(m => new
+                {
+                    label = $"{m.HomeTeam?.Name ?? $"Team {m.HomeTeamId}"} vs {m.AwayTeam?.Name ?? $"Team {m.AwayTeamId}"}",
+                    value = m.HomeTeam?.Name ?? m.AwayTeam?.Name ?? m.MaintenanceHall,
+                    meta = $"{m.Status} - {m.MaintenanceHall}"
+                });
+
+            return Json(suggestions);
+        }
+
+        [HttpGet]
         public IActionResult Details(int id)
         {
             _logger.LogInformation("Matches Details page requested for match ID: {MatchId}", id);
@@ -57,9 +77,11 @@ namespace HandballCompetitionManager.Controllers
 
             var homeTeamName = _teamRepository.GetById(match.HomeTeamId)?.Name ?? $"Team {match.HomeTeamId}";
             var awayTeamName = _teamRepository.GetById(match.AwayTeamId)?.Name ?? $"Team {match.AwayTeamId}";
+            var competitionName = _competitionRepository.GetById(match.CompetitionId)?.Name ?? $"Competition {match.CompetitionId}";
             
             ViewBag.HomeTeamName = homeTeamName;
             ViewBag.AwayTeamName = awayTeamName;
+            ViewBag.CompetitionName = competitionName;
             ViewBag.TeamRepository = _teamRepository;
             
             return View(match);

@@ -21,7 +21,6 @@ public class TeamMockRepository
             {
                 Id = 1,
                 Name = "Zagreb Tigers",
-                Club = "HK Zagreb",
                 CoachName = "Ivan Horvat",
                 HomeCity = "Zagreb",
                 FoundedYear = 2010,
@@ -33,7 +32,6 @@ public class TeamMockRepository
             {
                 Id = 2,
                 Name = "Rijeka Hawks",
-                Club = "HK Rijeka",
                 CoachName = "Marko Milic",
                 HomeCity = "Rijeka",
                 FoundedYear = 2005,
@@ -45,7 +43,6 @@ public class TeamMockRepository
             {
                 Id = 3,
                 Name = "Split Phoenix",
-                Club = "HK Split",
                 CoachName = "Ante Antic",
                 HomeCity = "Split",
                 FoundedYear = 2008,
@@ -57,7 +54,6 @@ public class TeamMockRepository
             {
                 Id = 4,
                 Name = "Osijek Wolves",
-                Club = "HK Osijek",
                 CoachName = "Drago Horvat",
                 HomeCity = "Osijek",
                 FoundedYear = 2012,
@@ -69,7 +65,6 @@ public class TeamMockRepository
             {
                 Id = 5,
                 Name = "Zadar Dolphins",
-                Club = "HK Zadar",
                 CoachName = "Jure Horvat",
                 HomeCity = "Zadar",
                 FoundedYear = 2009,
