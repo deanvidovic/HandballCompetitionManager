@@ -17,12 +17,12 @@
     <header class="navbar-header">
         <div class="navbar-container">
             <div class="navbar-brand">
-                <span class="brand-logo">🏐</span>
                 <span class="brand-text">Handball<br><small>Manager</small></span>
             </div>
             <nav class="navbar-actions">
-                <a href="#signin" class="btn-signin">Sign In</a>
-                <a href="#signup" class="btn-signup">Sign Up</a>
+                <a asp-action="Index" asp-controller="Home" class="navbar-link">Home</a>
+                <a asp-action="Login" asp-controller="Account" class="navbar-link">Sign In</a>
+                <a asp-action="Register" asp-controller="Account" class="navbar-link">Sign Up</a>
             </nav>
         </div>
     </header>
@@ -32,7 +32,7 @@
         <div class="hero-container">
             <h1 class="hero-title">Organize. Compete. Dominate.</h1>
             <p class="hero-subtitle">The complete platform for managing handball tournaments, teams, and players with precision and ease.</p>
-            <a href="#signup" class="btn-hero-cta">Get Started Free</a>
+            <a asp-action="Register" asp-controller="Account" class="btn-hero-cta">Get Started Free</a>
         </div>
     </section>
 
@@ -104,8 +104,7 @@
             <h2 class="cta-title">Ready to Organize Your Next Tournament?</h2>
             <p class="cta-subtitle">Join organizations worldwide using Handball Competition Manager to run seamless tournaments</p>
             <div class="cta-buttons">
-                <a href="#signup" class="btn-cta-primary">Start Your Free Account</a>
-                <a href="#learn" class="btn-cta-secondary">Learn More</a>
+                <a asp-action="Register" asp-controller="Account" class="btn-cta-primary">Start Your Free Account</a>
             </div>
         </div>
     </section>

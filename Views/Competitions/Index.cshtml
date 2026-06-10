@@ -22,6 +22,8 @@
     ViewData["ResetCta"] = "Reset";
     ViewData["SearchCtaAria"] = "Submit competition search";
     ViewData["ResetCtaAria"] = "Reset competition search filters";
+    var canManageCompetitions = User.IsInRole("Admin") || User.IsInRole("Manager");
+    var isAdmin = User.IsInRole("Admin");
 }
 
 <link rel="stylesheet" href="~/css/competitions.css" asp-append-version="true" />
@@ -40,10 +42,13 @@
             <h1 class="competitions-title">Handball Competitions</h1>
             <p class="competitions-subtitle">Manage and view all handball competitions</p>
         </div>
-        <button type="button" class="btn btn-create" data-competition-modal-open aria-haspopup="dialog" aria-controls="createCompetitionModal">
-            <span class="btn-icon" aria-hidden="true">+</span>
-            Create Competition
-        </button>
+        @if (isAdmin)
+        {
+            <button type="button" class="btn btn-create" data-competition-modal-open aria-haspopup="dialog" aria-controls="createCompetitionModal">
+                <span class="btn-icon" aria-hidden="true">+</span>
+                Create Competition
+            </button>
+        }
     </div>
 
     <section class="competition-search" aria-label="@ViewData["SearchSectionLabel"]">
@@ -108,14 +113,20 @@
                             <span class="status-badge @statusClass">@status</span>
                         </div>
                     </a>
-                    <div class="competition-actions">
-                        <button type="button" class="btn btn-edit" data-edit-competition data-edit-url="@Url.Action("Edit", "Competitions")" data-id="@competition.Id" data-name="@competition.Name" data-season="@competition.Season" data-city="@competition.City" data-start-date="@competition.StartDate.ToString("yyyy-MM-dd")" data-end-date="@competition.EndDate.ToString("yyyy-MM-dd")">Edit</button>
-                        <form asp-action="Delete" asp-controller="Competitions" method="post" class="delete-form" data-delete-form data-delete-name="@competition.Name">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@competition.Id" />
-                            <button type="submit" class="btn btn-delete">Delete</button>
-                        </form>
-                    </div>
+                    @if (canManageCompetitions)
+                    {
+                        <div class="competition-actions">
+                            <button type="button" class="btn btn-edit" data-edit-competition data-edit-url="@Url.Action("Edit", "Competitions")" data-id="@competition.Id" data-name="@competition.Name" data-season="@competition.Season" data-city="@competition.City" data-start-date="@competition.StartDate.ToString("yyyy-MM-dd")" data-end-date="@competition.EndDate.ToString("yyyy-MM-dd")">Edit</button>
+                            @if (isAdmin)
+                            {
+                                <form asp-action="Delete" asp-controller="Competitions" method="post" class="delete-form" data-delete-form data-delete-name="@competition.Name">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@competition.Id" />
+                                    <button type="submit" class="btn btn-delete">Delete</button>
+                                </form>
+                            }
+                        </div>
+                    }
                 </div>
             }
         </div>

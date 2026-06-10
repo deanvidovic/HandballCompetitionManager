@@ -7,6 +7,8 @@
     ViewData["SearchPlaceholder"] = "Search by player name, team, position, or jersey number";
     ViewData["SearchHint"] = "Use keywords to narrow the player list.";
     ViewData["SearchSectionLabel"] = "Player search";
+    var canManagePlayers = User.IsInRole("Admin") || User.IsInRole("Coach");
+    var isAdmin = User.IsInRole("Admin");
 }
 
 <link rel="stylesheet" href="~/css/players.css" asp-append-version="true" />
@@ -25,10 +27,13 @@
             <h1 class="players-title">Handball Players</h1>
             <p class="players-subtitle">View all competition players and their statistics</p>
         </div>
-        <button type="button" class="btn btn-create" data-player-modal-open aria-haspopup="dialog" aria-controls="createPlayerModal">
-            <span class="btn-icon" aria-hidden="true">+</span>
-            Create Player
-        </button>
+        @if (canManagePlayers)
+        {
+            <button type="button" class="btn btn-create" data-player-modal-open aria-haspopup="dialog" aria-controls="createPlayerModal">
+                <span class="btn-icon" aria-hidden="true">+</span>
+                Create Player
+            </button>
+        }
     </div>
 
     <section class="competition-search" aria-label="@ViewData["SearchSectionLabel"]">
@@ -91,14 +96,20 @@
                             <span class="position-badge">@player.Position</span>
                         </div>
                     </a>
-                    <div class="player-actions">
-                        <button type="button" class="btn btn-edit" data-edit-player data-edit-url="@Url.Action("Edit", "Players")" data-id="@player.Id" data-first-name="@player.FirstName" data-last-name="@player.LastName" data-birth-date="@player.BirthDate.ToString("yyyy-MM-dd")" data-jersey-number="@player.JerseyNumber" data-position="@player.Position" data-team-id="@player.TeamId" data-team-name="@player.Team?.Name" data-goals-scored="@player.GoalsScored" data-assists="@player.Assists">Edit</button>
-                        <form asp-action="DeleteConfirmed" asp-controller="Players" method="post" class="delete-form" data-delete-form data-delete-name="@player.FullName">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@player.Id" />
-                            <button type="submit" class="btn btn-delete">Delete</button>
-                        </form>
-                    </div>
+                    @if (canManagePlayers)
+                    {
+                        <div class="player-actions">
+                            <button type="button" class="btn btn-edit" data-edit-player data-edit-url="@Url.Action("Edit", "Players")" data-id="@player.Id" data-first-name="@player.FirstName" data-last-name="@player.LastName" data-birth-date="@player.BirthDate.ToString("yyyy-MM-dd")" data-jersey-number="@player.JerseyNumber" data-position="@player.Position" data-team-id="@player.TeamId" data-team-name="@player.Team?.Name" data-goals-scored="@player.GoalsScored" data-assists="@player.Assists">Edit</button>
+                            @if (isAdmin)
+                            {
+                                <form asp-action="DeleteConfirmed" asp-controller="Players" method="post" class="delete-form" data-delete-form data-delete-name="@player.FullName">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@player.Id" />
+                                    <button type="submit" class="btn btn-delete">Delete</button>
+                                </form>
+                            }
+                        </div>
+                    }
                 </div>
             }
         </div>

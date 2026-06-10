@@ -1,13 +1,24 @@
 ﻿<!DOCTYPE html>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<AppUser> UserManager
+@{
+    var currentUser = User.Identity?.IsAuthenticated == true
+        ? await UserManager.GetUserAsync(User)
+        : null;
+    var isAdmin = User.IsInRole("Admin");
+}
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Handball Competition Manager</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&display=swap" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/appusers.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/variables.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -20,19 +31,24 @@
     <nav class="navbar-global">
         <div class="navbar-wrapper">
             <a href="@Url.Action("Index", "Home")" class="logo">
-                <span class="logo-emoji">🏐</span>
                 <span class="logo-text">Handball Manager</span>
             </a>
             <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
             <ul class="nav-menu" id="navMenu">
-                <li class="nav-item">
-                    <a href="@Url.Action("Index", "Home")" class="nav-link" data-nav="home">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a href="@Url.Action("Index", "Teams")" class="nav-link" data-nav="teams">Teams</a>
-                </li>
+                @if (currentUser == null)
+                {
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Home")" class="nav-link" data-nav="home">Home</a>
+                    </li>
+                }
+                @if (isAdmin || User.IsInRole("Coach"))
+                {
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Teams")" class="nav-link" data-nav="teams">Teams</a>
+                    </li>
+                }
                 <li class="nav-item">
                     <a href="@Url.Action("Index", "Players")" class="nav-link" data-nav="players">Players</a>
                 </li>
@@ -42,9 +58,39 @@
                 <li class="nav-item">
                     <a href="@Url.Action("Index", "Matches")" class="nav-link" data-nav="matches">Matches</a>
                 </li>
-                <li class="nav-item">
-                    <a href="@Url.Action("Index", "AppUsers")" class="nav-link" data-nav="appusers">Users</a>
-                </li>
+                @if (isAdmin)
+                {
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "AppUsers")" class="nav-link" data-nav="appusers">Users</a>
+                    </li>
+                }
+                @if (currentUser == null)
+                {
+                    <li class="nav-item">
+                        <a href="@Url.Action("Login", "Account")" class="nav-link" data-nav="account">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Register", "Account")" class="nav-link" data-nav="account">Register</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item nav-account">
+                        <button type="button" class="nav-link nav-account-toggle" data-account-menu-toggle aria-expanded="false" aria-haspopup="true">
+                            <span>@currentUser.DisplayName</span>
+                            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                        </button>
+                        <div class="nav-account-menu" data-account-menu hidden>
+                            <button type="button" class="nav-account-menu-item" data-personal-data-modal-open>
+                                Change personal data
+                            </button>
+                            <form asp-action="Logout" asp-controller="Account" method="post" class="nav-account-logout">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="nav-account-menu-item nav-account-menu-danger">Logout</button>
+                            </form>
+                        </div>
+                    </li>
+                }
             </ul>
         </div>
     </nav>
@@ -82,9 +128,82 @@
         </section>
     </div>
 
+    @if (currentUser != null)
+    {
+        <div class="appuser-modal" id="personalDataModal" role="dialog" aria-modal="true" aria-labelledby="personalDataTitle" hidden data-personal-data-modal>
+            <div class="appuser-modal-backdrop" data-personal-data-modal-close></div>
+            <section class="appuser-modal-panel">
+                <header class="appuser-modal-header">
+                    <div>
+                        <p class="appuser-modal-eyebrow">Your account</p>
+                        <h2 class="appuser-modal-title" id="personalDataTitle">Change personal data</h2>
+                        <p class="appuser-modal-description">Update your public name and identity data.</p>
+                    </div>
+                    <button type="button" class="appuser-modal-close" data-personal-data-modal-close aria-label="Close personal data form">
+                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </header>
+
+                <form class="appuser-create-form" asp-action="UpdatePersonalData" asp-controller="Account" method="post" data-personal-data-form>
+                    @Html.AntiForgeryToken()
+                    <div class="appuser-form-grid">
+                        <div class="appuser-form-field" data-personal-data-field="DisplayName">
+                            <label class="appuser-form-label" for="personalDisplayName">Display name</label>
+                            <input class="appuser-form-input" id="personalDisplayName" name="DisplayName" type="text" autocomplete="name" value="@currentUser.DisplayName" required minlength="3" maxlength="120" data-personal-data-validate-field="DisplayName" aria-describedby="personalDisplayNameValidation" />
+                            <span class="appuser-validation-message" id="personalDisplayNameValidation" data-personal-data-validation-message-for="DisplayName" aria-live="polite"></span>
+                        </div>
+
+                        <div class="appuser-form-field" data-personal-data-field="Email">
+                            <label class="appuser-form-label" for="personalEmail">Email</label>
+                            <input class="appuser-form-input" id="personalEmail" name="Email" type="email" autocomplete="email" value="@currentUser.Email" required maxlength="160" data-personal-data-validate-field="Email" aria-describedby="personalEmailValidation" />
+                            <span class="appuser-validation-message" id="personalEmailValidation" data-personal-data-validation-message-for="Email" aria-live="polite"></span>
+                        </div>
+
+                        <div class="appuser-form-field" data-personal-data-field="OIB">
+                            <label class="appuser-form-label" for="personalOib">OIB</label>
+                            <input class="appuser-form-input" id="personalOib" name="OIB" type="text" inputmode="numeric" autocomplete="off" value="@currentUser.OIB" required minlength="11" maxlength="11" data-personal-data-validate-field="OIB" aria-describedby="personalOibValidation" />
+                            <span class="appuser-validation-message" id="personalOibValidation" data-personal-data-validation-message-for="OIB" aria-live="polite"></span>
+                        </div>
+
+                        <div class="appuser-form-field" data-personal-data-field="JMBG">
+                            <label class="appuser-form-label" for="personalJmbg">JMBG</label>
+                            <input class="appuser-form-input" id="personalJmbg" name="JMBG" type="text" inputmode="numeric" autocomplete="off" value="@currentUser.JMBG" required minlength="13" maxlength="13" data-personal-data-validate-field="JMBG" aria-describedby="personalJmbgValidation" />
+                            <span class="appuser-validation-message" id="personalJmbgValidation" data-personal-data-validation-message-for="JMBG" aria-live="polite"></span>
+                        </div>
+
+                        <div class="appuser-form-field appuser-form-field-wide" data-personal-data-field="DateOfBirth">
+                            <label class="appuser-form-label" for="personalDateOfBirth">Date of birth</label>
+                            @await Html.PartialAsync("_DateTimePicker", new HandballCompetitionManager.ViewModels.DateTimePickerViewModel
+                            {
+                                Name = "DateOfBirth",
+                                Id = "personalDateOfBirth",
+                                Label = "Date of birth",
+                                Value = currentUser.DateOfBirth?.ToString("yyyy-MM-dd"),
+                                Placeholder = "Select date of birth",
+                                DescribedBy = "personalDateOfBirthValidation",
+                                Required = false,
+                                ValidationField = "DateOfBirth"
+                            })
+                            <span class="appuser-validation-message" id="personalDateOfBirthValidation" data-personal-data-validation-message-for="DateOfBirth" aria-live="polite"></span>
+                        </div>
+                    </div>
+
+                    <div class="appuser-form-status" role="status" data-personal-data-form-status hidden></div>
+
+                    <footer class="appuser-modal-actions">
+                        <button type="button" class="btn btn-secondary appuser-modal-secondary" data-personal-data-modal-close>Cancel</button>
+                        <button type="submit" class="btn btn-create appuser-modal-submit">Save changes</button>
+                    </footer>
+                </form>
+            </section>
+        </div>
+    }
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/account-menu.js" asp-append-version="true"></script>
+    <script src="~/js/personal-data.js" asp-append-version="true"></script>
 
     @if (TempData["SuccessNotification"] is string successNotification)
     {

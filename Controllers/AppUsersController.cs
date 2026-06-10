@@ -1,18 +1,23 @@
 using HandballCompetitionManager.Models;
 using HandballCompetitionManager.Repositories;
 using HandballCompetitionManager.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HandballCompetitionManager.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AppUsersController : Controller
     {
         private readonly AppUserRepository _appUserRepository;
+        private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<AppUsersController> _logger;
 
-        public AppUsersController(AppUserRepository appUserRepository, ILogger<AppUsersController> logger)
+        public AppUsersController(AppUserRepository appUserRepository, UserManager<AppUser> userManager, ILogger<AppUsersController> logger)
         {
             _appUserRepository = appUserRepository;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -34,7 +39,7 @@ namespace HandballCompetitionManager.Controllers
                 {
                     label = u.DisplayName,
                     value = u.DisplayName,
-                    meta = $"{u.Username} - {u.Role}"
+                    meta = $"{u.UserName} - {u.Role}"
                 });
 
             return Json(suggestions);
@@ -42,7 +47,7 @@ namespace HandballCompetitionManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(CreateAppUserViewModel model)
+        public async Task<IActionResult> Create(CreateAppUserViewModel model)
         {
             if (model.DateOfBirth.HasValue && model.DateOfBirth.Value.Date > DateTime.Today)
             {
@@ -56,16 +61,31 @@ namespace HandballCompetitionManager.Controllers
 
             var user = new AppUser
             {
-                Username = model.Username.Trim(),
+                UserName = model.Username.Trim(),
                 DisplayName = model.DisplayName.Trim(),
                 Email = model.Email.Trim(),
+                EmailConfirmed = true,
+                OIB = model.OIB.Trim(),
+                JMBG = model.JMBG.Trim(),
                 Role = model.Role!.Value,
-                DateOfBirth = model.DateOfBirth!.Value.Date,
+                DateOfBirth = model.DateOfBirth?.Date,
                 CreatedAt = DateTime.Now
             };
 
-            _appUserRepository.Add(user);
-            _logger.LogInformation("App user created: {Username}", user.Username);
+            var result = await _userManager.CreateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return BadRequest(CreateValidationResponse());
+            }
+
+            await SyncIdentityRole(user);
+            _logger.LogInformation("App user created: {Username}", user.UserName);
 
             return Json(new
             {
@@ -76,7 +96,7 @@ namespace HandballCompetitionManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(CreateAppUserViewModel model)
+        public async Task<IActionResult> Edit(CreateAppUserViewModel model)
         {
             var user = _appUserRepository.GetById(model.Id);
 
@@ -95,14 +115,28 @@ namespace HandballCompetitionManager.Controllers
                 return BadRequest(CreateValidationResponse());
             }
 
-            user.Username = model.Username.Trim();
+            user.UserName = model.Username.Trim();
             user.DisplayName = model.DisplayName.Trim();
             user.Email = model.Email.Trim();
+            user.OIB = model.OIB.Trim();
+            user.JMBG = model.JMBG.Trim();
             user.Role = model.Role!.Value;
-            user.DateOfBirth = model.DateOfBirth!.Value.Date;
+            user.DateOfBirth = model.DateOfBirth?.Date;
 
-            _appUserRepository.Update(user);
-            _logger.LogInformation("App user updated: {Username}", user.Username);
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return BadRequest(CreateValidationResponse());
+            }
+
+            await SyncIdentityRole(user);
+            _logger.LogInformation("App user updated: {Username}", user.UserName);
 
             return Json(new
             {
@@ -167,6 +201,33 @@ namespace HandballCompetitionManager.Controllers
                 success = false,
                 errors = fieldErrors.SelectMany(entry => entry.Value).ToList(),
                 fieldErrors
+            };
+        }
+
+        private async Task SyncIdentityRole(AppUser user)
+        {
+            var roleName = ToIdentityRole(user.Role);
+            var currentRoles = await _userManager.GetRolesAsync(user);
+
+            if (currentRoles.Count > 0)
+            {
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            }
+
+            if (!string.IsNullOrWhiteSpace(roleName))
+            {
+                await _userManager.AddToRoleAsync(user, roleName);
+            }
+        }
+
+        private static string ToIdentityRole(UserRole role)
+        {
+            return role switch
+            {
+                UserRole.Admin => "Admin",
+                UserRole.TournamentManager => "Manager",
+                UserRole.Coach => "Coach",
+                _ => string.Empty
             };
         }
     }

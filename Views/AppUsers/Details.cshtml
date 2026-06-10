@@ -50,7 +50,7 @@
             <div class="overview-grid">
                 <article class="overview-card">
                     <span class="overview-label">Username</span>
-                    <span class="overview-value">@Model.Username</span>
+                    <span class="overview-value">@Model.UserName</span>
                 </article>
                 <article class="overview-card">
                     <span class="overview-label">Email</span>
@@ -58,7 +58,7 @@
                 </article>
                 <article class="overview-card">
                     <span class="overview-label">Date of Birth</span>
-                    <span class="overview-value">@Model.DateOfBirth.ToString("MMM dd, yyyy")</span>
+                    <span class="overview-value">@(Model.DateOfBirth?.ToString("MMM dd, yyyy") ?? "Not set")</span>
                 </article>
                 <article class="overview-card">
                     <span class="overview-label">Created</span>

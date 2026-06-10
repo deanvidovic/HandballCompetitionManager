@@ -1,6 +1,8 @@
 using HandballCompetitionManager.Models;
 using HandballCompetitionManager.Repositories;
 using HandballCompetitionManager.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HandballCompetitionManager.Controllers
@@ -10,29 +12,35 @@ namespace HandballCompetitionManager.Controllers
         private readonly CompetitionRepository _competitionRepository;
         private readonly GroupPhaseRepository _groupPhaseRepository;
         private readonly TeamRepository _teamRepository;
+        private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<CompetitionsController> _logger;
 
-        public CompetitionsController(CompetitionRepository competitionRepository, GroupPhaseRepository groupPhaseRepository, TeamRepository teamRepository, ILogger<CompetitionsController> logger)
+        public CompetitionsController(CompetitionRepository competitionRepository, GroupPhaseRepository groupPhaseRepository, TeamRepository teamRepository, UserManager<AppUser> userManager, ILogger<CompetitionsController> logger)
         {
             _competitionRepository = competitionRepository;
             _groupPhaseRepository = groupPhaseRepository;
             _teamRepository = teamRepository;
+            _userManager = userManager;
             _logger = logger;
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Index(string? query)
         {
             _logger.LogInformation("Competitions Index page requested");
             ViewData["Query"] = query;
-            var competitions = _competitionRepository.Search(query);
+            var competitions = GetAccessibleCompetitions(query);
             return View(competitions);
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Autocomplete(string? query)
         {
-            var suggestions = _competitionRepository.Search(query)
+            var competitions = GetAccessibleCompetitions(query);
+
+            var suggestions = competitions
                 .Take(8)
                 .Select(c => new
                 {
@@ -45,6 +53,7 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(CreateCompetitionViewModel model)
         {
@@ -70,6 +79,7 @@ namespace HandballCompetitionManager.Controllers
             };
 
             _competitionRepository.Add(competition);
+
             _logger.LogInformation("Competition created: {CompetitionName}", competition.Name);
 
             return Json(new
@@ -80,10 +90,11 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(CreateCompetitionViewModel model)
         {
-            var competition = _competitionRepository.GetById(model.Id);
+            var competition = GetAccessibleCompetition(model.Id);
 
             if (competition == null)
             {
@@ -119,10 +130,11 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Details(int id)
         {
             _logger.LogInformation("Competitions Details page requested for competition ID: {CompetitionId}", id);
-            var competition = _competitionRepository.GetById(id);
+            var competition = GetAccessibleCompetition(id);
             
             if (competition == null)
             {
@@ -135,9 +147,10 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult AvailableTeamsAutocomplete(int competitionId, string? query)
         {
-            var competition = _competitionRepository.GetById(competitionId);
+            var competition = GetAccessibleCompetition(competitionId);
 
             if (competition == null)
             {
@@ -177,6 +190,7 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         [ValidateAntiForgeryToken]
         public IActionResult AddGroup(CompetitionDetailsViewModel model)
         {
@@ -187,7 +201,7 @@ namespace HandballCompetitionManager.Controllers
 
             if (!ModelState.IsValid)
             {
-                var competition = _competitionRepository.GetById(model.CompetitionId);
+                var competition = GetAccessibleCompetition(model.CompetitionId);
 
                 if (competition == null)
                 {
@@ -200,7 +214,7 @@ namespace HandballCompetitionManager.Controllers
                 return View("Details", viewModel);
             }
 
-            var existingCompetition = _competitionRepository.GetById(model.CompetitionId);
+            var existingCompetition = GetAccessibleCompetition(model.CompetitionId);
 
             if (existingCompetition == null)
             {
@@ -220,10 +234,11 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         [ValidateAntiForgeryToken]
         public IActionResult AddTeam(CompetitionDetailsViewModel model)
         {
-            var competition = _competitionRepository.GetById(model.CompetitionId);
+            var competition = GetAccessibleCompetition(model.CompetitionId);
             var hasTeamSelectionErrors = false;
 
             if (competition == null)
@@ -273,10 +288,11 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         [ValidateAntiForgeryToken]
         public IActionResult RemoveTeam(int competitionId, int teamId)
         {
-            var competition = _competitionRepository.GetById(competitionId);
+            var competition = GetAccessibleCompetition(competitionId);
 
             if (competition == null)
             {
@@ -299,10 +315,11 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         [ValidateAntiForgeryToken]
         public IActionResult GenerateBracket(int competitionId)
         {
-            var competition = _competitionRepository.GetById(competitionId);
+            var competition = GetAccessibleCompetition(competitionId);
 
             if (competition == null)
             {
@@ -325,15 +342,21 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("competitions/city/{city}")]
         public IActionResult GetByCity(string city)
         {
             _logger.LogInformation("Competitions by city requested: {City}", city);
-            var competitions = _competitionRepository.GetByCity(city);
+            var competitions = IsAdmin()
+                ? _competitionRepository.GetByCity(city)
+                : IsCoach()
+                    ? _competitionRepository.GetByCityForCoach(city, CurrentUserDisplayName)
+                    : _competitionRepository.GetByCityForUser(city, CurrentUserId);
             return View("Index", competitions);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
@@ -464,5 +487,51 @@ namespace HandballCompetitionManager.Controllers
                 ModelState.AddModelError(nameof(model.Season), $"Second season year cannot be greater than {DateTime.Today.Year}.");
             }
         }
+
+        private bool IsAdmin() => User.IsInRole("Admin");
+
+        private bool IsCoach() => User.IsInRole("Coach");
+
+        private List<Competition> GetAccessibleCompetitions(string? query)
+        {
+            if (IsAdmin())
+            {
+                return _competitionRepository.Search(query);
+            }
+
+            if (IsCoach())
+            {
+                return _competitionRepository.SearchForCoach(query, CurrentUserDisplayName);
+            }
+
+            return _competitionRepository.SearchForUser(query, CurrentUserId);
+        }
+
+        private Competition? GetAccessibleCompetition(int id)
+        {
+            if (IsAdmin())
+            {
+                return _competitionRepository.GetById(id);
+            }
+
+            if (IsCoach())
+            {
+                return _competitionRepository.GetByIdForCoach(id, CurrentUserDisplayName);
+            }
+
+            return _competitionRepository.GetByIdForUser(id, CurrentUserId);
+        }
+
+        private int CurrentUserId
+        {
+            get
+            {
+                var userId = _userManager.GetUserId(User);
+                return int.TryParse(userId, out var parsedUserId) ? parsedUserId : 0;
+            }
+        }
+
+        private string CurrentUserDisplayName =>
+            _userManager.GetUserAsync(User).GetAwaiter().GetResult()?.DisplayName ?? string.Empty;
     }
 }

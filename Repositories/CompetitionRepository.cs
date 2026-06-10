@@ -25,12 +25,41 @@ public class CompetitionRepository
 
     public List<Competition> Search(string? query)
     {
-        var competitions = _context.Competitions
-            .Where(c => c.DeletedAt == null)
-            .Include(c => c.Teams.Where(t => t.DeletedAt == null))
-            .Include(c => c.Groups)
-            .Include(c => c.Administrators.Where(a => a.DeletedAt == null))
-            .AsQueryable();
+        var competitions = BuildCompetitionQuery();
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            var term = $"%{query.Trim()}%";
+            competitions = competitions.Where(c =>
+                EF.Functions.Like(c.Name, term) ||
+                EF.Functions.Like(c.City, term) ||
+                EF.Functions.Like(c.Season, term));
+        }
+
+        return competitions.ToList();
+    }
+
+    public List<Competition> SearchForUser(string? query, int userId)
+    {
+        var competitions = BuildCompetitionQuery()
+            .Where(c => c.Administrators.Any(a => a.Id == userId));
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            var term = $"%{query.Trim()}%";
+            competitions = competitions.Where(c =>
+                EF.Functions.Like(c.Name, term) ||
+                EF.Functions.Like(c.City, term) ||
+                EF.Functions.Like(c.Season, term));
+        }
+
+        return competitions.ToList();
+    }
+
+    public List<Competition> SearchForCoach(string? query, string coachName)
+    {
+        var competitions = BuildCompetitionQuery()
+            .Where(c => c.Teams.Any(t => t.DeletedAt == null && t.CoachName == coachName));
 
         if (!string.IsNullOrWhiteSpace(query))
         {
@@ -46,12 +75,13 @@ public class CompetitionRepository
 
     public Competition? GetById(int id)
     {
-        return _context.Competitions
-            .Where(c => c.DeletedAt == null)
-            .Include(c => c.Teams.Where(t => t.DeletedAt == null))
-            .Include(c => c.Groups)
-            .Include(c => c.Administrators.Where(a => a.DeletedAt == null))
-            .FirstOrDefault(c => c.Id == id);
+        return BuildCompetitionQuery().FirstOrDefault(c => c.Id == id);
+    }
+
+    public Competition? GetByIdForUser(int id, int userId)
+    {
+        return BuildCompetitionQuery()
+            .FirstOrDefault(c => c.Id == id && c.Administrators.Any(a => a.Id == userId));
     }
 
     public List<Competition> GetByseason(string season)
@@ -61,7 +91,31 @@ public class CompetitionRepository
 
     public List<Competition> GetByCity(string city)
     {
-        return _context.Competitions.Where(c => c.DeletedAt == null && c.City == city).ToList();
+        return BuildCompetitionQuery().Where(c => c.City == city).ToList();
+    }
+
+    public Competition? GetByIdForCoach(int id, string coachName)
+    {
+        return BuildCompetitionQuery()
+            .FirstOrDefault(c =>
+                c.Id == id &&
+                c.Teams.Any(t => t.DeletedAt == null && t.CoachName == coachName));
+    }
+
+    public List<Competition> GetByCityForUser(string city, int userId)
+    {
+        return BuildCompetitionQuery()
+            .Where(c => c.City == city && c.Administrators.Any(a => a.Id == userId))
+            .ToList();
+    }
+
+    public List<Competition> GetByCityForCoach(string city, string coachName)
+    {
+        return BuildCompetitionQuery()
+            .Where(c =>
+                c.City == city &&
+                c.Teams.Any(t => t.DeletedAt == null && t.CoachName == coachName))
+            .ToList();
     }
 
     public List<Competition> GetActive()
@@ -72,6 +126,19 @@ public class CompetitionRepository
 
     public void Add(Competition competition)
     {
+        _context.Competitions.Add(competition);
+        _context.SaveChanges();
+    }
+
+    public void AddForUser(Competition competition, int userId)
+    {
+        var user = _context.AppUsers.FirstOrDefault(u => u.Id == userId && u.DeletedAt == null);
+
+        if (user != null)
+        {
+            competition.Administrators.Add(user);
+        }
+
         _context.Competitions.Add(competition);
         _context.SaveChanges();
     }
@@ -237,5 +304,14 @@ public class CompetitionRepository
             competition.DeletedAt = DateTime.UtcNow;
             _context.SaveChanges();
         }
+    }
+
+    private IQueryable<Competition> BuildCompetitionQuery()
+    {
+        return _context.Competitions
+            .Where(c => c.DeletedAt == null)
+            .Include(c => c.Teams.Where(t => t.DeletedAt == null))
+            .Include(c => c.Groups)
+            .Include(c => c.Administrators.Where(a => a.DeletedAt == null));
     }
 }

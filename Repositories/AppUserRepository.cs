@@ -33,14 +33,14 @@ public class AppUserRepository
             var term = $"%{query.Trim()}%";
             users = users.Where(u =>
                 EF.Functions.Like(u.DisplayName, term) ||
-                EF.Functions.Like(u.Username, term) ||
+                EF.Functions.Like(u.UserName, term) ||
                 EF.Functions.Like(u.Email, term));
         }
 
         return users.ToList()
             .Where(u => string.IsNullOrWhiteSpace(query) ||
                 u.DisplayName.Contains(query.Trim(), StringComparison.OrdinalIgnoreCase) ||
-                u.Username.Contains(query.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                (u.UserName?.Contains(query.Trim(), StringComparison.OrdinalIgnoreCase) ?? false) ||
                 u.Email.Contains(query.Trim(), StringComparison.OrdinalIgnoreCase) ||
                 u.Role.ToString().Contains(query.Trim(), StringComparison.OrdinalIgnoreCase))
             .ToList();

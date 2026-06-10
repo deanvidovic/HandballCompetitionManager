@@ -2,19 +2,32 @@ using HandballCompetitionManager.Models;
 using HandballCompetitionManager.Repositories;
 using HandballCompetitionManager.Repositories.Mock;
 using HandballCompetitionManager.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
-// Register EF DbContext for Lab 3
 builder.Services.AddDbContext<HandballDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("HandballDbContext")));
 
-// Register EF Repositories for Lab 3
+builder.Services
+    .AddIdentity<AppUser, IdentityRole<int>>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+        options.Password.RequiredLength = 8;
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<HandballDbContext>()
+    .AddDefaultTokenProviders();
+
 builder.Services.AddScoped<PlayerRepository>();
 builder.Services.AddScoped<MatchRepository>();
 builder.Services.AddScoped<TeamRepository>();
@@ -22,8 +35,6 @@ builder.Services.AddScoped<GroupPhaseRepository>();
 builder.Services.AddScoped<CompetitionRepository>();
 builder.Services.AddScoped<AppUserRepository>();
 
-// Register Mock Repositories for Lab 2 - ORDER MATTERS (dependencies first)
-// Kept for compatibility while controllers are migrated to EF
 builder.Services.AddSingleton<PlayerMockRepository>();
 builder.Services.AddSingleton<MatchMockRepository>();
 builder.Services.AddSingleton<TeamMockRepository>();
@@ -33,21 +44,23 @@ builder.Services.AddSingleton<AppUserMockRepository>();
 
 var app = builder.Build();
 
+await SeedIdentityRolesAsync(app.Services);
+await SeedInitialDataAsync(app.Services);
+
 var labData = BuildLabData();
 RunLabQueries(labData);
 await DemonstrateAsyncAwait();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -57,8 +70,252 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.MapRazorPages();
 
 app.Run();
+
+static async Task SeedIdentityRolesAsync(IServiceProvider serviceProvider)
+{
+    using var scope = serviceProvider.CreateScope();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+
+    foreach (var role in new[] { "Admin", "Manager", "Coach" })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
+        }
+    }
+
+    var adminEmail = "admin@handball.local";
+    var admin = await userManager.FindByEmailAsync(adminEmail);
+
+    if (admin == null)
+    {
+        admin = new AppUser
+        {
+            UserName = "admin",
+            DisplayName = "Admin User",
+            Email = adminEmail,
+            EmailConfirmed = true,
+            Role = UserRole.Admin,
+            OIB = "12345678901",
+            JMBG = "1234567890123",
+            DateOfBirth = new DateTime(1985, 2, 12),
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var createResult = await userManager.CreateAsync(admin, "Admin123!");
+        if (!createResult.Succeeded)
+        {
+            Console.WriteLine($"Admin seed failed: {string.Join(", ", createResult.Errors.Select(error => error.Description))}");
+            return;
+        }
+    }
+    else if (string.IsNullOrWhiteSpace(admin.PasswordHash))
+    {
+        var passwordResult = await userManager.AddPasswordAsync(admin, "Admin123!");
+        if (!passwordResult.Succeeded)
+        {
+            Console.WriteLine($"Admin password seed failed: {string.Join(", ", passwordResult.Errors.Select(error => error.Description))}");
+        }
+    }
+
+    if (!await userManager.IsInRoleAsync(admin, "Admin"))
+    {
+        await userManager.AddToRoleAsync(admin, "Admin");
+    }
+}
+
+static async Task SeedInitialDataAsync(IServiceProvider serviceProvider)
+{
+    using var scope = serviceProvider.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<HandballDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+
+    var admin = await EnsureUserAsync(
+        userManager,
+        username: "dean",
+        email: "vidovicdean@gmail.com",
+        displayName: "Dean Vidovic",
+        role: UserRole.Admin,
+        identityRole: "Admin",
+        password: "Dean123!",
+        oib: "11111111111",
+        jmbg: "1111111111111");
+
+    var manager = await EnsureUserAsync(
+        userManager,
+        username: "manager.zagreb",
+        email: "manager@handball.local",
+        displayName: "Zagreb Manager",
+        role: UserRole.TournamentManager,
+        identityRole: "Manager",
+        password: "Manager123!",
+        oib: "22222222222",
+        jmbg: "2222222222222");
+
+    var coachZagreb = await EnsureUserAsync(
+        userManager,
+        username: "coach.horvat",
+        email: "coach.horvat@handball.local",
+        displayName: "Coach Horvat",
+        role: UserRole.Coach,
+        identityRole: "Coach",
+        password: "Coach123!",
+        oib: "33333333333",
+        jmbg: "3333333333333");
+
+    var coachSplit = await EnsureUserAsync(
+        userManager,
+        username: "coach.vukovic",
+        email: "coach.vukovic@handball.local",
+        displayName: "Coach Vukovic",
+        role: UserRole.Coach,
+        identityRole: "Coach",
+        password: "Coach123!",
+        oib: "44444444444",
+        jmbg: "4444444444444");
+
+    await EnsureUserAsync(
+        userManager,
+        username: "guest.user",
+        email: "guest@handball.local",
+        displayName: "Guest User",
+        role: UserRole.Guest,
+        identityRole: null,
+        password: "Guest123!",
+        oib: "55555555555",
+        jmbg: "5555555555555");
+
+    if (context.Teams.Any() || context.Competitions.Any())
+    {
+        return;
+    }
+
+    var teams = new List<Team>
+    {
+        new() { Name = "RK Zagreb", CoachName = coachZagreb.DisplayName, HomeCity = "Zagreb", FoundedYear = 1922, HomeArena = "Arena Zagreb" },
+        new() { Name = "RK Metalac", CoachName = coachZagreb.DisplayName, HomeCity = "Zagreb", FoundedYear = 1965, HomeArena = "Kutija Sibica" },
+        new() { Name = "RK Split", CoachName = coachSplit.DisplayName, HomeCity = "Split", FoundedYear = 1958, HomeArena = "SC Gripe" },
+        new() { Name = "RK Osijek", CoachName = "Coach Kovac", HomeCity = "Osijek", FoundedYear = 1970, HomeArena = "Gradski vrt" }
+    };
+
+    var competitions = new List<Competition>
+    {
+        new()
+        {
+            Name = "Zagreb Handball Cup",
+            Season = "2025/2026",
+            City = "Zagreb",
+            StartDate = new DateTime(2026, 7, 1),
+            EndDate = new DateTime(2026, 7, 10),
+            Teams = teams.Where(team => team.Name is "RK Zagreb" or "RK Metalac" or "RK Split").ToList(),
+            Administrators = new List<AppUser> { admin, manager }
+        },
+        new()
+        {
+            Name = "Adriatic League",
+            Season = "2025/2026",
+            City = "Split",
+            StartDate = new DateTime(2026, 8, 5),
+            EndDate = new DateTime(2026, 8, 18),
+            Teams = teams.Where(team => team.Name is "RK Split" or "RK Osijek").ToList(),
+            Administrators = new List<AppUser> { admin }
+        }
+    };
+
+    var players = new List<Player>
+    {
+        new() { FirstName = "Marko", LastName = "Horvat", BirthDate = new DateTime(1998, 5, 12), JerseyNumber = 1, Position = PlayerPosition.Goalkeeper, Team = teams[0], GoalsScored = 0, Assists = 2 },
+        new() { FirstName = "Ivan", LastName = "Novak", BirthDate = new DateTime(2000, 3, 20), JerseyNumber = 9, Position = PlayerPosition.LeftBack, Team = teams[0], GoalsScored = 18, Assists = 7 },
+        new() { FirstName = "Luka", LastName = "Basic", BirthDate = new DateTime(1999, 8, 2), JerseyNumber = 7, Position = PlayerPosition.RightWing, Team = teams[1], GoalsScored = 14, Assists = 5 },
+        new() { FirstName = "Ante", LastName = "Maric", BirthDate = new DateTime(2001, 11, 9), JerseyNumber = 10, Position = PlayerPosition.CenterBack, Team = teams[2], GoalsScored = 22, Assists = 11 },
+        new() { FirstName = "Petar", LastName = "Kovac", BirthDate = new DateTime(1997, 1, 15), JerseyNumber = 5, Position = PlayerPosition.Pivot, Team = teams[3], GoalsScored = 12, Assists = 3 }
+    };
+
+    var groups = new List<GroupPhase>
+    {
+        new() { Name = "Group A", Competition = competitions[0], Teams = teams.Where(team => team.Name is "RK Zagreb" or "RK Metalac").ToList() },
+        new() { Name = "Group B", Competition = competitions[0], Teams = teams.Where(team => team.Name == "RK Split").ToList() },
+        new() { Name = "Group A", Competition = competitions[1], Teams = teams.Where(team => team.Name is "RK Split" or "RK Osijek").ToList() }
+    };
+
+    var matches = new List<Match>
+    {
+        new() { Competition = competitions[0], GroupPhase = groups[0], RoundNumber = 1, HomeTeam = teams[0], AwayTeam = teams[1], HomeScore = 29, AwayScore = 24, Kickoff = new DateTime(2026, 7, 1, 18, 0, 0), MaintenanceHall = "Arena Zagreb", Status = MatchStatus.Finished },
+        new() { Competition = competitions[0], GroupPhase = groups[1], RoundNumber = 1, HomeTeam = teams[2], AwayTeam = teams[0], HomeScore = 0, AwayScore = 0, Kickoff = new DateTime(2026, 7, 3, 19, 0, 0), MaintenanceHall = "SC Gripe", Status = MatchStatus.Scheduled },
+        new() { Competition = competitions[1], GroupPhase = groups[2], RoundNumber = 1, HomeTeam = teams[2], AwayTeam = teams[3], HomeScore = 31, AwayScore = 28, Kickoff = new DateTime(2026, 8, 5, 20, 0, 0), MaintenanceHall = "SC Gripe", Status = MatchStatus.Finished }
+    };
+
+    context.Teams.AddRange(teams);
+    context.Competitions.AddRange(competitions);
+    context.Players.AddRange(players);
+    context.GroupPhases.AddRange(groups);
+    context.Matches.AddRange(matches);
+    await context.SaveChangesAsync();
+}
+
+static async Task<AppUser> EnsureUserAsync(
+    UserManager<AppUser> userManager,
+    string username,
+    string email,
+    string displayName,
+    UserRole role,
+    string? identityRole,
+    string password,
+    string oib,
+    string jmbg)
+{
+    var user = await userManager.FindByEmailAsync(email)
+        ?? await userManager.FindByNameAsync(username);
+
+    if (user == null)
+    {
+        user = new AppUser
+        {
+            UserName = username,
+            DisplayName = displayName,
+            Email = email,
+            EmailConfirmed = true,
+            Role = role,
+            OIB = oib,
+            JMBG = jmbg,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var createResult = await userManager.CreateAsync(user, password);
+        if (!createResult.Succeeded)
+        {
+            throw new InvalidOperationException($"Seed user {email} failed: {string.Join(", ", createResult.Errors.Select(error => error.Description))}");
+        }
+    }
+    else
+    {
+        user.UserName = username;
+        user.DisplayName = displayName;
+        user.Email = email;
+        user.EmailConfirmed = true;
+        user.Role = role;
+        user.OIB = oib;
+        user.JMBG = jmbg;
+        user.DeletedAt = null;
+        await userManager.UpdateAsync(user);
+
+        if (!await userManager.HasPasswordAsync(user))
+        {
+            await userManager.AddPasswordAsync(user, password);
+        }
+    }
+
+    if (!string.IsNullOrWhiteSpace(identityRole) && !await userManager.IsInRoleAsync(user, identityRole))
+    {
+        await userManager.AddToRoleAsync(user, identityRole);
+    }
+
+    return user;
+}
 
 static LabData BuildLabData()
 {
@@ -67,7 +324,7 @@ static LabData BuildLabData()
         new()
         {
             Id = 1,
-            Username = "admin",
+            UserName = "admin",
             DisplayName = "System Admin",
             Email = "admin@hcm.local",
             Role = UserRole.Admin,
@@ -76,7 +333,7 @@ static LabData BuildLabData()
         new()
         {
             Id = 2,
-            Username = "tm.zagreb",
+            UserName = "tm.zagreb",
             DisplayName = "Zagreb Manager",
             Email = "tm.zagreb@hcm.local",
             Role = UserRole.TournamentManager,
@@ -86,7 +343,7 @@ static LabData BuildLabData()
         new()
         {
             Id = 3,
-            Username = "coach.metalac",
+            UserName = "coach.metalac",
             DisplayName = "Coach Metalac",
             Email = "coach.metalac@hcm.local",
             Role = UserRole.Coach,
@@ -96,7 +353,7 @@ static LabData BuildLabData()
         new()
         {
             Id = 4,
-            Username = "guest.one",
+            UserName = "guest.one",
             DisplayName = "Guest User",
             Email = "guest@hcm.local",
             Role = UserRole.Guest,
@@ -362,3 +619,7 @@ public record LabData(
     List<GroupPhase> Groups,
     List<Match> Matches,
     List<AppUser> Users);
+
+public partial class Program
+{
+}

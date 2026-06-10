@@ -18,7 +18,7 @@ public class AppUserMockRepository
             new AppUser
             {
                 Id = 1,
-                Username = "ivan.horvat",
+                UserName = "ivan.horvat",
                 DisplayName = "Ivan Horvat",
                 Email = "ivan.horvat@handball.hr",
                 Role = UserRole.Coach,
@@ -28,7 +28,7 @@ public class AppUserMockRepository
             new AppUser
             {
                 Id = 2,
-                Username = "marko.milic",
+                UserName = "marko.milic",
                 DisplayName = "Marko Milic",
                 Email = "marko.milic@handball.hr",
                 Role = UserRole.Coach,
@@ -38,7 +38,7 @@ public class AppUserMockRepository
             new AppUser
             {
                 Id = 3,
-                Username = "ante.antic",
+                UserName = "ante.antic",
                 DisplayName = "Ante Antic",
                 Email = "ante.antic@handball.hr",
                 Role = UserRole.Coach,
@@ -48,7 +48,7 @@ public class AppUserMockRepository
             new AppUser
             {
                 Id = 4,
-                Username = "ana.kovacevic",
+                UserName = "ana.kovacevic",
                 DisplayName = "Ana Kovacevic",
                 Email = "ana.kovacevic@handball.hr",
                 Role = UserRole.Admin,
@@ -58,7 +58,7 @@ public class AppUserMockRepository
             new AppUser
             {
                 Id = 5,
-                Username = "petar.novak",
+                UserName = "petar.novak",
                 DisplayName = "Petar Novak",
                 Email = "petar.novak@handball.hr",
                 Role = UserRole.TournamentManager,
@@ -68,7 +68,7 @@ public class AppUserMockRepository
             new AppUser
             {
                 Id = 6,
-                Username = "drago.horvat",
+                UserName = "drago.horvat",
                 DisplayName = "Drago Horvat",
                 Email = "drago.horvat@handball.hr",
                 Role = UserRole.Coach,
@@ -78,7 +78,7 @@ public class AppUserMockRepository
             new AppUser
             {
                 Id = 7,
-                Username = "jure.horvat",
+                UserName = "jure.horvat",
                 DisplayName = "Jure Horvat",
                 Email = "jure.horvat@handball.hr",
                 Role = UserRole.Coach,
@@ -88,7 +88,7 @@ public class AppUserMockRepository
             new AppUser
             {
                 Id = 8,
-                Username = "vesna.sekulic",
+                UserName = "vesna.sekulic",
                 DisplayName = "Vesna Sekulic",
                 Email = "vesna.sekulic@handball.hr",
                 Role = UserRole.TournamentManager,

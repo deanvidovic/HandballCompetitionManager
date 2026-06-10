@@ -31,4 +31,6 @@ public class Match
     public int AwayScore { get; set; }
     public string MaintenanceHall { get; set; } = string.Empty;
     public MatchStatus Status { get; set; }
+    public string? ReportFilePath { get; set; }
+    public string? ReportFileName { get; set; }
 }

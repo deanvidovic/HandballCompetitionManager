@@ -24,11 +24,45 @@ public class TeamRepository
 
     public List<Team> Search(string? query)
     {
-        var teams = _context.Teams
-            .Where(t => t.DeletedAt == null)
-            .Include(t => t.Players.Where(p => p.DeletedAt == null))
-            .Include(t => t.Competitions.Where(c => c.DeletedAt == null))
-            .AsQueryable();
+        var teams = BuildTeamQuery();
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            var term = $"%{query.Trim()}%";
+            teams = teams.Where(t =>
+                EF.Functions.Like(t.Name, term) ||
+                EF.Functions.Like(t.CoachName, term) ||
+                EF.Functions.Like(t.HomeCity, term) ||
+                EF.Functions.Like(t.HomeArena, term));
+        }
+
+        return teams.ToList();
+    }
+
+    public List<Team> SearchForUser(string? query, int userId)
+    {
+        var teams = BuildTeamQuery()
+            .Where(t => t.Competitions.Any(c =>
+                c.DeletedAt == null &&
+                c.Administrators.Any(a => a.Id == userId)));
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            var term = $"%{query.Trim()}%";
+            teams = teams.Where(t =>
+                EF.Functions.Like(t.Name, term) ||
+                EF.Functions.Like(t.CoachName, term) ||
+                EF.Functions.Like(t.HomeCity, term) ||
+                EF.Functions.Like(t.HomeArena, term));
+        }
+
+        return teams.ToList();
+    }
+
+    public List<Team> SearchForCoach(string? query, string coachName)
+    {
+        var teams = BuildTeamQuery()
+            .Where(t => t.CoachName == coachName);
 
         if (!string.IsNullOrWhiteSpace(query))
         {
@@ -45,11 +79,24 @@ public class TeamRepository
 
     public Team? GetById(int id)
     {
-        return _context.Teams
-            .Where(t => t.DeletedAt == null)
-            .Include(t => t.Players.Where(p => p.DeletedAt == null))
-            .Include(t => t.Competitions.Where(c => c.DeletedAt == null))
+        return BuildTeamQuery()
             .FirstOrDefault(t => t.Id == id);
+    }
+
+    public Team? GetByIdForUser(int id, int userId)
+    {
+        return BuildTeamQuery()
+            .FirstOrDefault(t =>
+                t.Id == id &&
+                t.Competitions.Any(c =>
+                    c.DeletedAt == null &&
+                    c.Administrators.Any(a => a.Id == userId)));
+    }
+
+    public Team? GetByIdForCoach(int id, string coachName)
+    {
+        return BuildTeamQuery()
+            .FirstOrDefault(t => t.Id == id && t.CoachName == coachName);
     }
 
     public List<Team> GetAvailableForCompetition(DateTime startDate, DateTime endDate, int competitionId)
@@ -69,7 +116,25 @@ public class TeamRepository
 
     public List<Team> GetByCity(string city)
     {
-        return _context.Teams.Where(t => t.DeletedAt == null && t.HomeCity == city).ToList();
+        return BuildTeamQuery().Where(t => t.HomeCity == city).ToList();
+    }
+
+    public List<Team> GetByCityForUser(string city, int userId)
+    {
+        return BuildTeamQuery()
+            .Where(t =>
+                t.HomeCity == city &&
+                t.Competitions.Any(c =>
+                    c.DeletedAt == null &&
+                    c.Administrators.Any(a => a.Id == userId)))
+            .ToList();
+    }
+
+    public List<Team> GetByCityForCoach(string city, string coachName)
+    {
+        return BuildTeamQuery()
+            .Where(t => t.HomeCity == city && t.CoachName == coachName)
+            .ToList();
     }
 
     public void Add(Team team)
@@ -99,5 +164,14 @@ public class TeamRepository
 
             _context.SaveChanges();
         }
+    }
+
+    private IQueryable<Team> BuildTeamQuery()
+    {
+        return _context.Teams
+            .Where(t => t.DeletedAt == null)
+            .Include(t => t.Players.Where(p => p.DeletedAt == null))
+            .Include(t => t.Competitions.Where(c => c.DeletedAt == null))
+                .ThenInclude(c => c.Administrators);
     }
 }

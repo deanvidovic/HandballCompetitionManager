@@ -1,9 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
     const modal = document.querySelector('[data-team-modal]');
     const openButton = document.querySelector('[data-team-modal-open]');
+    const editButtons = document.querySelectorAll('[data-edit-team]');
     const closeButtons = document.querySelectorAll('[data-team-modal-close]');
     const form = document.querySelector('[data-team-create-form]');
     const status = document.querySelector('[data-team-form-status]');
+    const modalEyebrow = modal?.querySelector('.team-modal-eyebrow');
+    const modalTitle = modal?.querySelector('.team-modal-title');
+    const modalDescription = modal?.querySelector('.team-modal-description');
     const coachInput = document.querySelector('[data-coach-input]');
     const coachResults = document.querySelector('[data-coach-results]');
     const coachAutocomplete = document.querySelector('[data-coach-autocomplete]');
@@ -34,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    if (!modal || !openButton) {
+    if (!modal || (!openButton && editButtons.length === 0)) {
         return;
     }
 
@@ -161,11 +165,53 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
+    const setInputValue = (fieldName, value) => {
+        const input = getValidationInput(fieldName);
+
+        if (input) {
+            input.value = value ?? '';
+        }
+    };
+
+    const setCreateMode = () => {
+        if (!form) {
+            return;
+        }
+
+        form.action = openButton?.dataset.createUrl || form.action;
+        form.querySelector('[data-edit-id]').value = '0';
+        form.reset();
+        clearSelectedCoach();
+        modalEyebrow && (modalEyebrow.textContent = 'New team');
+        modalTitle && (modalTitle.textContent = 'Create Team');
+        modalDescription && (modalDescription.textContent = 'Add the main team details.');
+        form.querySelector('.team-modal-submit').textContent = 'Save Team';
+    };
+
+    const setEditMode = button => {
+        if (!form) {
+            return;
+        }
+
+        form.action = button.dataset.editUrl;
+        form.querySelector('[data-edit-id]').value = button.dataset.id ?? '0';
+        setInputValue('Name', button.dataset.name);
+        setInputValue('HomeCity', button.dataset.homeCity);
+        setInputValue('HomeArena', button.dataset.homeArena);
+        setInputValue('CoachName', button.dataset.coachName);
+        setInputValue('FoundedYear', button.dataset.foundedYear);
+        selectCoach(button.dataset.coachName ?? '');
+        modalEyebrow && (modalEyebrow.textContent = 'Edit team');
+        modalTitle && (modalTitle.textContent = 'Edit Team');
+        modalDescription && (modalDescription.textContent = 'Update team details.');
+        form.querySelector('.team-modal-submit').textContent = 'Save changes';
+    };
+
     const openModal = () => {
         lastFocusedElement = document.activeElement;
         modal.hidden = false;
         document.body.classList.add('team-modal-open');
-        openButton.setAttribute('aria-expanded', 'true');
+        openButton?.setAttribute('aria-expanded', 'true');
         clearValidationState();
 
         window.requestAnimationFrame(() => {
@@ -177,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModal = () => {
         modal.hidden = true;
         document.body.classList.remove('team-modal-open');
-        openButton.setAttribute('aria-expanded', 'false');
+        openButton?.setAttribute('aria-expanded', 'false');
         status.hidden = true;
         clearValidationState();
         form?.reset();
@@ -332,7 +378,17 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchCoachSuggestions();
     };
 
-    openButton.addEventListener('click', openModal);
+    openButton?.addEventListener('click', () => {
+        setCreateMode();
+        openModal();
+    });
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            setEditMode(button);
+            openModal();
+        });
+    });
 
     closeButtons.forEach(button => {
         button.addEventListener('click', closeModal);

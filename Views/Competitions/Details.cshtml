@@ -4,6 +4,7 @@
     ViewData["Title"] = $"{Model.Name} - Competition Details";
     var competitionNotification = TempData["CompetitionNotification"] as string;
     var competitionErrorNotification = TempData["CompetitionErrorNotification"] as string;
+    var canManageCompetition = User.IsInRole("Admin") || User.IsInRole("Manager");
 }
 
 <link rel="stylesheet" href="~/css/competitions.css" asp-append-version="true" />
@@ -68,6 +69,8 @@
                 </div>
             </div>
 
+            @if (canManageCompetition)
+            {
             <form class="competition-add-team-form" asp-action="AddTeam" asp-controller="Competitions" method="post" data-competition-add-team-form>
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="CompetitionId" />
@@ -93,6 +96,7 @@
                     <p class="competition-add-team-note">No teams are available for @Model.StartDate.ToString("MMM dd, yyyy") - @Model.EndDate.ToString("MMM dd, yyyy").</p>
                 }
             </form>
+            }
 
             @if (Model.Teams != null && Model.Teams.Count > 0)
             {
@@ -104,14 +108,17 @@
                                 <a href="@Url.Action("Details", "Teams", new { id = team.Id })" class="team-link">
                                     <h3 class="team-name">@team.Name</h3>
                                 </a>
-                                <form asp-action="RemoveTeam" asp-controller="Competitions" method="post" class="competition-remove-team-form">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="competitionId" value="@Model.CompetitionId" />
-                                    <input type="hidden" name="teamId" value="@team.Id" />
-                                    <button type="submit" class="competition-remove-team-button" aria-label="Remove @team.Name from competition">
-                                        <i class="fas fa-xmark" aria-hidden="true"></i>
-                                    </button>
-                                </form>
+                                @if (canManageCompetition)
+                                {
+                                    <form asp-action="RemoveTeam" asp-controller="Competitions" method="post" class="competition-remove-team-form">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="competitionId" value="@Model.CompetitionId" />
+                                        <input type="hidden" name="teamId" value="@team.Id" />
+                                        <button type="submit" class="competition-remove-team-button" aria-label="Remove @team.Name from competition">
+                                            <i class="fas fa-xmark" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                }
                             </div>
                             <div class="team-card-content">
                                 <div class="team-info-item">
@@ -145,6 +152,8 @@
                     <h2 class="section-title">@Model.BracketSectionTitle</h2>
                     <p class="competition-bracket-subtitle">@Model.BracketRuleMessage</p>
                 </div>
+                @if (canManageCompetition)
+                {
                 <form asp-action="GenerateBracket" asp-controller="Competitions" method="post" class="competition-bracket-generate-form">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="competitionId" value="@Model.CompetitionId" />
@@ -153,6 +162,7 @@
                         Randomize Bracket
                     </button>
                 </form>
+                }
             </div>
 
             @if (Model.Groups != null && Model.Groups.Count > 0)

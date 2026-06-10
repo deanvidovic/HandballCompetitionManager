@@ -7,6 +7,8 @@
     ViewData["SearchPlaceholder"] = "Search by team name, coach, city, or arena";
     ViewData["SearchHint"] = "Use keywords to narrow the team list.";
     ViewData["SearchSectionLabel"] = "Team search";
+    var isAdmin = User.IsInRole("Admin");
+    var isCoach = User.IsInRole("Coach");
 }
 
 <link rel="stylesheet" href="~/css/teams.css" asp-append-version="true" />
@@ -25,10 +27,13 @@
             <h1 class="teams-title">Handball Teams</h1>
             <p class="teams-subtitle">Manage and view all competition teams</p>
         </div>
-        <button type="button" class="btn btn-create" data-team-modal-open aria-haspopup="dialog" aria-controls="createTeamModal">
-            <span class="btn-icon" aria-hidden="true">+</span>
-            Create Team
-        </button>
+        @if (isAdmin)
+        {
+            <button type="button" class="btn btn-create" data-team-modal-open data-create-url="@Url.Action("Create", "Teams")" aria-haspopup="dialog" aria-controls="createTeamModal">
+                <span class="btn-icon" aria-hidden="true">+</span>
+                Create Team
+            </button>
+        }
     </div>
 
     <section class="competition-search" aria-label="@ViewData["SearchSectionLabel"]">
@@ -81,14 +86,20 @@
                             </div>
                         </div>
                     </a>
-                    <div class="team-actions">
-                        <button type="button" class="btn btn-edit" data-edit-team data-edit-url="@Url.Action("Edit", "Teams")" data-id="@team.Id" data-name="@team.Name" data-home-city="@team.HomeCity" data-home-arena="@team.HomeArena" data-coach-name="@team.CoachName" data-founded-year="@team.FoundedYear">Edit</button>
-                        <form asp-action="Delete" asp-controller="Teams" method="post" class="delete-form" data-delete-form data-delete-name="@team.Name">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@team.Id" />
-                            <button type="submit" class="btn btn-delete">Delete</button>
-                        </form>
-                    </div>
+                    @if (isAdmin || isCoach)
+                    {
+                        <div class="team-actions">
+                            <button type="button" class="btn btn-edit" data-edit-team data-edit-url="@Url.Action("Edit", "Teams")" data-id="@team.Id" data-name="@team.Name" data-home-city="@team.HomeCity" data-home-arena="@team.HomeArena" data-coach-name="@team.CoachName" data-founded-year="@team.FoundedYear">Edit</button>
+                            @if (isAdmin)
+                            {
+                                <form asp-action="Delete" asp-controller="Teams" method="post" class="delete-form" data-delete-form data-delete-name="@team.Name">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@team.Id" />
+                                    <button type="submit" class="btn btn-delete">Delete</button>
+                                </form>
+                            }
+                        </div>
+                    }
                 </div>
             }
         </div>

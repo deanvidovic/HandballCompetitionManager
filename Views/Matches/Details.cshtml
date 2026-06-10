@@ -7,6 +7,8 @@
     var venueName = !string.IsNullOrWhiteSpace(Model.MaintenanceHall)
         ? Model.MaintenanceHall
         : homeTeam?.HomeArena ?? "Venue not assigned";
+    var canManageMatchReport = User.IsInRole("Admin") || User.IsInRole("Manager");
+    var canEditResult = User.IsInRole("Admin") || User.IsInRole("Manager");
 }
 
 <link rel="stylesheet" href="~/css/matches.css" asp-append-version="true" />
@@ -66,6 +68,38 @@
             </div>
         </section>
 
+        @if (canEditResult)
+        {
+            <section class="match-details-panel" aria-labelledby="matchResultEditTitle">
+                <div class="details-section-header">
+                    <h2 id="matchResultEditTitle" class="section-title">Edit Result</h2>
+                </div>
+                <form asp-action="UpdateResult" asp-controller="Matches" asp-route-id="@Model.Id" method="post" class="match-result-form">
+                    @Html.AntiForgeryToken()
+                    <div class="overview-grid">
+                        <article class="overview-card">
+                            <label class="overview-label" for="homeScore">Home score</label>
+                            <input id="homeScore" name="homeScore" type="number" min="0" value="@Model.HomeScore" class="match-result-input" required />
+                        </article>
+                        <article class="overview-card">
+                            <label class="overview-label" for="awayScore">Away score</label>
+                            <input id="awayScore" name="awayScore" type="number" min="0" value="@Model.AwayScore" class="match-result-input" required />
+                        </article>
+                        <article class="overview-card">
+                            <label class="overview-label" for="matchStatus">Status</label>
+                            <select id="matchStatus" name="status" class="match-result-input" required>
+                                @foreach (var status in Enum.GetValues<MatchStatus>())
+                                {
+                                    <option value="@status" selected="@(Model.Status == status)">@status</option>
+                                }
+                            </select>
+                        </article>
+                    </div>
+                    <button type="submit" class="match-report-submit">Save Result</button>
+                </form>
+            </section>
+        }
+
         <section class="match-overview-section match-details-panel" aria-labelledby="matchOverviewTitle">
             <div class="details-section-header">
                 <h2 id="matchOverviewTitle" class="section-title">Overview</h2>
@@ -98,6 +132,50 @@
                 </article>
             </div>
         </section>
+
+        @if (canManageMatchReport || !string.IsNullOrWhiteSpace(Model.ReportFilePath))
+        {
+        <section class="match-report-section match-details-panel" aria-labelledby="matchReportTitle">
+            <div class="details-section-header">
+                <h2 id="matchReportTitle" class="section-title">Match Report</h2>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ReportFilePath))
+            {
+                <div class="match-report-current">
+                    <span class="match-report-label">Current report</span>
+                    <a href="@Model.ReportFilePath" target="_blank" rel="noopener" class="match-report-link">
+                        @(Model.ReportFileName ?? "Open match report")
+                    </a>
+                    @if (canManageMatchReport)
+                    {
+                        <form asp-action="RemoveReport" asp-controller="Matches" asp-route-id="@Model.Id" method="post" class="match-report-remove-form">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="match-report-remove-file" aria-label="Remove uploaded match report">x</button>
+                        </form>
+                    }
+                </div>
+            }
+
+            @if (canManageMatchReport)
+            {
+                <form asp-action="UploadReport" asp-controller="Matches" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" class="match-report-form">
+                    @Html.AntiForgeryToken()
+                    <label for="reportFile" class="match-report-dropzone">
+                        <span class="match-report-dropzone-icon">+</span>
+                        <span class="match-report-dropzone-title">Upload match report</span>
+                        <span class="match-report-dropzone-hint">PDF, DOC, DOCX, JPG, JPEG, or PNG up to 5 MB</span>
+                        <span class="match-report-selected-file" data-report-file-chip hidden>
+                            <span data-report-file-name>No file selected</span>
+                            <button type="button" class="match-report-remove-file" aria-label="Remove selected file" data-report-file-remove>x</button>
+                        </span>
+                        <input id="reportFile" name="reportFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="match-report-input" />
+                    </label>
+                    <button type="submit" class="match-report-submit">Save Report</button>
+                </form>
+            }
+        </section>
+        }
 
         <section class="match-teams-section match-details-panel" aria-labelledby="teamInfoTitle">
             <div class="details-section-header">
@@ -165,3 +243,37 @@
         </section>
     </main>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var reportInput = document.getElementById('reportFile');
+            var fileNameLabel = document.querySelector('[data-report-file-name]');
+            var fileChip = document.querySelector('[data-report-file-chip]');
+            var removeButton = document.querySelector('[data-report-file-remove]');
+
+            if (!reportInput || !fileNameLabel || !fileChip || !removeButton) {
+                return;
+            }
+
+            reportInput.addEventListener('change', function () {
+                if (reportInput.files.length > 0) {
+                    fileNameLabel.textContent = reportInput.files[0].name;
+                    fileChip.hidden = false;
+                    return;
+                }
+
+                fileNameLabel.textContent = 'No file selected';
+                fileChip.hidden = true;
+            });
+
+            removeButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                reportInput.value = '';
+                fileNameLabel.textContent = 'No file selected';
+                fileChip.hidden = true;
+            });
+        });
+    </script>
+}

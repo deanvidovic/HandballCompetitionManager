@@ -24,11 +24,22 @@ public class CreateAppUserViewModel
     [Display(Name = "Email")]
     public string Email { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "OIB is required.")]
+    [StringLength(11, MinimumLength = 11, ErrorMessage = "OIB must contain exactly 11 digits.")]
+    [RegularExpression("^[0-9]*$", ErrorMessage = "OIB can contain only numbers.")]
+    [Display(Name = "OIB")]
+    public string OIB { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "JMBG is required.")]
+    [StringLength(13, MinimumLength = 13, ErrorMessage = "JMBG must contain exactly 13 digits.")]
+    [RegularExpression("^[0-9]*$", ErrorMessage = "JMBG can contain only numbers.")]
+    [Display(Name = "JMBG")]
+    public string JMBG { get; set; } = string.Empty;
+
     [Required(ErrorMessage = "Role is required.")]
     [Display(Name = "Role")]
     public UserRole? Role { get; set; }
 
-    [Required(ErrorMessage = "Date of birth is required.")]
     [Display(Name = "Date of birth")]
     public DateTime? DateOfBirth { get; set; }
 }

@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using HandballCompetitionManager.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace HandballCompetitionManager.Data;
 
-public class HandballDbContext : DbContext
+public class HandballDbContext : IdentityDbContext<AppUser, IdentityRole<int>, int>
 {
     public HandballDbContext(DbContextOptions<HandballDbContext> options) : base(options)
     {
@@ -19,6 +21,15 @@ public class HandballDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<AppUser>().ToTable("AppUsers");
+        modelBuilder.Entity<AppUser>().Property(user => user.UserName).HasColumnName("Username");
+        modelBuilder.Entity<IdentityRole<int>>().ToTable("AspNetRoles");
+        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("AspNetUserRoles");
+        modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("AspNetUserClaims");
+        modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("AspNetUserLogins");
+        modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("AspNetRoleClaims");
+        modelBuilder.Entity<IdentityUserToken<int>>().ToTable("AspNetUserTokens");
 
         // Configure many-to-many: Team <-> Competition
         modelBuilder.Entity<Team>()
@@ -111,10 +122,10 @@ public class HandballDbContext : DbContext
 
         // Seed AppUsers
         modelBuilder.Entity<AppUser>().HasData(
-            new AppUser { Id = 1, Username = "admin", DisplayName = "Admin User", Email = "admin@handball.local", Role = UserRole.Admin, DateOfBirth = new DateTime(1985, 2, 12), CreatedAt = new DateTime(2025, 5, 4) },
-            new AppUser { Id = 2, Username = "coach_horvat", DisplayName = "Coach Horvat", Email = "coach1@handball.local", Role = UserRole.Coach, DateOfBirth = new DateTime(1979, 7, 21), CreatedAt = new DateTime(2025, 5, 4) },
-            new AppUser { Id = 3, Username = "coach_vukovic", DisplayName = "Coach Vukovic", Email = "coach2@handball.local", Role = UserRole.Coach, DateOfBirth = new DateTime(1982, 10, 3), CreatedAt = new DateTime(2025, 5, 4) },
-            new AppUser { Id = 4, Username = "guest_user", DisplayName = "Guest User", Email = "guest@handball.local", Role = UserRole.Guest, DateOfBirth = new DateTime(1993, 1, 16), CreatedAt = new DateTime(2025, 5, 4) }
+            new AppUser { Id = 1, UserName = "admin", NormalizedUserName = "ADMIN", DisplayName = "Admin User", Email = "admin@handball.local", NormalizedEmail = "ADMIN@HANDBALL.LOCAL", EmailConfirmed = true, Role = UserRole.Admin, DateOfBirth = new DateTime(1985, 2, 12), CreatedAt = new DateTime(2025, 5, 4), OIB = "12345678901", JMBG = "1234567890123", SecurityStamp = "seed-admin-security", ConcurrencyStamp = "seed-admin-concurrency" },
+            new AppUser { Id = 2, UserName = "coach_horvat", NormalizedUserName = "COACH_HORVAT", DisplayName = "Coach Horvat", Email = "coach1@handball.local", NormalizedEmail = "COACH1@HANDBALL.LOCAL", EmailConfirmed = true, Role = UserRole.Coach, DateOfBirth = new DateTime(1979, 7, 21), CreatedAt = new DateTime(2025, 5, 4), OIB = "12345678902", JMBG = "1234567890124", SecurityStamp = "seed-coach1-security", ConcurrencyStamp = "seed-coach1-concurrency" },
+            new AppUser { Id = 3, UserName = "coach_vukovic", NormalizedUserName = "COACH_VUKOVIC", DisplayName = "Coach Vukovic", Email = "coach2@handball.local", NormalizedEmail = "COACH2@HANDBALL.LOCAL", EmailConfirmed = true, Role = UserRole.Coach, DateOfBirth = new DateTime(1982, 10, 3), CreatedAt = new DateTime(2025, 5, 4), OIB = "12345678903", JMBG = "1234567890125", SecurityStamp = "seed-coach2-security", ConcurrencyStamp = "seed-coach2-concurrency" },
+            new AppUser { Id = 4, UserName = "guest_user", NormalizedUserName = "GUEST_USER", DisplayName = "Guest User", Email = "guest@handball.local", NormalizedEmail = "GUEST@HANDBALL.LOCAL", EmailConfirmed = true, Role = UserRole.Guest, DateOfBirth = new DateTime(1993, 1, 16), CreatedAt = new DateTime(2025, 5, 4), OIB = "12345678904", JMBG = "1234567890126", SecurityStamp = "seed-guest-security", ConcurrencyStamp = "seed-guest-concurrency" }
         );
 
         // Seed Competitions

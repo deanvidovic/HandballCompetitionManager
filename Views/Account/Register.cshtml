@@ -1,0 +1,136 @@
+@model HandballCompetitionManager.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Handball Competition Manager</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/account.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="navbar-header">
+        <div class="navbar-container">
+            <a asp-action="Index" asp-controller="Home" class="navbar-brand" aria-label="@Model.HomeAriaLabel">
+                <span class="brand-text">Handball<br><small>Manager</small></span>
+            </a>
+            <nav class="navbar-actions" aria-label="Account navigation">
+                <a asp-action="Index" asp-controller="Home" class="navbar-link">Home</a>
+                <a asp-action="Login" asp-controller="Account" class="navbar-link">Sign In</a>
+                <a asp-action="Register" asp-controller="Account" class="navbar-link">Sign Up</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="auth-hero" aria-labelledby="registerTitle">
+        <section class="auth-hero-container auth-hero-container-wide">
+            <article class="auth-copy">
+                <p class="auth-eyebrow">@Model.Eyebrow</p>
+                <h1 class="auth-title" id="registerTitle">@Model.Title</h1>
+                <p class="auth-description">@Model.Description</p>
+                <aside class="auth-note" aria-label="@Model.BenefitAriaLabel">
+                    <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                    <span>@Model.BenefitText</span>
+                </aside>
+            </article>
+
+            <article class="auth-card" aria-label="@Model.Title">
+                <header class="auth-card-header">
+                    <p class="auth-card-kicker">@Model.Eyebrow</p>
+                    <h2 class="auth-card-title">@Model.SubmitText</h2>
+                </header>
+
+                <form asp-action="Register" asp-controller="Account" method="post" class="auth-form" data-auth-form="register" data-register-form novalidate>
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="validation-error" role="alert"></div>
+
+                    <section class="auth-fields" aria-label="@Model.Title">
+                        <div class="auth-field" data-register-field="Username">
+                            <label asp-for="Username" class="auth-label"></label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                                <input asp-for="Username" class="auth-input" autocomplete="username" placeholder="@Model.UsernamePlaceholder" aria-describedby="RegisterUsernameValidation" data-register-validate-field="Username" />
+                            </div>
+                            <span asp-validation-for="Username" class="auth-validation" id="RegisterUsernameValidation" data-register-validation-message-for="Username"></span>
+                        </div>
+
+                        <div class="auth-field" data-register-field="DisplayName">
+                            <label asp-for="DisplayName" class="auth-label"></label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-id-card" aria-hidden="true"></i>
+                                <input asp-for="DisplayName" class="auth-input" autocomplete="name" placeholder="@Model.DisplayNamePlaceholder" aria-describedby="RegisterDisplayNameValidation" data-register-validate-field="DisplayName" />
+                            </div>
+                            <span asp-validation-for="DisplayName" class="auth-validation" id="RegisterDisplayNameValidation" data-register-validation-message-for="DisplayName"></span>
+                        </div>
+
+                        <div class="auth-field" data-register-field="Email">
+                            <label asp-for="Email" class="auth-label"></label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-envelope" aria-hidden="true"></i>
+                                <input asp-for="Email" class="auth-input" autocomplete="email" placeholder="@Model.EmailPlaceholder" aria-describedby="RegisterEmailValidation" data-register-validate-field="Email" />
+                            </div>
+                            <span asp-validation-for="Email" class="auth-validation" id="RegisterEmailValidation" data-register-validation-message-for="Email"></span>
+                        </div>
+
+                        <div class="auth-field" data-register-field="OIB">
+                            <label asp-for="OIB" class="auth-label"></label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-id-badge" aria-hidden="true"></i>
+                                <input asp-for="OIB" class="auth-input" inputmode="numeric" autocomplete="off" placeholder="@Model.OibPlaceholder" aria-describedby="RegisterOibValidation" data-register-validate-field="OIB" />
+                            </div>
+                            <span asp-validation-for="OIB" class="auth-validation" id="RegisterOibValidation" data-register-validation-message-for="OIB"></span>
+                        </div>
+
+                        <div class="auth-field" data-register-field="JMBG">
+                            <label asp-for="JMBG" class="auth-label"></label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-address-card" aria-hidden="true"></i>
+                                <input asp-for="JMBG" class="auth-input" inputmode="numeric" autocomplete="off" placeholder="@Model.JmbgPlaceholder" aria-describedby="RegisterJmbgValidation" data-register-validate-field="JMBG" />
+                            </div>
+                            <span asp-validation-for="JMBG" class="auth-validation" id="RegisterJmbgValidation" data-register-validation-message-for="JMBG"></span>
+                        </div>
+
+                        <div class="auth-field" data-register-field="Password">
+                            <label asp-for="Password" class="auth-label"></label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-lock" aria-hidden="true"></i>
+                                <input asp-for="Password" class="auth-input" autocomplete="new-password" placeholder="@Model.PasswordPlaceholder" aria-describedby="RegisterPasswordValidation" data-register-validate-field="Password" />
+                            </div>
+                            <span asp-validation-for="Password" class="auth-validation" id="RegisterPasswordValidation" data-register-validation-message-for="Password"></span>
+                        </div>
+
+                        <div class="auth-field" data-register-field="ConfirmPassword">
+                            <label asp-for="ConfirmPassword" class="auth-label"></label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-lock" aria-hidden="true"></i>
+                                <input asp-for="ConfirmPassword" class="auth-input" autocomplete="new-password" placeholder="@Model.ConfirmPasswordPlaceholder" aria-describedby="RegisterConfirmPasswordValidation" data-register-validate-field="ConfirmPassword" />
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="auth-validation" id="RegisterConfirmPasswordValidation" data-register-validation-message-for="ConfirmPassword"></span>
+                        </div>
+                    </section>
+
+                    <button type="submit" class="auth-submit">
+                        <span>@Model.SubmitText</span>
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </form>
+
+                <footer class="auth-switch">
+                    <span>@Model.SwitchText</span>
+                    <a asp-action="Login" asp-controller="Account">@Model.SwitchLinkText</a>
+                </footer>
+            </article>
+        </section>
+    </main>
+
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/account-register-validation.js" asp-append-version="true"></script>
+</body>
+</html>

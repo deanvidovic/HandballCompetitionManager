@@ -1,0 +1,90 @@
+@model HandballCompetitionManager.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Handball Competition Manager</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/account.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="navbar-header">
+        <div class="navbar-container">
+            <a asp-action="Index" asp-controller="Home" class="navbar-brand" aria-label="@Model.HomeAriaLabel">
+                <span class="brand-text">Handball<br><small>Manager</small></span>
+            </a>
+            <nav class="navbar-actions" aria-label="Account navigation">
+                <a asp-action="Index" asp-controller="Home" class="navbar-link">Home</a>
+                <a asp-action="Login" asp-controller="Account" class="navbar-link">Sign In</a>
+                <a asp-action="Register" asp-controller="Account" class="navbar-link">Sign Up</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="auth-hero" aria-labelledby="loginTitle">
+        <section class="auth-hero-container">
+            <article class="auth-copy">
+                <p class="auth-eyebrow">@Model.Eyebrow</p>
+                <h1 class="auth-title" id="loginTitle">@Model.Title</h1>
+                <p class="auth-description">@Model.Description</p>
+                <aside class="auth-note" aria-label="@Model.BenefitAriaLabel">
+                    <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                    <span>@Model.BenefitText</span>
+                </aside>
+            </article>
+
+            <article class="auth-card" aria-label="@Model.Title">
+                <header class="auth-card-header">
+                    <p class="auth-card-kicker">@Model.Eyebrow</p>
+                    <h2 class="auth-card-title">@Model.SubmitText</h2>
+                </header>
+
+                <form asp-action="Login" asp-controller="Account" method="post" class="auth-form" data-auth-form="login" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="validation-error" role="alert"></div>
+
+                    <section class="auth-fields" aria-label="@Model.Title">
+                        <div class="auth-field">
+                            <label asp-for="Email" class="auth-label"></label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-envelope" aria-hidden="true"></i>
+                                <input asp-for="Email" class="auth-input" autocomplete="email" placeholder="@Model.EmailPlaceholder" aria-describedby="LoginEmailValidation" />
+                            </div>
+                            <span asp-validation-for="Email" class="auth-validation" id="LoginEmailValidation"></span>
+                        </div>
+
+                        <div class="auth-field">
+                            <label asp-for="Password" class="auth-label"></label>
+                            <div class="auth-input-wrap">
+                                <i class="fas fa-lock" aria-hidden="true"></i>
+                                <input asp-for="Password" class="auth-input" autocomplete="current-password" placeholder="@Model.PasswordPlaceholder" aria-describedby="LoginPasswordValidation" />
+                            </div>
+                            <span asp-validation-for="Password" class="auth-validation" id="LoginPasswordValidation"></span>
+                        </div>
+                    </section>
+
+                    <button type="submit" class="auth-submit">
+                        <span>@Model.SubmitText</span>
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </form>
+
+                <footer class="auth-switch">
+                    <span>@Model.SwitchText</span>
+                    <a asp-action="Register" asp-controller="Account">@Model.SwitchLinkText</a>
+                </footer>
+            </article>
+        </section>
+    </main>
+
+    <partial name="_ValidationScriptsPartial" />
+</body>
+</html>

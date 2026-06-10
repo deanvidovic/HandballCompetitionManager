@@ -1,6 +1,8 @@
 using HandballCompetitionManager.Models;
 using HandballCompetitionManager.Repositories;
 using HandballCompetitionManager.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HandballCompetitionManager.Controllers
@@ -9,28 +11,34 @@ namespace HandballCompetitionManager.Controllers
     {
         private readonly PlayerRepository _playerRepository;
         private readonly TeamRepository _teamRepository;
+        private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<PlayersController> _logger;
 
-        public PlayersController(PlayerRepository playerRepository, TeamRepository teamRepository, ILogger<PlayersController> logger)
+        public PlayersController(PlayerRepository playerRepository, TeamRepository teamRepository, UserManager<AppUser> userManager, ILogger<PlayersController> logger)
         {
             _playerRepository = playerRepository;
             _teamRepository = teamRepository;
+            _userManager = userManager;
             _logger = logger;
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Index(string? query)
         {
             _logger.LogInformation("Players Index page requested");
             ViewData["Query"] = query;
-            var players = _playerRepository.Search(query);
+            var players = GetAccessiblePlayers(query);
             return View(players);
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Autocomplete(string? query)
         {
-            var suggestions = _playerRepository.Search(query)
+            var players = GetAccessiblePlayers(query);
+
+            var suggestions = players
                 .Take(8)
                 .Select(p => new
                 {
@@ -43,9 +51,14 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Coach")]
         public IActionResult TeamAutocomplete(string? query)
         {
-            var suggestions = _teamRepository.Search(query)
+            var teams = IsAdmin()
+                ? _teamRepository.Search(query)
+                : _teamRepository.SearchForCoach(query, CurrentUserDisplayName);
+
+            var suggestions = teams
                 .OrderBy(t => t.Name)
                 .Take(8)
                 .Select(t => new
@@ -60,6 +73,7 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Coach")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(CreatePlayerViewModel model)
         {
@@ -89,7 +103,7 @@ namespace HandballCompetitionManager.Controllers
                     ModelState.AddModelError(nameof(model.BirthDate), "Birth date cannot be after today's date.");
                 }
 
-                if (model.TeamId.HasValue && _teamRepository.GetById(model.TeamId.Value) == null)
+                if (model.TeamId.HasValue && GetAccessibleTeam(model.TeamId.Value) == null)
                 {
                     ModelState.AddModelError(nameof(model.TeamId), "Select an existing team from the suggestions.");
                 }
@@ -123,10 +137,11 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Coach")]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(CreatePlayerViewModel model)
         {
-            var player = _playerRepository.GetById(model.Id);
+            var player = GetAccessiblePlayer(model.Id);
             var jerseyNumber = 0;
             var goalsScored = 0;
             var assists = 0;
@@ -158,7 +173,7 @@ namespace HandballCompetitionManager.Controllers
                     ModelState.AddModelError(nameof(model.BirthDate), "Birth date cannot be after today's date.");
                 }
 
-                if (model.TeamId.HasValue && _teamRepository.GetById(model.TeamId.Value) == null)
+                if (model.TeamId.HasValue && GetAccessibleTeam(model.TeamId.Value) == null)
                 {
                     ModelState.AddModelError(nameof(model.TeamId), "Select an existing team from the suggestions.");
                 }
@@ -189,10 +204,11 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Details(int id)
         {
             _logger.LogInformation("Players Details page requested for player ID: {PlayerId}", id);
-            var player = _playerRepository.GetById(id);
+            var player = GetAccessiblePlayer(id);
             
             if (player == null)
             {
@@ -204,19 +220,24 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("teams/{teamId}/players")]
         public IActionResult GetByTeam(int teamId)
         {
             _logger.LogInformation("Players by team requested: {TeamId}", teamId);
-            var players = _playerRepository.GetByTeamId(teamId);
+            var players = IsAdmin()
+                ? _playerRepository.GetByTeamId(teamId)
+                : IsCoach()
+                    ? _playerRepository.GetByTeamIdForCoach(teamId, CurrentUserDisplayName)
+                    : _playerRepository.GetByTeamIdForUser(teamId, CurrentUserId);
             return View("Index", players);
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Coach")]
         public IActionResult Edit(int id)
         {
-            // Return a view to edit an existing player
-            var player = _playerRepository.GetById(id);
+            var player = GetAccessiblePlayer(id);
             if (player == null)
             {
                 return NotFound();
@@ -225,9 +246,9 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
-            // Return a view to confirm deletion of a player
             var player = _playerRepository.GetById(id);
             if (player == null)
             {
@@ -237,6 +258,7 @@ namespace HandballCompetitionManager.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
@@ -279,5 +301,66 @@ namespace HandballCompetitionManager.Controllers
                 fieldErrors
             };
         }
+
+        private bool IsAdmin() => User.IsInRole("Admin");
+
+        private bool IsCoach() => User.IsInRole("Coach");
+
+        private List<Player> GetAccessiblePlayers(string? query)
+        {
+            if (IsAdmin())
+            {
+                return _playerRepository.Search(query);
+            }
+
+            if (IsCoach())
+            {
+                return _playerRepository.SearchForCoach(query, CurrentUserDisplayName);
+            }
+
+            return _playerRepository.SearchForUser(query, CurrentUserId);
+        }
+
+        private Player? GetAccessiblePlayer(int id)
+        {
+            if (IsAdmin())
+            {
+                return _playerRepository.GetById(id);
+            }
+
+            if (IsCoach())
+            {
+                return _playerRepository.GetByIdForCoach(id, CurrentUserDisplayName);
+            }
+
+            return _playerRepository.GetByIdForUser(id, CurrentUserId);
+        }
+
+        private Team? GetAccessibleTeam(int id)
+        {
+            if (IsAdmin())
+            {
+                return _teamRepository.GetById(id);
+            }
+
+            if (IsCoach())
+            {
+                return _teamRepository.GetByIdForCoach(id, CurrentUserDisplayName);
+            }
+
+            return _teamRepository.GetByIdForUser(id, CurrentUserId);
+        }
+
+        private int CurrentUserId
+        {
+            get
+            {
+                var userId = _userManager.GetUserId(User);
+                return int.TryParse(userId, out var parsedUserId) ? parsedUserId : 0;
+            }
+        }
+
+        private string CurrentUserDisplayName =>
+            _userManager.GetUserAsync(User).GetAwaiter().GetResult()?.DisplayName ?? string.Empty;
     }
 }

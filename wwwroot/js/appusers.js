@@ -1,9 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
     const modal = document.querySelector('[data-appuser-modal]');
     const openButton = document.querySelector('[data-appuser-modal-open]');
+    const editButtons = document.querySelectorAll('[data-edit-appuser]');
     const closeButtons = document.querySelectorAll('[data-appuser-modal-close]');
     const form = document.querySelector('[data-appuser-create-form]');
     const status = document.querySelector('[data-appuser-form-status]');
+    const modalEyebrow = modal?.querySelector('.appuser-modal-eyebrow');
+    const modalTitle = modal?.querySelector('.appuser-modal-title');
+    const modalDescription = modal?.querySelector('.appuser-modal-description');
+    const submitButton = form?.querySelector('.appuser-modal-submit');
     let lastFocusedElement = null;
 
     const validationMessages = {
@@ -19,12 +24,19 @@ document.addEventListener('DOMContentLoaded', function () {
             required: 'Email is required.',
             invalid: 'Enter a valid email address.'
         },
+        OIB: {
+            required: 'OIB is required.',
+            invalid: 'OIB must contain exactly 11 digits.'
+        },
+        JMBG: {
+            required: 'JMBG is required.',
+            invalid: 'JMBG must contain exactly 13 digits.'
+        },
         Role: {
             required: 'Select a role.',
             invalid: 'Select a role.'
         },
         DateOfBirth: {
-            required: 'Date of birth is required.',
             invalid: 'Date of birth cannot be after today.'
         }
     };
@@ -41,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'a[href]'
     ].join(',');
 
-    const fields = ['Username', 'DisplayName', 'Email', 'Role', 'DateOfBirth'];
+    const fields = ['Username', 'DisplayName', 'Email', 'OIB', 'JMBG', 'Role', 'DateOfBirth'];
     const getFocusableElements = () => Array.from(modal.querySelectorAll(focusableSelector));
     const getValidationInput = fieldName => form.querySelector(`[data-appuser-validate-field="${fieldName}"]`);
     const getValidationMessage = fieldName => form.querySelector(`[data-appuser-validation-message-for="${fieldName}"]`);
@@ -89,9 +101,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const input = getValidationInput(fieldName);
         const value = input?.value.trim() ?? '';
 
-        if (!value) {
+        if (!value && fieldName !== 'DateOfBirth') {
             setFieldError(fieldName, validationMessages[fieldName].required);
             return false;
+        }
+
+        if (!value) {
+            clearFieldError(fieldName);
+            return true;
         }
 
         if (fieldName === 'Username' && (value.length < 3 || !/^[A-Za-z0-9._-]+$/.test(value))) {
@@ -105,6 +122,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (fieldName === 'Email' && !isValidEmail(value)) {
+            setFieldError(fieldName, validationMessages[fieldName].invalid);
+            return false;
+        }
+
+        if (fieldName === 'OIB' && !/^[0-9]{11}$/.test(value)) {
+            setFieldError(fieldName, validationMessages[fieldName].invalid);
+            return false;
+        }
+
+        if (fieldName === 'JMBG' && !/^[0-9]{13}$/.test(value)) {
             setFieldError(fieldName, validationMessages[fieldName].invalid);
             return false;
         }
@@ -149,6 +176,47 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
+    const setInputValue = (fieldName, value) => {
+        const input = getValidationInput(fieldName);
+        if (input) {
+            input.value = value ?? '';
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        if (fieldName === 'DateOfBirth') {
+            const display = input?.closest('[data-app-date-picker]')?.querySelector('[data-date-picker-display]');
+            if (display) {
+                display.textContent = value || 'Select date of birth';
+            }
+        }
+    };
+
+    const setCreateMode = () => {
+        form.action = openButton.dataset.createUrl || form.action;
+        form.querySelector('[data-edit-id]').value = '0';
+        modalEyebrow && (modalEyebrow.textContent = 'New app user');
+        modalTitle && (modalTitle.textContent = 'Create AppUser');
+        modalDescription && (modalDescription.textContent = 'Add a new account profile with identity, role, and date of birth.');
+        submitButton && (submitButton.textContent = 'Save AppUser');
+        form.reset();
+    };
+
+    const setEditMode = button => {
+        form.action = button.dataset.editUrl;
+        form.querySelector('[data-edit-id]').value = button.dataset.id ?? '0';
+        setInputValue('Username', button.dataset.username);
+        setInputValue('DisplayName', button.dataset.displayName);
+        setInputValue('Email', button.dataset.email);
+        setInputValue('OIB', button.dataset.oib);
+        setInputValue('JMBG', button.dataset.jmbg);
+        setInputValue('Role', button.dataset.role);
+        setInputValue('DateOfBirth', button.dataset.dateOfBirth);
+        modalEyebrow && (modalEyebrow.textContent = 'Edit app user');
+        modalTitle && (modalTitle.textContent = 'Edit AppUser');
+        modalDescription && (modalDescription.textContent = 'Update account profile data.');
+        submitButton && (submitButton.textContent = 'Save changes');
+    };
+
     const openModal = () => {
         lastFocusedElement = document.activeElement;
         modal.hidden = false;
@@ -171,7 +239,17 @@ document.addEventListener('DOMContentLoaded', function () {
         lastFocusedElement?.focus();
     };
 
-    openButton.addEventListener('click', openModal);
+    openButton.addEventListener('click', () => {
+        setCreateMode();
+        openModal();
+    });
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            setEditMode(button);
+            openModal();
+        });
+    });
 
     closeButtons.forEach(button => {
         button.addEventListener('click', closeModal);
@@ -224,7 +302,9 @@ document.addEventListener('DOMContentLoaded', function () {
             submitButton.textContent = 'Saving...';
         }
 
-        status.textContent = 'Creating app user...';
+        status.textContent = form.querySelector('[data-edit-id]')?.value === '0'
+            ? 'Creating app user...'
+            : 'Updating app user...';
         status.classList.remove('is-error', 'is-success');
         status.hidden = false;
 

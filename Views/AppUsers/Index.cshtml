@@ -25,7 +25,7 @@
             <h1 class="appusers-title">Handball AppUsers</h1>
             <p class="appusers-subtitle">Manage and view all handball appusers</p>
         </div>
-        <button type="button" class="btn btn-create" data-appuser-modal-open aria-haspopup="dialog" aria-controls="createAppUserModal">
+        <button type="button" class="btn btn-create" data-appuser-modal-open data-create-url="@Url.Action("Create", "AppUsers")" aria-haspopup="dialog" aria-controls="createAppUserModal">
             <span class="btn-icon" aria-hidden="true">+</span>
             Create AppUser
         </button>
@@ -75,7 +75,7 @@
                         <div class="appuser-details">
                             <div class="appuser-detail-item">
                                 <span class="appuser-detail-label">Username</span>
-                                <span class="appuser-detail-value">@appuser.Username</span>
+                                <span class="appuser-detail-value">@appuser.UserName</span>
                             </div>
                             <div class="appuser-detail-item">
                                 <span class="appuser-detail-label">Created At</span>
@@ -87,7 +87,7 @@
                         </div>
                     </a>
                     <div class="appuser-actions">
-                        <button type="button" class="btn btn-edit" data-edit-appuser data-edit-url="@Url.Action("Edit", "AppUsers")" data-id="@appuser.Id" data-username="@appuser.Username" data-display-name="@appuser.DisplayName" data-email="@appuser.Email" data-role="@appuser.Role" data-date-of-birth="@appuser.DateOfBirth.ToString("yyyy-MM-dd")">Edit</button>
+                            <button type="button" class="btn btn-edit" data-edit-appuser data-edit-url="@Url.Action("Edit", "AppUsers")" data-id="@appuser.Id" data-username="@appuser.UserName" data-display-name="@appuser.DisplayName" data-email="@appuser.Email" data-oib="@appuser.OIB" data-jmbg="@appuser.JMBG" data-role="@appuser.Role" data-date-of-birth="@appuser.DateOfBirth?.ToString("yyyy-MM-dd")">Edit</button>
                         <form asp-action="Delete" asp-controller="AppUsers" method="post" class="delete-form" data-delete-form data-delete-name="@appuser.DisplayName">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@appuser.Id" />
@@ -136,6 +136,18 @@
                     <span class="appuser-validation-message" id="appUserEmailValidation" data-appuser-validation-message-for="Email" aria-live="polite"></span>
                 </div>
 
+                <div class="appuser-form-field" data-appuser-field="OIB">
+                    <label class="appuser-form-label" for="appUserOib">OIB</label>
+                    <input class="appuser-form-input" id="appUserOib" name="OIB" type="text" inputmode="numeric" autocomplete="off" placeholder="12345678901" required minlength="11" maxlength="11" data-appuser-validate-field="OIB" aria-describedby="appUserOibValidation" />
+                    <span class="appuser-validation-message" id="appUserOibValidation" data-appuser-validation-message-for="OIB" aria-live="polite"></span>
+                </div>
+
+                <div class="appuser-form-field" data-appuser-field="JMBG">
+                    <label class="appuser-form-label" for="appUserJmbg">JMBG</label>
+                    <input class="appuser-form-input" id="appUserJmbg" name="JMBG" type="text" inputmode="numeric" autocomplete="off" placeholder="1234567890123" required minlength="13" maxlength="13" data-appuser-validate-field="JMBG" aria-describedby="appUserJmbgValidation" />
+                    <span class="appuser-validation-message" id="appUserJmbgValidation" data-appuser-validation-message-for="JMBG" aria-live="polite"></span>
+                </div>
+
                 <div class="appuser-form-field" data-appuser-field="Role">
                     <label class="appuser-form-label" for="appUserRole">Role</label>
                     <select class="appuser-form-input" id="appUserRole" name="Role" required data-appuser-validate-field="Role" aria-describedby="appUserRoleValidation">
@@ -157,7 +169,7 @@
                         Label = "Date of birth",
                         Placeholder = "Select date of birth",
                         DescribedBy = "appUserDateOfBirthValidation",
-                        Required = true,
+                        Required = false,
                         ValidationField = "DateOfBirth"
                     })
                     <span class="appuser-validation-message" id="appUserDateOfBirthValidation" data-appuser-validation-message-for="DateOfBirth" aria-live="polite"></span>
