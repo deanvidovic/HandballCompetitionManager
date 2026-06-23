@@ -1,0 +1,101 @@
+@model HandballCompetitionManager.ViewModels.AdminTournamentManagementViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Tournaments";
+    ViewData["AdminTitle"] = "Tournament Management";
+    ViewData["AdminSubtitle"] = "Manage competitions, schedules, and tournament progress.";
+    ViewData["AdminActive"] = "Tournaments";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-tournaments.css" asp-append-version="true" />
+}
+
+<section class="admin-dashboard-grid" aria-label="Tournament summary">
+    <article class="admin-summary-card">
+        <span>Total Tournaments</span>
+        <strong>@Model.TotalTournaments</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Active Tournaments</span>
+        <strong>@Model.ActiveTournaments</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Upcoming Tournaments</span>
+        <strong>@Model.UpcomingTournaments</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Completed Tournaments</span>
+        <strong>@Model.CompletedTournaments</strong>
+    </article>
+</section>
+
+<section class="admin-content-grid">
+    <div class="admin-panel admin-panel--table" aria-labelledby="tournament-table-title">
+        <div class="admin-panel__header admin-panel__header--actions">
+            <div>
+                <h2 id="tournament-table-title">Tournaments</h2>
+                <p>Operational view of tournament setup and progress.</p>
+            </div>
+            <button class="admin-create-button" type="button" disabled>Create Tournament</button>
+        </div>
+
+        <div class="admin-toolbar" aria-label="Tournament table controls">
+            <label class="admin-field admin-field--search">
+                <span class="visually-hidden">Search tournaments</span>
+                <input type="search" placeholder="Search tournaments" />
+            </label>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Tournament</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Location</th>
+                        <th scope="col">Start</th>
+                        <th scope="col">End</th>
+                        <th scope="col">Teams</th>
+                        <th scope="col">Matches</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tournament in Model.Tournaments)
+                    {
+                        <tr>
+                            <td>
+                                <div class="tournament-cell">
+                                    <strong>@tournament.Name</strong>
+                                    <span>@tournament.CurrentPhase</span>
+                                </div>
+                            </td>
+                            <td><span class="admin-status">@tournament.Status</span></td>
+                            <td>@tournament.Location</td>
+                            <td>@tournament.StartDate</td>
+                            <td>@tournament.EndDate</td>
+                            <td>@tournament.TeamCount</td>
+                            <td>@tournament.MatchCount</td>
+                            <td>
+                                <div class="admin-actions">
+                                    <a href="/Admin/Tournaments/Details/@tournament.Id">View</a>
+                                    <button type="button" disabled>Edit</button>
+                                    <button type="button" disabled>Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @* Empty state reserved for future search/filter behavior.
+        <section class="admin-empty-state" hidden>
+            <h2>No tournaments found</h2>
+            <p>Create your first tournament to get started.</p>
+        </section>
+        *@
+    </div>
+</section>

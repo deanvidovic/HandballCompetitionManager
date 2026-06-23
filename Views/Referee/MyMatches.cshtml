@@ -1,0 +1,99 @@
+@model HandballCompetitionManager.ViewModels.RefereeMyMatchesViewModel
+
+@{
+    Layout = "_RefereeLayout";
+    ViewData["Title"] = "Referee My Matches";
+    ViewData["RefereeTitle"] = "My Matches";
+    ViewData["RefereeSubtitle"] = "Review assigned matches, prepare team sheets, and record match results.";
+    ViewData["RefereeActive"] = "MyMatches";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/referee-my-matches.css" asp-append-version="true" />
+}
+
+<section class="referee-dashboard-grid" aria-label="Assigned match summary">
+    <article class="referee-summary-card">
+        <span>Assigned Matches</span>
+        <strong>@Model.AssignedMatches</strong>
+    </article>
+    <article class="referee-summary-card">
+        <span>Today</span>
+        <strong>@Model.TodayMatches</strong>
+    </article>
+    <article class="referee-summary-card">
+        <span>Upcoming</span>
+        <strong>@Model.UpcomingMatches</strong>
+    </article>
+    <article class="referee-summary-card">
+        <span>Completed</span>
+        <strong>@Model.CompletedMatches</strong>
+    </article>
+</section>
+
+<section class="referee-panel referee-panel--table" aria-labelledby="assigned-table-title">
+    <div class="referee-panel__header">
+        <div>
+            <h2 id="assigned-table-title">Assigned Matches</h2>
+            <p>All fixtures currently assigned to @Model.Referee?.FullName.</p>
+        </div>
+    </div>
+
+    <div class="referee-toolbar" aria-label="Assigned matches table controls">
+        <label class="referee-field referee-field--search">
+            <span class="visually-hidden">Search assigned matches</span>
+            <input type="search" placeholder="Search by team, tournament, or match status..." />
+        </label>
+    </div>
+
+    <div class="referee-table-wrap">
+        <table class="referee-table">
+            <thead>
+                <tr>
+                    <th scope="col">Match</th>
+                    <th scope="col">Tournament</th>
+                    <th scope="col">Phase</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Venue</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var match in Model.Matches)
+                {
+                    <tr>
+                        <td data-label="Match">
+                            <div class="referee-match-cell">
+                                <strong>@match.HomeTeamName vs @match.AwayTeamName</strong>
+                                <span>@match.Score</span>
+                            </div>
+                        </td>
+                        <td data-label="Tournament">@match.TournamentName</td>
+                        <td data-label="Phase">@match.Phase</td>
+                        <td data-label="Date">
+                            <time datetime="@match.ScheduledAt.ToString("yyyy-MM-ddTHH:mm")">@match.ScheduledAt.ToString("MMM d, yyyy HH:mm")</time>
+                        </td>
+                        <td data-label="Status">
+                            <span class="referee-status referee-status--@match.Status.ToLowerInvariant().Replace(" ", "-")">@match.Status</span>
+                        </td>
+                        <td data-label="Venue">@match.VenueName</td>
+                        <td data-label="Actions">
+                            <div class="referee-actions">
+                                <a href="/Referee/Matches/Details/@match.Id">View</a>
+                                <a href="/Referee/Matches/Report/@match.Id">Report</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @* Empty state reserved for future repository states.
+    <section class="referee-empty-state" hidden>
+        <h2>No assigned matches</h2>
+        <p>Assigned matches will appear here when the schedule is published.</p>
+    </section>
+    *@
+</section>

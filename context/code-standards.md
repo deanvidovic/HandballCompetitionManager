@@ -53,11 +53,26 @@
 
 ## Styling
 
-- Avoid inline styles when possible.
+- Avoid inline styles.
 - Keep custom CSS in `wwwroot/css/`.
-- Keep custom JavaScript in `wwwroot/js/`.
+- Page-specific CSS must be placed in separate files, for example:
+    - `wwwroot/css/home.css`
+    - `wwwroot/css/tournaments.css`
+    - `wwwroot/css/matches.css`
+- Global styles should stay in `wwwroot/css/site.css`.
+- Do not place page-specific styles directly in `_Layout.cshtml`.
 - Do not modify third-party library files in `wwwroot/lib/`.
-- Keep UI consistent across all pages.
+
+## JavaScript
+
+- Keep custom JavaScript in `wwwroot/js/`.
+- Page-specific JavaScript must be placed in separate files, for example:
+    - `wwwroot/js/home.js`
+    - `wwwroot/js/tournaments.js`
+    - `wwwroot/js/matches.js`
+- Do not use inline JavaScript inside Razor views.
+- Do not use JavaScript libraries unless explicitly required.
+- Load page-specific JavaScript only on the page where it is needed.
 
 ## Services
 

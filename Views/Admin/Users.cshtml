@@ -1,0 +1,128 @@
+@model HandballCompetitionManager.ViewModels.AdminUserManagementViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Users";
+    ViewData["AdminTitle"] = "User Management";
+    ViewData["AdminSubtitle"] = "Manage user accounts, roles, and assignments.";
+    ViewData["AdminActive"] = "Users";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-users.css" asp-append-version="true" />
+}
+
+<section class="admin-dashboard-grid" aria-label="User summary">
+    <article class="admin-summary-card">
+        <span>Total Users</span>
+        <strong>@Model.TotalUsers</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Administrators</span>
+        <strong>@Model.Administrators</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Coaches</span>
+        <strong>@Model.Coaches</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Referees</span>
+        <strong>@Model.Referees</strong>
+    </article>
+</section>
+
+<section class="admin-content-grid">
+    <div class="admin-panel admin-panel--table" aria-labelledby="users-table-title">
+        <div class="admin-panel__header admin-panel__header--actions">
+            <div>
+                <h2 id="users-table-title">Users</h2>
+                <p>Operational view of account roles, status, and current assignments.</p>
+            </div>
+            <button class="admin-create-button" type="button" disabled>Create User</button>
+        </div>
+
+        <div class="admin-toolbar" aria-label="User table controls">
+            <label class="admin-field admin-field--search">
+                <span class="visually-hidden">Search users</span>
+                <input type="search" placeholder="Search by name, email, or role..." />
+            </label>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Assigned Team</th>
+                        <th scope="col">Assigned Matches</th>
+                        <th scope="col">Last Login</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td data-label="Name">
+                                <div class="user-cell">
+                                    <strong>@user.FullName</strong>
+                                </div>
+                            </td>
+                            <td data-label="Email">@user.Email</td>
+                            <td data-label="Role">
+                                <span class="admin-role admin-role--@user.Role.ToLowerInvariant()">@user.Role</span>
+                            </td>
+                            <td data-label="Status">
+                                <span class="admin-status admin-status--@user.Status.ToLowerInvariant()">@user.Status</span>
+                            </td>
+                            <td data-label="Assigned Team">@user.AssignedTeam</td>
+                            <td data-label="Assigned Matches">@user.AssignedMatches</td>
+                            <td data-label="Last Login">@user.LastLoginLabel</td>
+                            <td data-label="Actions">
+                                <div class="admin-actions">
+                                    <a href="/Admin/Users/Details/@user.Id">View</a>
+                                    <button type="button" disabled>Edit</button>
+                                    <button type="button" disabled>Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @* Empty state reserved for future search/filter behavior.
+        <section class="admin-empty-state" hidden>
+            <h2>No users found</h2>
+            <p>Users will appear here once accounts are created.</p>
+        </section>
+        *@
+    </div>
+
+    <section class="admin-panel role-panel" aria-labelledby="role-distribution-title">
+        <div class="admin-panel__header">
+            <div>
+                <h2 id="role-distribution-title">Role Distribution</h2>
+                <p>Current account spread across administrator and competition operations roles.</p>
+            </div>
+        </div>
+
+        <div class="role-distribution">
+            <article class="role-card">
+                <span>Admins</span>
+                <strong>@Model.Administrators</strong>
+            </article>
+            <article class="role-card">
+                <span>Coaches</span>
+                <strong>@Model.Coaches</strong>
+            </article>
+            <article class="role-card">
+                <span>Referees</span>
+                <strong>@Model.Referees</strong>
+            </article>
+        </div>
+    </section>
+</section>

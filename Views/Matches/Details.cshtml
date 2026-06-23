@@ -1,0 +1,284 @@
+@model HandballCompetitionManager.ViewModels.MatchDetailsViewModel
+
+@{
+    ViewData["Title"] = $"{Model.Match.HomeTeamName} vs {Model.Match.AwayTeamName}";
+    string score = Model.Match.HomeScore.HasValue && Model.Match.AwayScore.HasValue
+        ? $"{Model.Match.HomeScore} - {Model.Match.AwayScore}"
+        : "vs";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/match-details.css" asp-append-version="true" />
+}
+
+<section class="match-hero">
+    <div class="page-shell">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">/</span>
+            <a href="/Tournaments">Tournaments</a>
+            <span aria-hidden="true">/</span>
+            <a href="/Tournaments/Details/@Model.Tournament.Id">Tournament Details</a>
+            <span aria-hidden="true">/</span>
+            <span>Match Details</span>
+        </nav>
+
+        <div class="match-hero__grid">
+            <div class="match-hero__copy">
+                <span class="status-badge">@Model.Match.Status</span>
+                <div class="scoreboard">
+                    <a href="/Teams/Details/@Model.HomeTeam.Id">@Model.Match.HomeTeamName</a>
+                    <strong>@score</strong>
+                    <a href="/Teams/Details/@Model.AwayTeam.Id">@Model.Match.AwayTeamName</a>
+                </div>
+                <p>@Model.Match.RoundName match in @Model.Tournament.Name, scheduled for @Model.Match.ScheduledAt.ToString("MMMM d, yyyy") at @Model.Match.ScheduledAt.ToString("HH:mm").</p>
+                <div class="hero-actions">
+                    <a class="button button--primary" href="/Tournaments/Details/@Model.Tournament.Id">Back to Tournament</a>
+                </div>
+            </div>
+
+            <dl class="summary-panel">
+                <div>
+                    <dt>Date</dt>
+                    <dd>@Model.Match.ScheduledAt.ToString("MMM d, yyyy")</dd>
+                </div>
+                <div>
+                    <dt>Time</dt>
+                    <dd>@Model.Match.ScheduledAt.ToString("HH:mm")</dd>
+                </div>
+                <div>
+                    <dt>Phase</dt>
+                    <dd>@Model.Match.RoundName</dd>
+                </div>
+                <div>
+                    <dt>Venue</dt>
+                    <dd>@Model.Match.VenueName</dd>
+                </div>
+                <div>
+                    <dt>Tournament</dt>
+                    <dd>@Model.Tournament.Name</dd>
+                </div>
+                <div>
+                    <dt>Status</dt>
+                    <dd>@Model.Match.Status</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</section>
+
+<main class="match-main">
+    <section class="match-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">SUMMARY</p>
+                <h2>Match Summary Stats</h2>
+            </div>
+
+            <div class="stat-grid">
+                <article>
+                    <span>Total Goals</span>
+                    <strong>@Model.Totals.TotalGoals</strong>
+                </article>
+                <article>
+                    <span>Yellow Cards</span>
+                    <strong>@Model.Totals.YellowCards</strong>
+                </article>
+                <article>
+                    <span>Red Cards</span>
+                    <strong>@Model.Totals.RedCards</strong>
+                </article>
+                <article>
+                    <span>2-Min Suspensions</span>
+                    <strong>@Model.Totals.TwoMinuteSuspensions</strong>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="match-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">COMPARISON</p>
+                <h2>Team Comparison</h2>
+            </div>
+
+            <div class="comparison-grid">
+                <article>
+                    <a href="/Teams/Details/@Model.HomeComparison.TeamId">@Model.HomeComparison.TeamName</a>
+                    <dl>
+                        <div><dt>Goals</dt><dd>@Model.HomeComparison.Goals</dd></div>
+                        <div><dt>Yellow Cards</dt><dd>@Model.HomeComparison.YellowCards</dd></div>
+                        <div><dt>Red Cards</dt><dd>@Model.HomeComparison.RedCards</dd></div>
+                        <div><dt>2-Min Suspensions</dt><dd>@Model.HomeComparison.TwoMinuteSuspensions</dd></div>
+                    </dl>
+                </article>
+                <article>
+                    <a href="/Teams/Details/@Model.AwayComparison.TeamId">@Model.AwayComparison.TeamName</a>
+                    <dl>
+                        <div><dt>Goals</dt><dd>@Model.AwayComparison.Goals</dd></div>
+                        <div><dt>Yellow Cards</dt><dd>@Model.AwayComparison.YellowCards</dd></div>
+                        <div><dt>Red Cards</dt><dd>@Model.AwayComparison.RedCards</dd></div>
+                        <div><dt>2-Min Suspensions</dt><dd>@Model.AwayComparison.TwoMinuteSuspensions</dd></div>
+                    </dl>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="match-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">TIMELINE</p>
+                <h2>Match Events</h2>
+            </div>
+
+            <div class="event-list">
+                @foreach (var matchEvent in Model.Events)
+                {
+                    <article class="event-card">
+                        <span>@matchEvent.Minute'</span>
+                        <div>
+                            <a href="/Players/Details/@matchEvent.PlayerId">@matchEvent.PlayerName</a>
+                            <p>
+                                <a href="/Teams/Details/@matchEvent.TeamId">@matchEvent.TeamName</a>
+                                <span>@matchEvent.EventType</span>
+                            </p>
+                        </div>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="match-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">PLAYERS</p>
+                <h2>Player Performances</h2>
+            </div>
+
+            <div class="table-card">
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Team</th>
+                                <th>Goals</th>
+                                <th>Yellow</th>
+                                <th>Red</th>
+                                <th>2-Min</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var player in Model.PlayerPerformances)
+                            {
+                                <tr>
+                                    <td><a href="/Players/Details/@player.PlayerId">@player.PlayerName</a></td>
+                                    <td><a href="/Teams/Details/@player.TeamId">@player.TeamName</a></td>
+                                    <td>@player.Goals</td>
+                                    <td>@player.YellowCards</td>
+                                    <td>@player.RedCards</td>
+                                    <td>@player.TwoMinuteSuspensions</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="match-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">LEADERS</p>
+                <h2>Top Performers</h2>
+            </div>
+
+            <div class="performer-grid">
+                @foreach (var performer in Model.TopPerformers)
+                {
+                    <article>
+                        <span>@performer.Title</span>
+                        @if (performer.PlayerId > 0)
+                        {
+                            <a href="/Players/Details/@performer.PlayerId">@performer.PlayerName</a>
+                        }
+                        else
+                        {
+                            <strong>@performer.PlayerName</strong>
+                        }
+                        <p>@performer.TeamName</p>
+                        <b>@performer.StatisticValue</b>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="match-section match-section--last">
+        <div class="page-shell">
+            <div class="context-grid">
+                <section>
+                    <div class="section-heading">
+                        <p class="eyebrow">CONTEXT</p>
+                        <h2>Tournament Context</h2>
+                    </div>
+
+                    <a class="context-card" href="/Tournaments/Details/@Model.Tournament.Id">
+                        <dl>
+                            <div>
+                                <dt>Tournament name</dt>
+                                <dd>@Model.Tournament.Name</dd>
+                            </div>
+                            <div>
+                                <dt>Status</dt>
+                                <dd>@Model.Tournament.Status</dd>
+                            </div>
+                            <div>
+                                <dt>Current phase</dt>
+                                <dd>@Model.Tournament.CurrentPhase</dd>
+                            </div>
+                        </dl>
+                    </a>
+                </section>
+
+                <section>
+                    <div class="section-heading">
+                        <p class="eyebrow">TEAMS</p>
+                        <h2>Teams</h2>
+                    </div>
+
+                    <div class="team-card-grid">
+                        <a class="team-card" href="/Teams/Details/@Model.HomeTeam.Id">
+                            <strong>@Model.HomeTeam.Name</strong>
+                            <span>@Model.HomeTeam.City</span>
+                            <small>@Model.HomeTeam.CoachName</small>
+                        </a>
+                        <a class="team-card" href="/Teams/Details/@Model.AwayTeam.Id">
+                            <strong>@Model.AwayTeam.Name</strong>
+                            <span>@Model.AwayTeam.City</span>
+                            <small>@Model.AwayTeam.CoachName</small>
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+            @* Future empty states:
+            <section class="empty-state" hidden>Match has not started yet.</section>
+            <section class="empty-state" hidden>No match events available.</section>
+            <section class="empty-state" hidden>No player performances available.</section>
+            <section class="empty-state" hidden>Match statistics unavailable.</section>
+            *@
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="page-shell site-footer__inner">
+        <span>Handball Competition Manager</span>
+        <a href="/Tournaments">Tournaments</a>
+    </div>
+</footer>

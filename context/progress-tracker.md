@@ -9,28 +9,599 @@ change.
 
 ## Current Goal
 
-- Define the initial C# object model for Handball Competition Manager.
+- None.
 
 ## Completed
 
-- Read `context/features/01-entities.md`.
+- Added the design-only public Login page at `/Account/Login` from `context/features/20-login-page.md`.
+- Added `AccountController.Login()` as a GET-only view action with no authentication, login, POST, database, or Identity behavior.
+- Added the Guest-layout login card with editable email and password fields, disabled Sign In action, visual-only Google action, Sign Up and forgot-password links, role hint, breadcrumbs, and Home-style footer.
+- Added and page-scoped `wwwroot/css/login.css` with responsive behavior below 768px.
+- Verified the Login page implementation with `dotnet build`: 0 warnings and 0 errors.
+- Added the design-only public Sign Up page at `/Account/Register` from `context/features/19-register-page.md`.
+- Added `AccountController.Register()` as a GET-only view action with no authentication, registration, POST, database, or Identity behavior.
+- Added the Guest-layout registration card with editable account fields, disabled Create Account action, visual-only Google action, Sign In link, terms copy, breadcrumbs, and Home-style footer.
+- Added and page-scoped `wwwroot/css/register.css` with responsive behavior below 768px.
+- Verified the Sign Up page compiles successfully with an isolated `dotnet build -o .codex-build-register`: 0 errors; the normal output remained locked by the already-running application process.
+- Reimplemented the design-only Referee Profile page at `/Referee/Profile` from `context/features/18-referee-profile-page.md`.
+- Added repository-backed profile and assignment summaries through `IUserRepository` and the existing mock match repository, without authentication, POST actions, database access, model changes, or migrations.
+- Added the profile form, account information, four assignment cards, disabled Save/Cancel/Delete actions, and the reserved hidden unavailable state.
+- Restored Profile in the dedicated Referee layout navigation and kept the sidebar visible at all responsive breakpoints with Profile marked active on its page.
+- Added and page-scoped `wwwroot/css/referee-profile.css` with responsive behavior below 768px.
+- Verified the Referee Profile implementation with `dotnet build`: 0 warnings and 0 errors.
+- Removed the Match Reports and Results placeholder links from the shared Referee sidebar; it now contains My Matches and Sign Out only.
+- Removed the complete design-only Referee Profile implementation at the user's request: the `/Referee/Profile` controller action, profile ViewModel, Razor view, and page-specific stylesheet.
+- Restored the shared Referee sidebar to its pre-profile navigation so the existing My Matches page remains intact.
+- Confirmed the project still builds successfully after removing the Referee Profile page.
+- Re-read the required project context and `context/features/18-referee-profile-page.md`.
+- Removed the previous Referee profile view, ViewModel, and page stylesheet, then rebuilt them cleanly to match the feature specification.
+- Added the design-only Referee Profile page at `/Referee/Profile` using the dedicated Referee dashboard layout.
+- Added a typed `RefereeProfileViewModel` and composed profile and assignment data through `IUserRepository` and the existing mock match repository.
+- Added the seven-field visual-only profile form, five read-only account details, four repository-derived assignment summary cards, and exactly three disabled actions.
+- Added the hidden `Profile unavailable` state required by the feature.
+- Added `wwwroot/css/referee-profile.css`, linked only from the profile view, with responsive behavior below 768px.
+- Updated the shared Referee sidebar to contain only My Matches, Profile, and Sign Out, with Profile marked active on this page.
+- Kept the page free of authentication, authorization, POST actions, JavaScript, AJAX, EF Core, migrations, and database changes.
+- Verified the project builds successfully with `dotnet build`: 0 warnings and 0 errors.
+- Re-read `context/features/02-welcome-page.md`.
 - Checked for `AGENTS.md`; no file was present in the repository.
-- Added initial model classes in `Models/`:
-  - `Competition`
-  - `Team`
-  - `Player`
-  - `Venue`
-  - `Match`
-  - `Referee`
-- Added custom enums:
-  - `CompetitionStatus`
-  - `MatchStatus`
-  - `RefereeRole`
-- Replaced explicit many-to-many middle classes with direct EF Core navigation collections:
-  - `Team.Competitions` and `Competition.Teams`
-  - `Match.Referees` and `Referee.Matches`
-- Removed `TeamCompetition` and `MatchOfficial`.
+- Re-read `context/ui-context.md` and kept the page aligned with the dark Linear-style design system.
+- Confirmed `HomeController.cs` has an `Index()` action.
+- Confirmed `Views/Shared/_Navbar.cshtml` exists and is included by the shared layout.
+- Removed the surplus `Browse Matches` hero button because it pointed to the same `/Tournaments` route as `View Tournaments`.
+- Updated the mock scoreboard to use handball-style results:
+    - `RK Zagreb 31 - 29 RK Split`
+    - `RK Nexe 25 - 25 RK Pozega`
+- Updated the closing CTA banner to match the current spec:
+    - Headline: `Built for every role in the competition`
+    - Sign In CTA linking to `/Account/Login`
+- Verified no model classes, EF Core migrations, or database files were changed for this feature.
 - Verified the project builds successfully with `dotnet build`.
+- Re-read `context/code-standards.md` after its update.
+- Added a `Styles` section to the shared layout so page-specific CSS can load only where needed.
+- Moved home-page-specific styles from `wwwroot/css/site.css` into `wwwroot/css/home.css`.
+- Kept global design tokens, shared layout helpers, buttons, and navbar styling in `wwwroot/css/site.css`.
+- Added `wwwroot/js/home.js` for the page-specific stats count-up animation.
+- Loaded `home.css` and `home.js` only from `Views/Home/Index.cshtml`.
+- Verified `Browse Matches` remains removed.
+- Verified there are no inline style or inline JavaScript blocks in the home view.
+- Verified the project builds successfully with `dotnet build`.
+- Re-read `context/features/03-guest-tournaments.md`.
+- Added `TournamentsController` with a public `Index()` action for `/Tournaments`.
+- Added mock repository sample tournament data for the public listing page.
+- Added `ViewModels/TournamentCardViewModel.cs` for typed tournament card data without changing domain models.
+- Added `Views/Tournaments/Index.cshtml` with breadcrumbs, page header, search section, static filter chips, tournament cards, hidden future empty state, and footer.
+- Added `wwwroot/css/tournaments.css` and linked it only from the tournaments index view.
+- Kept the tournaments page disconnected from the database and did not add authentication, authorization, Create, Edit, Delete, Admin, AJAX, or autocomplete behavior.
+- Verified no EF Core migrations were created and no database files were changed.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Added a right-side `Home` link to the shared navigation before `Tournaments`.
+- Re-read `AGENTS.md` and confirmed the required context-reading workflow.
+- Re-read `context/features/03-guest-tournaments.md` and compared it against the existing tournaments implementation.
+- Confirmed `ITournamentRepository`, `MockTournamentRepository`, and dependency injection are already present.
+- Confirmed `TournamentsController` retrieves tournament data through `ITournamentRepository` instead of hardcoded controller data.
+- Confirmed the tournaments Razor view renders typed model data and contains no hardcoded tournament sample data.
+- Updated the tournaments grid CSS to match the required responsive layout:
+    - 3 cards per row on desktop.
+    - 2 cards per row on tablet.
+    - 1 card per row on mobile.
+- Removed viewport-scaled and negative-tracked typography from the tournaments page styles for more stable responsive rendering.
+- Re-read the required project context files before continuing details-page work.
+- Added the public tournament details page for `/Tournaments/Details/{id}`.
+- Added `Details(int id)` to `TournamentsController` and return `NotFound()` for invalid tournament ids.
+- Updated `TournamentsController` to load details-page data through repository interfaces only:
+    - `ITournamentRepository`
+    - `ITeamRepository`
+    - `IPlayerRepository`
+    - `IMatchRepository`
+- Added details-page presentation view models for:
+    - Tournament details composition.
+    - Team details rows.
+    - Group standings rows.
+    - Elimination bracket rounds.
+    - Player statistic leaderboards.
+- Added repository-backed mock metadata for tournament end date and current phase.
+- Added mock match status examples for scheduled and completed matches.
+- Added `Views/Tournaments/Details.cshtml`.
+- Added `wwwroot/css/tournament-details.css` and linked it only from the tournament details view.
+- Expanded the primary mock tournament to eight teams across two groups.
+- Added Group B mock standings and group-stage match data.
+- Removed postponed and canceled statuses from the mock tournament data because those statuses are no longer part of scope.
+- Added elimination match placeholders for:
+    - `A1` vs `B2`
+    - `A2` vs `B1`
+    - `Winner SF1` vs `Winner SF2`
+- Replaced the bracket board with elimination phase match cards matching the group match card design.
+- Removed the Recent Results filter controls.
+- Reordered the details page so Group Phase standings are followed by Group Matches, then Elimination Phase Matches.
+- Updated match rendering so each match card occupies one full row and is used consistently for group and elimination matches.
+- Improved match cards so teams and score are visually primary, with phase, status, date, and venue shown below the scoreline.
+- Updated `TournamentsController` so the details page receives all tournament matches instead of limiting the match list.
+- Added separate details-page view model collections for group matches and elimination matches.
+- Kept Player Statistics Leaders unchanged except for compatibility with the details page layout.
+- Kept the details page disconnected from the database and did not add authentication, authorization, JavaScript, AJAX, Create, Edit, Delete, Admin, or EF Core migration behavior.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Verified `/Players/Details/1` returns HTTP 200 and renders the required player details sections with `player-details.css` linked.
+- Re-read `context/features/05-team-detail-page.md`.
+- Added the public team details page for `/Teams/Details/{id}`.
+- Added `TeamsController` with `Details(int id)` and `NotFound()` handling for invalid team or tournament ids.
+- Loaded team details-page data through repository interfaces only:
+    - `ITeamRepository`
+    - `IPlayerRepository`
+    - `IMatchRepository`
+    - `ITournamentRepository`
+- Added `ViewModels/TeamDetailsViewModel.cs` for team details composition, tournament performance, and roster rows.
+- Added `Views/Teams/Details.cshtml` with:
+    - Breadcrumbs from Home to Tournaments to Tournament Details to Team Details.
+    - Team hero summary.
+    - Team overview stats.
+    - Team roster table.
+    - Current-tournament-only match list ordered chronologically.
+    - Four team player leaderboards.
+    - Tournament context section.
+    - Hidden future empty states.
+    - Footer.
+- Added `wwwroot/css/team-details.css` and linked it only from the team details view.
+- Added mock tournament player statistics for the expanded Group B teams so all active tournament team pages have roster statistics and leaderboards.
+- Kept the team details page disconnected from the database and did not add authentication, authorization, JavaScript, AJAX, Create, Edit, Delete, Admin, model changes, or EF Core migration behavior.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Removed the Reports placeholder from the shared Admin sidebar.
+- Updated admin feature specs so the documented sidebar no longer includes Reports:
+    - `context/features/07-admin-tournaments-page.md`
+    - `context/features/08-admin-tournament-details-page.md`
+    - `context/features/09-admin-team-page.md`
+    - `context/features/13-admin-matches-page.md`
+    - `context/features/15-admin-user-page.md`
+- Confirmed no `Reports` references remain in Admin views, the shared Admin layout, or admin feature specs.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/17-referee-matches-page.md`.
+- Added the design-only Referee My Matches dashboard for `/Referee/MyMatches`.
+- Added `RefereeController` with a public `MyMatches()` action.
+- Loaded Referee assigned match data through repository interfaces only:
+    - `IMatchRepository`
+    - `ITournamentRepository`
+    - `ITeamRepository`
+    - `IUserRepository`
+- Added `ViewModels/RefereeMyMatchesViewModel.cs` for assigned match summaries, status sections, priority cards, and table rows.
+- Added dedicated Referee dashboard layout `Views/Shared/_RefereeLayout.cshtml` with:
+    - Left sidebar.
+    - Referee-focused navigation.
+    - Top header.
+    - Main content area.
+- Added `Views/Referee/MyMatches.cshtml` with:
+    - Four summary cards.
+    - Priority match cards.
+    - Today, Upcoming, and Completed sections.
+    - Visual-only search, status filter, and tournament filter.
+    - Assigned matches table.
+    - Referee Workflow help panel.
+    - Hidden future empty state.
+- Added `Views/Referee/_RefereeMatchSection.cshtml` for compact assigned-match section rendering.
+- Added `wwwroot/css/referee-my-matches.css` and linked it only from the Referee My Matches page.
+- Updated mock referee assignments in `MockUserRepository` so the design-only page includes completed, today, and future assigned match examples.
+- Kept the Referee My Matches page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model classes, EF Core migrations, JavaScript, AJAX, or database changes.
+- Verified the project compiles successfully with `dotnet build`.
+- Verified `/Referee/MyMatches` returns HTTP 200 from a temporary local server.
+- Removed the Priority Matches section from the Referee My Matches page.
+- Removed the Referee Workflow help panel from the Referee My Matches page.
+- Removed the visual-only status and tournament filters from the Assigned Matches toolbar.
+- Updated the Referee My Matches search toolbar so the search input spans the full available width.
+- Removed now-unused Referee priority-match ViewModel and CSS surface.
+- Updated `context/features/17-referee-matches-page.md` so it documents the simplified Referee My Matches layout.
+- Confirmed no Referee priority-card, workflow-panel, status-filter, or tournament-filter references remain in the Referee page files.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager (7076)` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/16-admin-users-details-page.md`.
+- Added the design-only Admin User Details page for `/Admin/Users/Details/{id}`.
+- Added `UserDetails(int id)` to `AdminController` with `NotFound()` handling for invalid user ids.
+- Loaded Admin user details data through repository interfaces only:
+    - `IUserRepository`
+    - `ITeamRepository`
+    - `IMatchRepository`
+- Extended `IUserRepository` and `MockUserRepository` with mock user detail, assigned match id, and account activity retrieval.
+- Updated mock user ids from presentation string ids to numeric ids so the required `UserDetails(int id)` route is used consistently.
+- Added presentation-only detail fields to `UserSummaryViewModel` for profile, assignment, created-date, and tournament labels.
+- Added `ViewModels/AdminUserDetailsViewModel.cs` for role-specific assignment counts, status badges, and summary values.
+- Added `Views/Admin/UserDetails.cshtml` using the dedicated Admin layout with:
+    - Admin breadcrumbs.
+    - User profile header.
+    - Disabled Edit User, Change Role, Disable Account, Reset Password, and Delete User controls.
+    - Summary cards.
+    - Profile information.
+    - Role-specific assignments for Admin, Coach, and Referee users.
+    - Activity overview.
+    - Related entity navigation cards.
+    - Administration panel.
+    - Hidden future empty states.
+- Added `wwwroot/css/admin-user-details.css` and linked it only from the Admin user details page.
+- Kept the Admin User Details page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model classes, EF Core migrations, JavaScript, AJAX, or database changes.
+- Confirmed Admin user detail team links point to `/Admin/Teams/Details/{id}`, match links point to `/Admin/Matches/Details/{id}`, and tournament links point to `/Admin/Tournaments/Details/{id}`.
+- Verified the project compiles successfully with `dotnet build`.
+- Removed the Activity Overview section from the Admin User Details page.
+- Removed the Related Entities section from the Admin User Details page.
+- Removed now-unused activity overview CSS, `UserActivityViewModel`, and user activity repository methods/mock data.
+- Updated the Admin User Details topbar subtitle so it no longer references removed sections.
+- Confirmed no remaining `activity`, `related`, `UserActivity`, or `GetActivity` references exist in the Admin user details page, CSS, ViewModels, Controllers, Services, or Interfaces.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Updated `context/features/07-admin-tournaments-page.md` to remove the Admin tournaments quick actions panel from scope.
+- Updated the Admin tournaments page so the Tournaments section spans the full available content width.
+- Removed the Quick Actions panel from the Admin tournaments page.
+- Added a single disabled `Create Tournament` button to the top-right of the Tournaments section header.
+- Removed the visual-only `Generate Bracket` and `Export Report` buttons from the Admin tournaments page.
+- Documented that Generate Bracket belongs on a future Admin Tournament Details page and Export Report is not needed for this page.
+- Removed the visual-only status filter and sort dropdowns from the Admin tournaments toolbar.
+- Updated `context/features/07-admin-tournaments-page.md` so the Admin tournaments toolbar only includes the search input.
+- Removed the notification and profile/avatar placeholders from the Admin layout header.
+- Removed the unused notification and profile/avatar placeholder CSS.
+- Updated `context/features/07-admin-tournaments-page.md` so the Admin header no longer includes notification or profile/avatar placeholders.
+- Removed the Dashboard placeholder from the Admin sidebar navigation.
+- Updated `context/features/07-admin-tournaments-page.md` so the Admin sidebar no longer includes a Dashboard placeholder.
+- Removed the extra `Back to Tournaments` hero button from the team details page, leaving only `Back to Tournament`.
+- Confirmed normal `dotnet build` remains blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/06-player-detail-page.md`.
+- Added the public player details page for `/Players/Details/{id}`.
+- Added `PlayersController` with `Details(int id)` and `NotFound()` handling for invalid player, team, or tournament ids.
+- Loaded player details-page data through repository interfaces only:
+    - `IPlayerRepository`
+    - `ITeamRepository`
+    - `IMatchRepository`
+    - `ITournamentRepository`
+- Added `ViewModels/PlayerDetailsViewModel.cs` for player details composition, tournament performance, match performance rows, and rankings.
+- Extended `IPlayerRepository` and `MockPlayerRepository` with player match-performance data for the selected tournament.
+- Added `Views/Players/Details.cshtml` with:
+    - Breadcrumbs from Home to Tournaments to Tournament Details to Team Details to Player Details.
+    - Player hero summary.
+    - Player overview stat cards.
+    - Tournament Performance section.
+    - Tournament Match Performance table linking to `/Matches/Details/{id}`.
+    - Tournament Rankings cards.
+    - Current Team context section.
+    - Current Tournament context section.
+    - Hidden future empty states.
+    - Footer.
+- Added `wwwroot/css/player-details.css` and linked it only from the player details view.
+- Kept the player details page disconnected from the database and did not add authentication, authorization, JavaScript, AJAX, Create, Edit, Delete, Admin, model changes, or EF Core migration behavior.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/match-detail-page.md`.
+- Added the public match details page for `/Matches/Details/{id}`.
+- Added `MatchesController` with `Details(int id)` and `NotFound()` handling for invalid match ids, placeholder elimination match ids, or missing related data.
+- Loaded match details-page data through repository interfaces only:
+    - `IMatchRepository`
+    - `ITeamRepository`
+    - `IPlayerRepository`
+    - `ITournamentRepository`
+- Added `ViewModels/MatchDetailsViewModel.cs` for match details composition, totals, team comparison rows, per-player match performances, and top performers.
+- Extended `IMatchRepository` and `MockMatchRepository` with match-event retrieval by match id.
+- Extended `IPlayerRepository` and `MockPlayerRepository` with player performance retrieval by match id.
+- Expanded mock match event data for completed matches so match timelines, comparison stats, player rows, and top performers are repository-backed.
+- Added `Views/Matches/Details.cshtml` with:
+    - Breadcrumbs from Home to Tournaments to Tournament Details to Match Details.
+    - Match hero with team links, score/status/date/phase/venue/tournament context, and navigation links.
+    - Match summary stats.
+    - Team Comparison section.
+    - Match Events timeline.
+    - Player Performances table.
+    - Top Performers cards.
+    - Tournament Context section.
+    - Related Teams section.
+    - Hidden future empty states.
+    - Footer.
+- Added `wwwroot/css/match-details.css` and linked it only from the match details view.
+- Kept the match details page disconnected from the database and did not add authentication, authorization, JavaScript, AJAX, Create, Edit, Delete, Admin, model changes, or EF Core migration behavior.
+- Verified the project compiles successfully with `dotnet build`.
+- Removed the extra `Back to Tournaments` hero button from the match details page, leaving only `Back to Tournament`.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/07-admin-tournaments-page.md`.
+- Added `AdminController` with a public `Tournaments()` action for `/Admin/Tournaments`.
+- Loaded admin tournament dashboard data through `ITournamentRepository` only.
+- Added `ViewModels/AdminTournamentManagementViewModel.cs` for tournament list data and summary counts.
+- Added dedicated admin layout `Views/Shared/_AdminLayout.cshtml` with:
+    - Left sidebar.
+    - Top header.
+    - Main content area.
+    - Placeholder notification and profile controls.
+- Added `Views/Admin/Tournaments.cshtml` with:
+    - Four summary cards.
+    - Visual-only search toolbar.
+    - Visual-only status and sort dropdowns.
+    - Responsive tournament management table.
+    - View links pointing to `/Admin/Tournaments/Details/{id}`.
+    - Disabled Edit and Delete actions.
+    - Disabled quick action controls for Create Tournament, Generate Bracket, and Export Report.
+    - Hidden future empty state.
+- Added `wwwroot/css/admin-tournaments.css` and linked it only from the Admin tournaments page.
+- Kept the Admin tournaments page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create, Edit, Delete, Admin behavior, model changes, EF Core migrations, or database changes.
+- Confirmed no new authentication, database, migration, or controller/view sample-data patterns were introduced in the admin page files.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/07-admin-tournaments-page.md` and checked the existing Admin tournaments implementation against the current scope.
+- Confirmed `AdminController.Tournaments()` remains publicly accessible and depends only on `ITournamentRepository`.
+- Confirmed `Views/Admin/Tournaments.cshtml` uses the dedicated Admin layout, repository-backed model data, summary cards, visual-only search, tournament table, disabled Create/Edit/Delete actions, and `/Admin/Tournaments/Details/{id}` View links.
+- Confirmed the Admin sidebar excludes Dashboard and the Admin header excludes notification/profile/avatar placeholders.
+- Confirmed no authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model changes, EF Core migrations, database changes, or hardcoded controller/view tournament data were added for this pass.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/07-admin-tournaments-page.md` and verified the current Admin tournaments page against the full checklist.
+- Confirmed `Views/Admin/Tournaments.cshtml` links `admin-tournaments.css` only through the page `Styles` section and contains no inline styles or scripts.
+- Confirmed the dedicated Admin layout contains the required sidebar links, plain header, and no Dashboard, notification, profile, or avatar placeholders.
+- Confirmed the Admin tournaments page keeps the disabled Create/Edit/Delete controls visual-only and does not include quick actions, Generate Bracket, Export Report, status filters, or sort controls.
+- Confirmed DI maps `ITournamentRepository` to `MockTournamentRepository`, and `AdminController.Tournaments()` loads page data only through the repository interface.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/08-admin-tournament-details-page.md`.
+- Added `TournamentDetails(int id)` to `AdminController` with the route `/Admin/Tournaments/Details/{id}`.
+- Updated `AdminController` to load Admin tournament details data through repository interfaces only:
+    - `ITournamentRepository`
+    - `ITeamRepository`
+    - `IMatchRepository`
+    - `IPlayerRepository`
+- Added `ViewModels/AdminTournamentDetailsViewModel.cs` for Admin status/progress values derived from repository-backed tournament details data.
+- Added `Views/Admin/TournamentDetails.cshtml` using the dedicated Admin layout with:
+    - Admin breadcrumbs.
+    - Tournament management header.
+    - Disabled Edit Tournament, Generate Bracket, Export Report, Manage, Manage Result, and Regenerate Bracket controls.
+    - Summary cards.
+    - Status panel.
+    - Teams management table with public team links.
+    - Matches management table with public match links.
+    - Group phase standings.
+    - Elimination phase preview.
+    - Tournament leaderboards with public player links.
+    - Admin notes/warnings panel.
+    - Hidden future empty states.
+- Added `wwwroot/css/admin-tournament-details.css` and linked it only from the Admin tournament details page.
+- Added `RefereeName` to `MatchSummaryViewModel` as presentation data for the Admin matches table.
+- Added `PlayerId` to `StatisticLeaderViewModel` so Admin leaderboard rows can link to public player details pages.
+- Kept the Admin tournament details page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model classes, EF Core migrations, or database changes.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Updated the Admin tournament details page layout:
+    - Removed the standalone Elimination Phase bracket preview section.
+    - Removed the Export Report button from the tournament header actions.
+    - Removed the Admin Notes panel.
+    - Made the Status Panel a full-width section.
+    - Moved Tournament Matches below Group Phase Standings.
+    - Split Tournament Matches into Group Phase Matches and Elimination Phase Matches tables.
+- Cleaned up obsolete Admin tournament details CSS for the removed notes and bracket preview sections.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Updated Admin tournament details action labels from `View Public Page` to `View` for team and match public links.
+- Split Group Phase Matches into separate tables grouped by match group, such as Group A and Group B.
+- Added compact styling for grouped match subsections in `admin-tournament-details.css`.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/09-admin-team-page.md`.
+- Added the design-only Admin Teams Management page for `/Admin/Teams`.
+- Added `Teams()` to `AdminController`.
+- Loaded Admin teams page data through repository interfaces only:
+    - `ITeamRepository`
+    - `ITournamentRepository`
+    - `IPlayerRepository`
+    - `IMatchRepository`
+- Added `ViewModels/AdminTeamManagementViewModel.cs` for Admin team summary cards and table rows.
+- Updated the shared Admin layout so the sidebar can mark either Tournaments or Teams as active.
+- Updated the Admin sidebar Teams link to point to `/Admin/Teams`.
+- Kept the existing Admin tournaments and Admin tournament details pages marked as the active Tournaments section.
+- Added `Views/Admin/Teams.cshtml` using the dedicated Admin layout with:
+    - Four summary cards.
+    - Visual-only search toolbar.
+    - Responsive teams management table.
+    - View links pointing to `/Admin/Teams/Details/{id}`.
+    - Disabled Edit and Delete actions.
+    - Disabled Create Team action.
+    - Hidden future empty state.
+- Added `wwwroot/css/admin-teams.css` and linked it only from the Admin teams page.
+- Kept the Admin Teams page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model classes, EF Core migrations, or database changes.
+- Confirmed `Views/Admin/Teams.cshtml` links to `/Admin/Teams/Details/{id}` and does not point View actions to the public `/Teams/Details/{id}` route.
+- Confirmed no `[Authorize]` usages exist in Controllers or Views.
+- Verified the project compiles successfully with `dotnet build`.
+- Re-read `context/features/10-admin-team-details-page.md`.
+- Added the design-only Admin Team Details page for `/Admin/Teams/Details/{id}`.
+- Added `TeamDetails(int id)` to `AdminController` with `NotFound()` handling for invalid team or tournament ids.
+- Loaded Admin team details data through repository interfaces only:
+    - `ITeamRepository`
+    - `IPlayerRepository`
+    - `IMatchRepository`
+    - `ITournamentRepository`
+- Added `ViewModels/AdminTeamDetailsViewModel.cs` for Admin team details composition, roster rows, match rows, statistic cards, and readiness state.
+- Added `Views/Admin/TeamDetails.cshtml` using the dedicated Admin layout with:
+    - Admin breadcrumbs.
+    - Team header with disabled Edit Team and Manage Players buttons.
+    - Back to Teams link.
+    - Team summary cards.
+    - Players management table with public player View links and disabled Manage buttons.
+    - Tournament information with Admin tournament details link.
+    - Tournament Matches table with public match View links.
+    - Team Statistics cards with public player links.
+    - Team Management Status panel.
+    - Hidden future empty states.
+- Added `wwwroot/css/admin-team-details.css` and linked it only from the Admin team details page.
+- Kept the Admin Team Details page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model classes, EF Core migrations, JavaScript, AJAX, or database changes.
+- Verified the project compiles successfully with `dotnet build`.
+- Updated the Admin Team Details page layout:
+    - Removed the horizontal scrollbar from the Players section by using a fit-to-panel players table and stacked mobile rows.
+    - Removed the side-by-side Team Management Status box.
+    - Added a full-width Status Panel matching the Admin tournament details status panel pattern.
+    - Kept the Tournament information panel full width above the Status Panel.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Updated the Admin Team Details layout so the full-width Status Panel appears directly below the team overview summary cards.
+- Rebalanced the Players table column widths so the Actions column has enough room for `View` and `Manage` to remain on one row without text overlap.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Added a `Players` link below `Teams` in the shared Admin sidebar on `/Admin` pages, pointing to the future `/Admin/Players` route.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/11-admin-players-page.md`.
+- Added the design-only Admin Players Management page for `/Admin/Players`.
+- Added `Players()` to `AdminController`.
+- Loaded Admin players page data through repository interfaces only:
+    - `IPlayerRepository`
+    - `ITeamRepository`
+- Added `ViewModels/AdminPlayerManagementViewModel.cs` for Admin player summary cards and table rows.
+- Added `Views/Admin/Players.cshtml` using the dedicated Admin layout with:
+    - Four summary cards.
+    - Visual-only search toolbar.
+    - Responsive players management table.
+    - View links pointing to `/Admin/Players/Details/{id}`.
+    - Disabled Edit and Delete actions.
+    - Disabled Create Player action.
+    - Hidden future empty state.
+- Added `wwwroot/css/admin-players.css` and linked it only from the Admin players page.
+- Kept the Admin Players page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model classes, EF Core migrations, JavaScript, AJAX, or database changes.
+- Confirmed the shared Admin sidebar marks Players active on `/Admin/Players`.
+- Confirmed `Views/Admin/Players.cshtml` links to `/Admin/Players/Details/{id}` and does not point View actions to the public `/Players/Details/{id}` route.
+- Confirmed no `[Authorize]` usages exist in Controllers or Admin views.
+- Verified the project compiles successfully with `dotnet build`.
+- Updated the Admin Players table layout:
+    - Removed the visible player ID from the Player column.
+    - Removed the horizontal scrollbar by dropping the fixed table minimum width.
+    - Added fixed column sizing, compact table spacing, and a wider responsive stacked-table breakpoint.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/12-admin-players-details-page.md`.
+- Added the design-only Admin Player Details page for `/Admin/Players/Details/{id}`.
+- Added `PlayerDetails(int id)` to `AdminController` with `NotFound()` handling for invalid player, team, or tournament ids.
+- Loaded Admin player details data through repository interfaces only:
+    - `IPlayerRepository`
+    - `ITeamRepository`
+    - `ITournamentRepository`
+    - `IMatchRepository`
+- Added `ViewModels/AdminPlayerDetailsViewModel.cs` for Admin player details composition, recent match rows, disciplinary event rows, and performance cards.
+- Added `Views/Admin/PlayerDetails.cshtml` using the dedicated Admin layout with:
+    - Admin breadcrumbs.
+    - Player header with disabled Edit Player and Transfer Player buttons.
+    - Back to Players link.
+    - Player summary cards.
+    - Team information with an Admin team details link.
+    - Tournament statistics table with placeholder assists.
+    - Recent matches table with public match View links.
+    - Disciplinary record totals and event table.
+    - Performance overview cards.
+    - Hidden future empty states.
+- Added `wwwroot/css/admin-player-details.css` and linked it only from the Admin player details page.
+- Kept the Admin Player Details page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model classes, EF Core migrations, JavaScript, AJAX, or database changes.
+- Confirmed the shared Admin sidebar marks Players active on `/Admin/Players/Details/{id}`.
+- Confirmed team links point to `/Admin/Teams/Details/{id}` and match links point to `/Matches/Details/{id}`.
+- Verified the project compiles successfully with `dotnet build`.
+- Removed the Disciplinary Record section from the Admin Player Details page.
+- Removed the now-unused disciplinary event rows, controller helpers, and page-specific CSS for that removed section.
+- Kept yellow cards, red cards, and two-minute suspensions visible in the summary cards, tournament statistics table, and recent match card summary column.
+- Verified the project compiles successfully with `dotnet build`.
+- Re-read `context/features/13-admin-matches-page.md`.
+- Added the design-only Admin Matches Management page for `/Admin/Matches`.
+- Added `Matches()` to `AdminController`.
+- Loaded Admin matches page data through repository interfaces only:
+    - `IMatchRepository`
+    - `ITournamentRepository`
+- Added `ViewModels/AdminMatchManagementViewModel.cs` for Admin match summary cards, table rows, visual filter options, and scheduling overview values.
+- Updated the shared Admin layout so the Matches sidebar link points to `/Admin/Matches` and marks Matches as active on the Admin matches page.
+- Added `Views/Admin/Matches.cshtml` using the dedicated Admin layout with:
+    - Four summary cards.
+    - Disabled Create Match action.
+    - Visual-only search, tournament, status, and phase filters.
+    - Responsive matches management table.
+    - View links pointing to `/Admin/Matches/Details/{id}`.
+    - Disabled Edit and Delete actions.
+    - Scheduling overview cards.
+    - Hidden future empty state.
+- Added `wwwroot/css/admin-matches.css` and linked it only from the Admin matches page.
+- Kept the Admin Matches page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model classes, EF Core migrations, JavaScript, AJAX, or database changes.
+- Confirmed the shared Admin sidebar marks Matches active on `/Admin/Matches`.
+- Confirmed match View links intentionally target the future Admin details route at `/Admin/Matches/Details/{id}` rather than the existing public match details route.
+- Verified the project compiles successfully with `dotnet build`.
+- Removed the visual-only tournament, status, and phase filters from the Admin Matches toolbar.
+- Updated the Admin Matches toolbar so the search input spans the full available width.
+- Removed now-unused Admin Matches filter option data from the presentation ViewModel and controller action.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Re-read `context/features/14-admin-matches-details-page.md`.
+- Added the design-only Admin Match Details page for `/Admin/Matches/Details/{id}`.
+- Added `MatchDetails(int id)` to `AdminController` with `NotFound()` handling for invalid match ids, placeholder elimination match ids, missing tournaments, or missing teams.
+- Loaded Admin match details data through repository interfaces only:
+    - `IMatchRepository`
+    - `ITeamRepository`
+    - `IPlayerRepository`
+    - `ITournamentRepository`
+    - `IUserRepository`
+- Added `IUserRepository`, `MockUserRepository`, and `UserSummaryViewModel` for mock assigned-referee display data.
+- Registered `IUserRepository` with dependency injection using `MockUserRepository`.
+- Added `ViewModels/AdminMatchDetailsViewModel.cs` for Admin match details composition, status badges, summary placeholders, and derived administration panel states.
+- Added `Views/Admin/MatchDetails.cshtml` using the dedicated Admin layout with:
+    - Admin breadcrumbs.
+    - Match header with disabled Edit Match, Assign Referee, and Confirm Result controls.
+    - Back to Matches link.
+    - Match summary cards.
+    - Team comparison.
+    - Match events timeline with Admin player and team links.
+    - Player performances table with Admin player View links.
+    - Match administration panel with badges and disabled visual-only controls.
+    - Hidden future empty states.
+- Added `wwwroot/css/admin-match-details.css` and linked it only from the Admin match details page.
+- Kept the Admin Match Details page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model classes, EF Core migrations, JavaScript, AJAX, or database changes.
+- Confirmed player links point to `/Admin/Players/Details/{id}` and team links point to `/Admin/Teams/Details/{id}`.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Removed the Tournament Context section from the Admin Match Details page.
+- Removed the Related Teams section from the Admin Match Details page.
+- Cleaned up the now-unused Admin Match Details CSS for those removed sections and kept the Match Administration panel as a single flat section.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
+- Updated the Admin Matches table action buttons so their width is clearly greater than their height.
+- Widened the Admin Matches Actions column and reduced adjacent column widths to keep desktop table layout balanced.
+- Verified the project compiles successfully with `dotnet build`.
+- Re-read `context/features/15-admin-user-page.md`.
+- Added the design-only Admin User Management page for `/Admin/Users`.
+- Added `Users()` to `AdminController`.
+- Loaded Admin users page data through `IUserRepository` only.
+- Extended `IUserRepository` and `MockUserRepository` with mock user list retrieval.
+- Added presentation-only user assignment/status fields to `UserSummaryViewModel`.
+- Added `ViewModels/AdminUserManagementViewModel.cs` for Admin user summary counts and table rows.
+- Updated the shared Admin layout so the Users sidebar link points to `/Admin/Users` and marks Users as active.
+- Added `Views/Admin/Users.cshtml` using the dedicated Admin layout with:
+    - Four summary cards.
+    - Disabled Create User action.
+    - Visual-only search, role filter, and status filter.
+    - Responsive users management table.
+    - Colored role badges for Admin, Coach, and Referee.
+    - View links pointing to `/Admin/Users/Details/{id}`.
+    - Disabled Edit and Delete actions.
+    - Role distribution panel.
+    - Hidden future empty state.
+- Added `wwwroot/css/admin-users.css` and linked it only from the Admin users page.
+- Kept the Admin Users page disconnected from the database and did not add authentication, authorization, `[Authorize]`, Create/Edit/Delete behavior, model classes, EF Core migrations, JavaScript, AJAX, or database changes.
+- Verified the project compiles successfully with `dotnet build`.
+- Removed the visual-only role and status filters from the Admin Users toolbar.
+- Removed the separate Today, Upcoming, and Completed match sections from the Referee My Matches page.
+- Removed the now-unused Referee match-section partial and its page-specific CSS while retaining the summary counters and Assigned Matches table.
+- Removed the Match Reports and Results placeholders from the Referee sidebar.
+- Updated the Admin Users toolbar so the search input spans the full available width.
+- Updated `context/features/15-admin-user-page.md` so the Admin Users toolbar only includes the search input.
+- Confirmed normal `dotnet build` was blocked by the already-running `HandballCompetitionManager.exe` process locking the default output file.
+- Verified the project compiles successfully with `dotnet build -o .codex-build`.
+- Removed the temporary `.codex-build` verification output folder.
 
 ## In Progress
 
@@ -46,11 +617,113 @@ change.
 
 ## Architecture Decisions
 
-- Teams and competitions use direct many-to-many navigation properties because no extra data is currently needed on the relationship.
-- Matches reference `HomeTeam`, `AwayTeam`, `Competition`, and `Venue` with foreign key properties so Entity Framework Core can infer one-to-many relationships later.
-- Referees and matches use direct many-to-many navigation properties because no extra data is currently needed on the relationship.
-- Models are plain EF-friendly C# classes only; no database context, migrations, controllers, views, services, seed data, or schema updates were added.
+- The Sign Up page is presentation-only and intentionally uses no ViewModel because it renders no dynamic or repository-backed data; no model, Identity, EF Core, migration, or database changes were introduced.
+- The welcome page now uses page-specific JavaScript only for the stats animation requested in `02-welcome-page.md`; no authentication logic, model changes, EF Core migrations, or database updates were added.
+- The secondary hero CTA was intentionally removed even though the original spec listed it, because the user requested a single CTA to avoid duplicate navigation.
+- The tournaments listing uses a small ViewModel for typed static page data; no domain models, EF Core entities, database access, or persistence changes were introduced.
+- Shared navigation now includes a right-side `Home` link in addition to the brand link.
+- The tournament details page uses repository-backed mock data and presentation-only view models; no domain models or EF Core storage changes were introduced.
+- The details page now separates group-stage matches from elimination-phase matches instead of showing match status filters or bracket-specific UI.
+- The team details page uses repository-backed mock data and presentation-only view models; no domain models or EF Core storage changes were introduced.
+- Team details match filtering is based on the selected team's tournament id, then narrowed to matches where the team is home or away.
+- The player details page uses repository-backed mock data and presentation-only view models; no domain models or EF Core storage changes were introduced.
+- Player match-performance rows are exposed through `IPlayerRepository` so the controller depends only on the repositories required by `06-player-detail-page.md`.
+- The match details page uses repository-backed mock data and presentation-only view models; no domain models or EF Core storage changes were introduced.
+- Match events are exposed through `IMatchRepository` so `MatchesController` remains limited to the four repository dependencies required by `match-detail-page.md`.
+- Player match performance rows are exposed through `IPlayerRepository` for match-specific public statistics.
+- The Admin tournaments page uses repository-backed mock data and a presentation-only ViewModel; no domain models, EF Core storage changes, authentication, or authorization were introduced.
+- A dedicated admin layout is used for the Admin tournaments page so the internal management dashboard does not reuse the public guest layout as-is.
+- The Admin tournaments list is now the full-width primary management surface; only the disabled Create Tournament action remains on this page.
+- The Admin tournaments toolbar is visual-only search input; status filtering and sorting controls are not part of this page.
+- The Admin layout header is intentionally plain for now, without notification or profile/avatar placeholder controls.
+- The Admin sidebar starts with the active Tournaments link; Dashboard is not included in this design-only page.
+- The Admin tournament details page uses repository-backed mock data and presentation-only ViewModels; no domain models or EF Core storage changes were introduced.
+- The shared Admin layout remains unchanged for the details page so it stays consistent with the current Admin tournaments page, including the sidebar without a Dashboard placeholder.
+- The Admin tournament details page now treats Group Phase Standings as the primary phase overview, followed by separate Group Phase and Elimination Phase match tables instead of a standalone bracket preview.
+- Group Phase Matches on the Admin tournament details page are grouped by match `RoundName` so each group has its own compact match table.
+- The Admin Teams page uses repository-backed mock data and a presentation-only ViewModel; no domain models, EF Core storage changes, authentication, or authorization were introduced.
+- The shared Admin layout now uses page-provided active navigation state so Tournaments and Teams can be highlighted by their respective pages.
+- The shared Admin layout includes a Players sidebar link below Teams and supports a future `AdminActive` value of `Players`.
+- Admin Teams `View` links intentionally target the future Admin details route at `/Admin/Teams/Details/{id}` rather than the existing public team details route.
+- The Admin Team Details page uses repository-backed mock data and a presentation-only ViewModel; no domain models or EF Core storage changes were introduced.
+- Admin Team Details keeps player and match drill-down links on existing public detail routes while tournament context links to the Admin tournament details route.
+- Player age on the Admin Team Details roster is presentation-only derived data because current player repository summaries do not expose date-of-birth or age and the feature forbids model changes.
+- The Admin Team Details status content now uses the same full-width status-panel structure as Admin tournament details instead of a secondary side-by-side card.
+- The Admin Team Details status panel is positioned immediately after the overview summary cards so readiness is visible before roster, tournament, match, and statistics sections.
+- The Admin Players page uses repository-backed mock data and a presentation-only ViewModel; no domain models or EF Core storage changes were introduced.
+- Admin Players `View` links intentionally target the future Admin details route at `/Admin/Players/Details/{id}` rather than the existing public player details route.
+- Admin Players aggregates current mock tournament statistics through `IPlayerRepository` and uses `ITeamRepository` only to resolve team names and tournament ids for presentation.
+- The Admin Players table now prioritizes fit-to-panel desktop rendering and switches to stacked rows before a horizontal scrollbar is needed.
+- The Admin Player Details page uses repository-backed mock data and a presentation-only ViewModel; no domain models or EF Core storage changes were introduced.
+- Admin Player Details uses existing `IPlayerRepository` match-performance data for recent matches.
+- Player age, active status, assists, and fair play rating remain presentation-only placeholders because current player repository summaries do not expose date of birth, lifecycle status, assists, or formal fair-play scoring and the feature forbids model changes.
+- The Admin Matches page uses `IMatchRepository` as the primary data source and `ITournamentRepository` only to resolve tournament names and visual tournament filter options; no match data is hardcoded in the controller or view.
+- Completed matches awaiting confirmation is shown as `0` because the current mock match summary data does not expose a confirmation state and this feature forbids model changes.
+- The Admin Matches toolbar now contains search only; tournament, status, and phase filters are intentionally out of scope for the current design pass.
+- Admin Matches action buttons use a fixed minimum width and nowrap labels so View, Edit, and Delete do not render as near-square controls on desktop.
+- The Admin Match Details page uses existing match, event, player performance, team, and tournament repository data, with mock referee assignment display data supplied through `IUserRepository`; no domain model or EF Core storage changes were introduced.
+- Admin Match Details returns `NotFound()` for placeholder elimination matches where participating team ids are `0`, because there are no concrete related team records to render for those scheduled placeholders.
+- Admin Match Details uses presentation-only placeholders for attendance and match duration because current match summary data does not expose those fields and the feature forbids model changes.
+- Tournament Context and Related Teams were removed from Admin Match Details by request; tournament and team data remain loaded because the header, scoreline, comparison, event links, and player-performance rows still require them.
+- The Admin Users page uses repository-backed mock data and a presentation-only ViewModel; no domain models or EF Core storage changes were introduced.
+- User status, assigned team, assigned match count, and last-login labels are presentation-only mock fields exposed through `UserSummaryViewModel` for the design-only Admin users table.
+- The Admin Users toolbar now contains search only; role and status filters are intentionally out of scope for the current design pass.
+- The Admin User Details page uses repository-backed mock data and presentation-only ViewModels; no domain models or EF Core storage changes were introduced.
+- User ids in the mock user repository are numeric so the Admin user details route can use the required `UserDetails(int id)` signature.
+- Account created date, phone, email verification, profile completeness, system access level, managed tournaments, and assigned tournament labels remain presentation-only mock fields for the design-only Admin user details page.
+- The Admin User Details page intentionally excludes Activity Overview and Related Entities sections by request; assignment links remain inside the role-specific Assignments section.
+- The shared Admin sidebar intentionally excludes the Reports placeholder by request.
+- The Referee My Matches page uses repository-backed mock data and presentation-only ViewModels; no domain models or EF Core storage changes were introduced.
+- The Referee dashboard has its own layout instead of reusing the public guest layout or Admin layout, while matching the existing Admin dashboard design language.
+- Referee assignment uses existing mock `IUserRepository` assigned-match ids for demo referee user id `4`; this keeps controller data composition interface-based and avoids authentication behavior in the design-only step.
+- The Referee My Matches page now prioritizes summary cards, Today/Upcoming/Completed sections, and the Assigned Matches table; priority cards, workflow help, and visual filters are intentionally out of scope by request.
+- The Referee My Matches page retains Today, Upcoming, and Completed summary counts but no longer displays separate match-status sections; the Assigned Matches table remains the detailed fixture surface.
+- The Referee sidebar intentionally includes only My Matches, Profile, and Sign Out; Match Reports and Results placeholders were removed by request.
 
 ## Session Notes
 
-- Scope from `01-entities.md` is models only. Database configuration and migrations are intentionally deferred.
+- The Sign Up page normal build was blocked by running process `HandballCompetitionManager (25496)` locking the default executable; isolated output verification passed with warning `NETSDK1194` and 0 errors.
+- The Referee Profile Management verification build passed with `dotnet build` and no warnings; the page remains design-only with no POST, authentication, authorization, database, JavaScript, or migration changes.
+- Scope is limited to the welcome page, shared navigation/layout styling already in place, and progress tracker cleanup.
+- Current scope is limited to completing remaining guest tournaments listing requirements from `03-guest-tournaments.md`.
+- The first build attempt was blocked by an already-running `HandballCompetitionManager.exe` locking the output file; the process exited, and the follow-up build passed.
+- The normal `dotnet build` command was blocked by the currently running `HandballCompetitionManager` process locking `bin\Debug\net10.0\HandballCompetitionManager.exe` and `.dll`; isolated build output with `dotnet build -o .codex-build` passed.
+- `git status --short` could not run because Git reported the repository as a dubious ownership path for the sandbox user.
+- The latest details-page verification build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder.
+- The team details verification build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder.
+- The player details verification build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder.
+- Browser verification was attempted, but the in-app browser runtime failed to start in the sandbox. The route was verified with `Invoke-WebRequest` against a temporary local `dotnet run` job instead.
+- Runtime HTTP verification for the match details page was attempted, but `dotnet run` could not stay available in the sandbox because ASP.NET data-protection keys under the Windows profile path were not writable/decryptable for the sandbox user. Compile verification passed with `dotnet build`.
+- The match details button cleanup verification build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder.
+- The Admin tournaments verification build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder.
+- The latest Admin tournaments verification pass did not require implementation changes; the existing page already matched `07-admin-tournaments-page.md`.
+- The latest Admin tournaments verification build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder.
+- The latest Admin tournaments checklist verification did not require implementation changes; the existing controller, view, layout, CSS, DI, and mock repository wiring already matched `07-admin-tournaments-page.md`.
+- The latest Admin tournaments checklist build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder.
+- The Admin tournament details build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder.
+- If `localhost:5059` is already running, it may need to be restarted before `/Admin/Tournaments/Details/{id}` serves the newly added route.
+- Normal `dotnet build` was blocked by the already-running `HandballCompetitionManager (25640)` process locking `bin\Debug\net10.0\HandballCompetitionManager.exe`; isolated build output passed before cleanup.
+- The latest Admin tournament details layout build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder.
+- The latest Admin tournament details grouped-matches build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder.
+- The Admin Teams verification build passed with `dotnet build` and no warnings.
+- The Admin Team Details verification build passed with `dotnet build` and no warnings.
+- The latest Admin Team Details layout build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder; normal build was blocked by running process `HandballCompetitionManager (26912)`.
+- The latest Admin Team Details panel-position and player-action layout build passed with warning `NETSDK1194`; normal build was blocked by running process `HandballCompetitionManager (26748)`.
+- The Admin sidebar Players-link verification build passed with warning `NETSDK1194`; normal build was blocked by running process `HandballCompetitionManager (29428)`.
+- The Admin Players verification build passed with `dotnet build` and no warnings.
+- The latest Admin Players table layout build passed with warning `NETSDK1194`; normal build was blocked by running process `HandballCompetitionManager (36492)`.
+- The Admin Player Details verification build passed with `dotnet build` and no warnings.
+- The Admin Player Details disciplinary-section removal build passed with `dotnet build` and no warnings.
+- The Admin Matches verification build passed with `dotnet build` and no warnings.
+- The latest Admin Matches search-only toolbar build passed with warning `NETSDK1194`; normal build was blocked by running process `HandballCompetitionManager (26844)`.
+- The Admin Match Details verification build passed with warning `NETSDK1194`; normal build was blocked by running process `HandballCompetitionManager (13776)`.
+- The Admin Match Details section-removal build passed with warning `NETSDK1194`; normal build was blocked by running process `HandballCompetitionManager (33036)`.
+- The Admin Matches action-button sizing build passed with `dotnet build` and no warnings.
+- The latest Admin Users search-only toolbar build passed with warning `NETSDK1194`; normal build was blocked by running process `HandballCompetitionManager (31140)`.
+- The Admin User Details verification build passed with `dotnet build` and no warnings.
+- The latest Admin User Details section-removal build passed with warning `NETSDK1194`; normal build was blocked by running process `HandballCompetitionManager (21024)`.
+- The Admin sidebar Reports-removal build passed with warning `NETSDK1194`; normal build was blocked by running process `HandballCompetitionManager (7964)`.
+- The Referee My Matches build passed with `dotnet build` and no warnings.
+- Runtime route verification for `/Referee/MyMatches` returned HTTP 200 after allowing extra startup time for existing ASP.NET data-protection warnings.
+- In-app browser verification was attempted, but the browser runtime failed to start in the sandbox with `spawn setup refresh`; route and compile verification passed.
+- The latest Referee My Matches cleanup build passed with warning `NETSDK1194` because solution-level `dotnet build -o .codex-build` uses a shared output folder; normal build was blocked by running process `HandballCompetitionManager (7076)`.

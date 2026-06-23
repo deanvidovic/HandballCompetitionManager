@@ -1,0 +1,102 @@
+@model HandballCompetitionManager.ViewModels.AdminPlayerManagementViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Players";
+    ViewData["AdminTitle"] = "Player Management";
+    ViewData["AdminSubtitle"] = "Review player information, statistics and team assignments.";
+    ViewData["AdminActive"] = "Players";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-players.css" asp-append-version="true" />
+}
+
+<section class="admin-dashboard-grid" aria-label="Player summary">
+    <article class="admin-summary-card">
+        <span>Total Players</span>
+        <strong>@Model.TotalPlayers</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Active Players</span>
+        <strong>@Model.ActivePlayers</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Registered Teams</span>
+        <strong>@Model.RegisteredTeams</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Total Goals</span>
+        <strong>@Model.TotalGoals</strong>
+    </article>
+</section>
+
+<section class="admin-content-grid">
+    <div class="admin-panel admin-panel--table" aria-labelledby="players-table-title">
+        <div class="admin-panel__header admin-panel__header--actions">
+            <div>
+                <h2 id="players-table-title">Players</h2>
+                <p>Operational view of player roster assignments and tournament statistics.</p>
+            </div>
+            <button class="admin-create-button" type="button" disabled>Create Player</button>
+        </div>
+
+        <div class="admin-toolbar" aria-label="Player table controls">
+            <label class="admin-field admin-field--search">
+                <span class="visually-hidden">Search players</span>
+                <input type="search" placeholder="Search players by name, team, position, or number..." />
+            </label>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Player</th>
+                        <th scope="col">Team</th>
+                        <th scope="col">Position</th>
+                        <th scope="col">Number</th>
+                        <th scope="col">Goals</th>
+                        <th scope="col">Yellow Cards</th>
+                        <th scope="col">Red Cards</th>
+                        <th scope="col">Two-Minute Suspensions</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var player in Model.Players)
+                    {
+                        <tr>
+                            <td data-label="Player">
+                                <div class="player-cell">
+                                    <strong>@player.FullName</strong>
+                                </div>
+                            </td>
+                            <td data-label="Team">@player.TeamName</td>
+                            <td data-label="Position">@player.Position</td>
+                            <td data-label="Number"><span class="admin-number">@player.ShirtNumber</span></td>
+                            <td data-label="Goals">@player.Goals</td>
+                            <td data-label="Yellow Cards">@player.YellowCards</td>
+                            <td data-label="Red Cards">@player.RedCards</td>
+                            <td data-label="Two-Minute Suspensions">@player.TwoMinuteSuspensions</td>
+                            <td data-label="Actions">
+                                <div class="admin-actions">
+                                    <a href="/Admin/Players/Details/@player.Id">View</a>
+                                    <button type="button" disabled>Edit</button>
+                                    <button type="button" disabled>Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @* Empty state reserved for future search/filter behavior.
+        <section class="admin-empty-state" hidden>
+            <h2>No players found</h2>
+            <p>Players will appear here once they are registered to teams.</p>
+        </section>
+        *@
+    </div>
+</section>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HandballCompetitionManager</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/HandballCompetitionManager.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="referee-body">
+    <div class="referee-shell">
+        <aside class="referee-sidebar" aria-label="Referee navigation">
+            <a class="referee-brand" href="/Referee/MyMatches">
+                <span class="referee-brand__mark">HC</span>
+                <span>Referee</span>
+            </a>
+
+            <nav class="referee-nav">
+                <a class="referee-nav__link @(string.Equals(ViewData["RefereeActive"], "MyMatches") ? "referee-nav__link--active" : string.Empty)" href="/Referee/MyMatches">My Matches</a>
+                <a class="referee-nav__link @(string.Equals(ViewData["RefereeActive"], "Profile") ? "referee-nav__link--active" : string.Empty)" href="/Referee/Profile">Profile</a>
+            </nav>
+
+            <a class="referee-nav__link referee-nav__link--muted" href="#">Sign Out</a>
+        </aside>
+
+        <div class="referee-workspace">
+            <header class="referee-topbar">
+                <div>
+                    <h1>@ViewData["RefereeTitle"]</h1>
+                    <p>@ViewData["RefereeSubtitle"]</p>
+                </div>
+            </header>
+
+            <main class="referee-main" role="main">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

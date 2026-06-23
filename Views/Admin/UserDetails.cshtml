@@ -1,0 +1,196 @@
+@model HandballCompetitionManager.ViewModels.AdminUserDetailsViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin User Details";
+    ViewData["AdminTitle"] = "User Details";
+    ViewData["AdminSubtitle"] = "Review profile information, role assignment, status, and account administration.";
+    ViewData["AdminActive"] = "Users";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-user-details.css" asp-append-version="true" />
+}
+
+<nav class="admin-breadcrumbs" aria-label="Breadcrumb">
+    <a href="/Admin/Tournaments">Admin</a>
+    <span aria-hidden="true">/</span>
+    <a href="/Admin/Users">Users</a>
+    <span aria-hidden="true">/</span>
+    <span>User Details</span>
+</nav>
+
+<section class="user-detail-header">
+    <div class="user-detail-header__copy">
+        <span class="admin-role admin-role--@Model.User.Role.ToLowerInvariant()">@Model.RoleLabel</span>
+        <h2>@Model.User.FullName</h2>
+        <p>@Model.User.Email</p>
+        <dl class="user-meta-grid">
+            <div>
+                <dt>Account Status</dt>
+                <dd><span class="admin-status admin-status--@Model.User.Status.ToLowerInvariant()">@Model.User.Status</span></dd>
+            </div>
+            <div>
+                <dt>Date Created</dt>
+                <dd>@Model.User.CreatedDateLabel</dd>
+            </div>
+            <div>
+                <dt>Last Login</dt>
+                <dd>@Model.User.LastLoginLabel</dd>
+            </div>
+        </dl>
+    </div>
+    <div class="user-header-actions">
+        <button type="button" disabled>Edit User</button>
+        <button type="button" disabled>Change Role</button>
+        <button type="button" disabled>Disable Account</button>
+        <a href="/Admin/Users">Back to Users</a>
+    </div>
+</section>
+
+<section class="admin-dashboard-grid" aria-label="User summary">
+    <article class="admin-summary-card">
+        <span>Assigned Teams</span>
+        <strong>@Model.AssignedTeamsCount</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Assigned Matches</span>
+        <strong>@Model.AssignedMatches.Count</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Account Status</span>
+        <strong>@Model.User.Status</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Role</span>
+        <strong>@Model.RoleLabel</strong>
+    </article>
+</section>
+
+<section class="detail-section">
+    <div class="admin-panel__header">
+        <div>
+            <h2>Profile Information</h2>
+            <p>Read-only identity and contact details for this account.</p>
+        </div>
+    </div>
+    <dl class="profile-grid">
+        <div><dt>First Name</dt><dd>@Model.User.FirstName</dd></div>
+        <div><dt>Last Name</dt><dd>@Model.User.LastName</dd></div>
+        <div><dt>Email</dt><dd>@Model.User.Email</dd></div>
+        <div><dt>Phone</dt><dd>@Model.User.PhoneLabel</dd></div>
+        <div><dt>Role</dt><dd>@Model.RoleLabel</dd></div>
+        <div><dt>Status</dt><dd>@Model.User.Status</dd></div>
+    </dl>
+</section>
+
+<section class="detail-section">
+    <div class="admin-panel__header">
+        <div>
+            <h2>Assignments</h2>
+            <p>Current operational responsibility based on the assigned role.</p>
+        </div>
+    </div>
+
+    @if (Model.IsCoach)
+    {
+        <div class="assignment-grid">
+            <article class="assignment-card">
+                <span>Assigned Team</span>
+                @if (Model.AssignedTeam is not null)
+                {
+                    <a href="/Admin/Teams/Details/@Model.AssignedTeam.Id">@Model.AssignedTeam.Name</a>
+                }
+                else
+                {
+                    <strong>No assigned team</strong>
+                }
+            </article>
+            <article class="assignment-card">
+                <span>Tournament</span>
+                @if (Model.User.AssignedTournamentId.HasValue)
+                {
+                    <a href="/Admin/Tournaments/Details/@Model.User.AssignedTournamentId">@Model.User.AssignedTournament</a>
+                }
+                else
+                {
+                    <strong>No tournament</strong>
+                }
+            </article>
+            <article class="assignment-card">
+                <span>Number of Players</span>
+                <strong>@Model.User.AssignedTeamPlayerCount</strong>
+            </article>
+        </div>
+    }
+    else if (Model.IsReferee)
+    {
+        <div class="assignment-grid">
+            <article class="assignment-card"><span>Assigned Matches</span><strong>@Model.AssignedMatches.Count</strong></article>
+            <article class="assignment-card"><span>Upcoming Matches</span><strong>@Model.UpcomingMatches</strong></article>
+            <article class="assignment-card"><span>Completed Matches</span><strong>@Model.CompletedMatches</strong></article>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Match</th>
+                        <th scope="col">Phase</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var match in Model.AssignedMatches)
+                    {
+                        <tr>
+                            <td data-label="Match">@match.HomeTeamName vs @match.AwayTeamName</td>
+                            <td data-label="Phase">@match.RoundName</td>
+                            <td data-label="Date"><time datetime="@match.ScheduledAt.ToString("yyyy-MM-ddTHH:mm")">@match.ScheduledAt.ToString("MMM d, yyyy HH:mm")</time></td>
+                            <td data-label="Status"><span class="admin-status admin-status--@match.Status.ToLowerInvariant()">@match.Status</span></td>
+                            <td data-label="Actions">
+                                <div class="admin-actions">
+                                    <a href="/Admin/Matches/Details/@match.Id">View</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (Model.IsAdministrator)
+    {
+        <div class="assignment-grid">
+            <article class="assignment-card"><span>System Access Level</span><strong>@Model.AccessLevel</strong></article>
+            <article class="assignment-card"><span>Total Managed Tournaments</span><strong>@Model.ManagedTournamentsLabel</strong></article>
+        </div>
+    }
+</section>
+
+<section class="detail-section">
+    <div class="admin-panel__header">
+        <div>
+            <h2>Administration Panel</h2>
+            <p>Visual-only account controls for a future implementation pass.</p>
+        </div>
+    </div>
+    <div class="status-badge-grid">
+        <span class="admin-status">@((Model.IsActive ? "Account Active" : "Account Inactive"))</span>
+        <span class="admin-status">@((Model.EmailVerified ? "Email Verified" : "Email Pending"))</span>
+        <span class="admin-status">@((Model.ProfileComplete ? "Profile Complete" : "Profile Incomplete"))</span>
+    </div>
+    <div class="admin-button-grid">
+        <button type="button" disabled>Edit User</button>
+        <button type="button" disabled>Reset Password</button>
+        <button type="button" disabled>Change Role</button>
+        <button type="button" disabled>Delete User</button>
+    </div>
+
+    @* Future empty states:
+    <section class="admin-empty-state" hidden>No assigned team.</section>
+    <section class="admin-empty-state" hidden>No assigned matches.</section>
+    *@
+</section>

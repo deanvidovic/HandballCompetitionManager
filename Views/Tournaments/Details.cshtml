@@ -1,0 +1,277 @@
+@model HandballCompetitionManager.ViewModels.TournamentDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Tournament.Name;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/tournament-details.css" asp-append-version="true" />
+}
+
+<section class="details-hero">
+    <div class="page-shell">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">/</span>
+            <a href="/Tournaments">Tournaments</a>
+            <span aria-hidden="true">/</span>
+            <span>Tournament Details</span>
+        </nav>
+
+        <div class="details-hero__grid">
+            <div class="details-hero__copy">
+                <span class="status-badge">@Model.Tournament.Status</span>
+                <h1>@Model.Tournament.Name</h1>
+                <p>@Model.Tournament.Description</p>
+                <a class="button button--secondary" href="/Tournaments">Back to Tournaments</a>
+            </div>
+
+            <dl class="summary-panel">
+                <div>
+                    <dt>Location</dt>
+                    <dd>@Model.Tournament.Location</dd>
+                </div>
+                <div>
+                    <dt>Start date</dt>
+                    <dd>@Model.Tournament.StartDate</dd>
+                </div>
+                <div>
+                    <dt>End date</dt>
+                    <dd>@Model.Tournament.EndDate</dd>
+                </div>
+                <div>
+                    <dt>Teams</dt>
+                    <dd>@Model.Tournament.TeamCount</dd>
+                </div>
+                <div>
+                    <dt>Matches</dt>
+                    <dd>@Model.Tournament.MatchCount</dd>
+                </div>
+                <div>
+                    <dt>Current phase</dt>
+                    <dd>@Model.Tournament.CurrentPhase</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</section>
+
+<main class="details-main">
+    <section class="details-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">TEAMS</p>
+                <h2>Participating Teams</h2>
+            </div>
+
+            <div class="team-grid">
+                @foreach (var team in Model.Teams)
+                {
+                    <a class="team-card" href="/Teams/Details/@team.Id">
+                        <div>
+                            <h3>@team.Name</h3>
+                            <p>@team.City</p>
+                        </div>
+                        <dl>
+                            <div>
+                                <dt>Coach</dt>
+                                <dd>@team.CoachName</dd>
+                            </div>
+                            <div>
+                                <dt>Players</dt>
+                                <dd>@team.PlayerCount</dd>
+                            </div>
+                            <div>
+                                <dt>Record</dt>
+                                <dd>@team.Record</dd>
+                            </div>
+                            <div>
+                                <dt>Goals</dt>
+                                <dd>@team.GoalsScored / @team.GoalsConceded</dd>
+                            </div>
+                        </dl>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="details-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">STANDINGS</p>
+                <h2>Group Phase</h2>
+            </div>
+
+            <div class="group-grid">
+                @foreach (var group in Model.Groups)
+                {
+                    <article class="table-card">
+                        <h3>@group.Name</h3>
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Pos</th>
+                                        <th>Team</th>
+                                        <th>Played</th>
+                                        <th>Wins</th>
+                                        <th>Draws</th>
+                                        <th>Losses</th>
+                                        <th>GF</th>
+                                        <th>GA</th>
+                                        <th>GD</th>
+                                        <th>Pts</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in group.Standings)
+                                    {
+                                        <tr class="@(row.Position <= 2 ? "is-qualifying" : null)">
+                                            <td>@row.Position</td>
+                                            <td>@row.Standing.TeamName</td>
+                                            <td>@row.Standing.Played</td>
+                                            <td>@row.Standing.Won</td>
+                                            <td>@row.Standing.Drawn</td>
+                                            <td>@row.Standing.Lost</td>
+                                            <td>@row.Standing.GoalsFor</td>
+                                            <td>@row.Standing.GoalsAgainst</td>
+                                            <td>@row.GoalDifference</td>
+                                            <td>@row.Standing.Points</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="details-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">MATCHES</p>
+                <h2>Group Matches</h2>
+            </div>
+
+            <div class="match-list">
+                @foreach (var match in Model.GroupMatches)
+                {
+                    <a class="result-card" href="/Matches/Details/@match.Id">
+                        <div class="result-card__scoreline">
+                            <span>@match.HomeTeamName</span>
+                            <strong>@(match.HomeScore.HasValue ? $"{match.HomeScore} - {match.AwayScore}" : "vs")</strong>
+                            <span>@match.AwayTeamName</span>
+                        </div>
+                        <dl class="result-card__meta">
+                            <div>
+                                <dt>Phase</dt>
+                                <dd>@match.RoundName</dd>
+                            </div>
+                            <div>
+                                <dt>Status</dt>
+                                <dd>@match.Status</dd>
+                            </div>
+                            <div>
+                                <dt>Date</dt>
+                                <dd>@match.ScheduledAt.ToString("MMM d, yyyy")</dd>
+                            </div>
+                            <div>
+                                <dt>Venue</dt>
+                                <dd>@match.VenueName</dd>
+                            </div>
+                        </dl>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="details-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">ELIMINATION</p>
+                <h2>Elimination Phase Matches</h2>
+            </div>
+
+            <div class="match-list">
+                @foreach (var match in Model.EliminationMatches)
+                {
+                    <a class="result-card" href="/Matches/Details/@match.Id">
+                        <div class="result-card__scoreline">
+                            <span>@match.HomeTeamName</span>
+                            <strong>@(match.HomeScore.HasValue ? $"{match.HomeScore} - {match.AwayScore}" : "vs")</strong>
+                            <span>@match.AwayTeamName</span>
+                        </div>
+                        <dl class="result-card__meta">
+                            <div>
+                                <dt>Phase</dt>
+                                <dd>@match.RoundName</dd>
+                            </div>
+                            <div>
+                                <dt>Status</dt>
+                                <dd>@match.Status</dd>
+                            </div>
+                            <div>
+                                <dt>Date</dt>
+                                <dd>@match.ScheduledAt.ToString("MMM d, yyyy")</dd>
+                            </div>
+                            <div>
+                                <dt>Venue</dt>
+                                <dd>@match.VenueName</dd>
+                            </div>
+                        </dl>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="details-section details-section--last">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">STATISTICS</p>
+                <h2>Player Statistics Leaders</h2>
+            </div>
+
+            <div class="leaderboard-grid">
+                @foreach (var leaderboard in Model.PlayerLeaderboards)
+                {
+                    <article class="leaderboard-card">
+                        <h3>@leaderboard.Title</h3>
+                        <ol>
+                            @foreach (var leader in leaderboard.Leaders)
+                            {
+                                <li>
+                                    <span class="leader-rank">@leader.Rank</span>
+                                    <span>
+                                        <strong>@leader.PlayerName</strong>
+                                        <small>@leader.TeamName</small>
+                                    </span>
+                                    <b>@leader.Value</b>
+                                </li>
+                            }
+                        </ol>
+                        <p>@leaderboard.StatLabel</p>
+                    </article>
+                }
+            </div>
+
+            @* Future empty states:
+            <section class="empty-state" hidden>No teams registered yet.</section>
+            <section class="empty-state" hidden>Group phase has not started yet.</section>
+            <section class="empty-state" hidden>Elimination phase has not started yet.</section>
+            <section class="empty-state" hidden>No player statistics available yet.</section>
+            *@
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="page-shell site-footer__inner">
+        <span>Handball Competition Manager</span>
+        <a href="/Tournaments">Tournaments</a>
+    </div>
+</footer>

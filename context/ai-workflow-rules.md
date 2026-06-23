@@ -58,4 +58,4 @@ changes:
 1. The current unit works end to end within its defined scope
 2. No invariant defined in `architecture.md` was violated
 3. `progress-tracker.md` reflects the completed work
-4. `npx expo export` passes
+4. `dotnet build` passes

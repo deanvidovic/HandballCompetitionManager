@@ -1,8 +1,105 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Welcome";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
+
+<section class="hero-section">
+    <div class="page-shell hero-grid">
+        <div class="hero-copy">
+            <p class="eyebrow">HANDBALL COMPETITION MANAGER</p>
+            <h1>Organize. Manage. Compete.</h1>
+            <p class="hero-subhead">The complete platform for managing handball tournaments &mdash; from team registration to final results.</p>
+            <div class="hero-actions">
+                <a class="button button--primary" href="/Tournaments">View Tournaments</a>
+            </div>
+        </div>
+
+        <div class="scoreboard-panel" aria-label="Match scoreboard preview">
+            <div class="scoreboard-panel__header">
+                <span>Live tournament board</span>
+                <span class="status-badge">Preview</span>
+            </div>
+            <div class="scoreboard-match">
+                <span>RK Zagreb</span>
+                <strong>31 &ndash; 29</strong>
+                <span>RK Split</span>
+            </div>
+            <div class="scoreboard-match">
+                <span>RK Nexe</span>
+                <strong>25 &ndash; 25</strong>
+                <span>RK Po&#382;ega</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-block">
+    <div class="page-shell">
+        <div class="section-heading">
+            <p class="eyebrow">FEATURES</p>
+            <h2>Everything you need to run a tournament</h2>
+        </div>
+        <div class="feature-grid">
+            <article class="feature-card">
+                <div class="feature-card__icon" aria-hidden="true">&#127942;</div>
+                <h3>Tournament Management</h3>
+                <p>Create and manage tournaments, set brackets, and track progress.</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-card__icon" aria-hidden="true">&#129342;</div>
+                <h3>Team &amp; Player Profiles</h3>
+                <p>Register clubs, manage rosters, and track player details.</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-card__icon" aria-hidden="true">&#128203;</div>
+                <h3>Live Match Events</h3>
+                <p>Record goals, cards, and suspensions in real time.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="page-shell stats-grid" aria-label="Platform statistics">
+        <div class="stat-item">
+            <strong class="stat-number" data-stat-target="12" data-stat-suffix="+">0+</strong>
+            <span>Tournaments</span>
+        </div>
+        <div class="stat-item">
+            <strong class="stat-number" data-stat-target="48">0</strong>
+            <span>Teams</span>
+        </div>
+        <div class="stat-item">
+            <strong class="stat-number" data-stat-target="320">0</strong>
+            <span>Players</span>
+        </div>
+        <div class="stat-item">
+            <strong class="stat-number" data-stat-target="200" data-stat-suffix="+">0+</strong>
+            <span>Matches Played</span>
+        </div>
+    </div>
+</section>
+
+<section class="section-block">
+    <div class="page-shell">
+        <div class="cta-banner">
+            <h2>Built for every role in the competition</h2>
+            <p>Administrators manage tournaments, Referees record match events, and Coaches track team performance through a single platform.</p>
+            <a class="button button--primary" href="/Account/Login">Sign In</a>
+        </div>
+    </div>
+</section>
+
+<footer class="site-footer">
+    <div class="page-shell site-footer__inner">
+        <span>Handball Competition Manager</span>
+        <a href="/Tournaments">Tournaments</a>
+    </div>
+</footer>
+
+@section Scripts {
+    <script src="~/js/home.js" asp-append-version="true"></script>
+}

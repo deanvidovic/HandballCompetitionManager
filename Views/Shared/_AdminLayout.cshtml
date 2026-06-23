@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HandballCompetitionManager</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/HandballCompetitionManager.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="admin-body">
+    <div class="admin-shell">
+        <aside class="admin-sidebar" aria-label="Admin navigation">
+            <a class="admin-brand" href="/Admin/Tournaments">
+                <span class="admin-brand__mark">HC</span>
+                <span>Manager</span>
+            </a>
+
+            <nav class="admin-nav">
+                <a class="admin-nav__link @(string.Equals(ViewData["AdminActive"], "Tournaments") ? "admin-nav__link--active" : string.Empty)" href="/Admin/Tournaments">Tournaments</a>
+                <a class="admin-nav__link @(string.Equals(ViewData["AdminActive"], "Teams") ? "admin-nav__link--active" : string.Empty)" href="/Admin/Teams">Teams</a>
+                <a class="admin-nav__link @(string.Equals(ViewData["AdminActive"], "Players") ? "admin-nav__link--active" : string.Empty)" href="/Admin/Players">Players</a>
+                <a class="admin-nav__link @(string.Equals(ViewData["AdminActive"], "Matches") ? "admin-nav__link--active" : string.Empty)" href="/Admin/Matches">Matches</a>
+                <a class="admin-nav__link @(string.Equals(ViewData["AdminActive"], "Users") ? "admin-nav__link--active" : string.Empty)" href="/Admin/Users">Users</a>
+            </nav>
+
+            <a class="admin-nav__link admin-nav__link--muted" href="#">Sign Out</a>
+        </aside>
+
+        <div class="admin-workspace">
+            <header class="admin-topbar">
+                <div>
+                    <h1>@ViewData["AdminTitle"]</h1>
+                    <p>@ViewData["AdminSubtitle"]</p>
+                </div>
+            </header>
+
+            <main class="admin-main" role="main">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

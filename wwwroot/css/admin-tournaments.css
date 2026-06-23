@@ -1,0 +1,371 @@
+.admin-body {
+  min-height: 100vh;
+  background: var(--canvas);
+}
+
+.admin-shell {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: 264px minmax(0, 1fr);
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  gap: 28px;
+  border-right: 1px solid var(--hairline);
+  background: #0f1011;
+  padding: 24px 16px;
+}
+
+.admin-brand,
+.admin-nav__link {
+  display: flex;
+  align-items: center;
+}
+
+.admin-brand {
+  gap: 10px;
+  padding: 0 8px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.admin-brand__mark {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 8px;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.admin-nav {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-nav__link {
+  min-height: 40px;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--ink-subtle);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin-nav__link:hover,
+.admin-nav__link--active {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.admin-nav__link--active {
+  border: 1px solid var(--hairline-strong);
+}
+
+.admin-nav__link--muted {
+  margin-top: auto;
+}
+
+.admin-workspace {
+  min-width: 0;
+}
+
+.admin-topbar {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--hairline);
+  background: rgba(1, 1, 2, 0.94);
+  padding: 18px 32px;
+}
+
+.admin-topbar h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.admin-topbar p {
+  margin: 6px 0 0;
+  color: var(--ink-subtle);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin-main {
+  padding: 32px;
+}
+
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-summary-card,
+.admin-panel {
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--surface-1);
+}
+
+.admin-summary-card {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.admin-summary-card span {
+  color: var(--ink-subtle);
+  font-size: 13px;
+}
+
+.admin-summary-card strong {
+  color: var(--ink);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.admin-content-grid {
+  margin-top: 20px;
+}
+
+.admin-panel {
+  min-width: 0;
+  padding: 20px;
+}
+
+.admin-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.admin-panel__header h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.admin-panel__header p {
+  margin: 6px 0 0;
+  color: var(--ink-subtle);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin-panel__header--actions {
+  align-items: center;
+}
+
+.admin-toolbar {
+  margin-bottom: 18px;
+}
+
+.admin-field {
+  display: block;
+  max-width: 420px;
+}
+
+.admin-field input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--canvas);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+.admin-field input::placeholder {
+  color: var(--ink-tertiary, #62666d);
+}
+
+.admin-field input:focus {
+  border-color: var(--primary-focus);
+  outline: 2px solid rgba(94, 105, 209, 0.35);
+  outline-offset: 0;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 920px;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  border-bottom: 1px solid var(--hairline);
+  padding: 14px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-table th {
+  color: var(--ink-subtle);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin-table td {
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+
+.tournament-cell {
+  display: grid;
+  gap: 4px;
+}
+
+.tournament-cell strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.tournament-cell span {
+  color: var(--ink-subtle);
+  font-size: 12px;
+}
+
+.admin-status {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  border-radius: 9999px;
+  background: var(--surface-2);
+  color: var(--ink-muted);
+  font-size: 12px;
+  padding: 2px 8px;
+}
+
+.admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-actions a,
+.admin-actions button,
+.admin-create-button {
+  min-height: 34px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 10px;
+}
+
+.admin-actions a:hover {
+  border-color: var(--primary-focus);
+  color: #ffffff;
+}
+
+.admin-actions button:disabled,
+.admin-create-button:disabled {
+  color: var(--ink-tertiary, #62666d);
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.admin-empty-state {
+  border: 1px dashed var(--hairline-strong);
+  border-radius: 12px;
+  padding: 28px;
+  text-align: center;
+}
+
+.admin-empty-state h2 {
+  margin: 0 0 8px;
+}
+
+.admin-empty-state p {
+  margin: 0;
+  color: var(--ink-subtle);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 1120px) {
+  .admin-dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .admin-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .admin-main {
+    padding: 20px;
+  }
+
+  .admin-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-field {
+    max-width: none;
+  }
+
+  .admin-panel__header--actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-create-button {
+    width: 100%;
+  }
+}

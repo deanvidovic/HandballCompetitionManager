@@ -1,0 +1,210 @@
+@model HandballCompetitionManager.ViewModels.AdminMatchDetailsViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Match Details";
+    ViewData["AdminTitle"] = "Match Details";
+    ViewData["AdminSubtitle"] = "Review match status, referee assignment, teams, events, and player statistics.";
+    ViewData["AdminActive"] = "Matches";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-match-details.css" asp-append-version="true" />
+}
+
+<nav class="admin-breadcrumbs" aria-label="Breadcrumb">
+    <a href="/Admin/Tournaments">Admin</a>
+    <span aria-hidden="true">/</span>
+    <a href="/Admin/Matches">Matches</a>
+    <span aria-hidden="true">/</span>
+    <span>Match Details</span>
+</nav>
+
+<section class="match-detail-header">
+    <div class="match-detail-header__copy">
+        <span class="admin-status admin-status--@Model.Match.Status.ToLowerInvariant().Replace(" ", "-")">@Model.Match.Status</span>
+        <div class="match-scoreline">
+            <a href="/Admin/Teams/Details/@Model.HomeTeam.Id">@Model.HomeTeam.Name</a>
+            <strong>@Model.Score</strong>
+            <a href="/Admin/Teams/Details/@Model.AwayTeam.Id">@Model.AwayTeam.Name</a>
+        </div>
+        <dl class="match-meta-grid">
+            <div>
+                <dt>Tournament</dt>
+                <dd>@Model.Tournament.Name</dd>
+            </div>
+            <div>
+                <dt>Phase</dt>
+                <dd>@Model.Match.RoundName</dd>
+            </div>
+            <div>
+                <dt>Date &amp; Time</dt>
+                <dd><time datetime="@Model.Match.ScheduledAt.ToString("yyyy-MM-ddTHH:mm")">@Model.Match.ScheduledAt.ToString("MMM d, yyyy HH:mm")</time></dd>
+            </div>
+            <div>
+                <dt>Venue</dt>
+                <dd>@Model.Match.VenueName</dd>
+            </div>
+            <div>
+                <dt>Assigned Referee</dt>
+                <dd>@Model.AssignedRefereeName</dd>
+            </div>
+        </dl>
+    </div>
+    <div class="match-header-actions">
+        <button type="button" disabled>Edit Match</button>
+        <button type="button" disabled>Assign Referee</button>
+        <button type="button" disabled>Confirm Result</button>
+        <a href="/Admin/Matches">Back to Matches</a>
+    </div>
+</section>
+
+<section class="admin-dashboard-grid" aria-label="Match summary">
+    <article class="admin-summary-card">
+        <span>Total Goals</span>
+        <strong>@Model.Totals.TotalGoals</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Yellow Cards</span>
+        <strong>@Model.Totals.YellowCards</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Red Cards</span>
+        <strong>@Model.Totals.RedCards</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Two-Min Suspensions</span>
+        <strong>@Model.Totals.TwoMinuteSuspensions</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Attendance</span>
+        <strong>@Model.AttendanceLabel</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Match Duration</span>
+        <strong>@Model.DurationLabel</strong>
+    </article>
+</section>
+
+<section class="detail-section">
+    <div class="admin-panel__header">
+        <div>
+            <h2>Team Comparison</h2>
+            <p>Side-by-side disciplinary and scoring totals for both teams.</p>
+        </div>
+    </div>
+    <div class="comparison-grid">
+        <article class="comparison-card">
+            <a href="/Admin/Teams/Details/@Model.HomeComparison.TeamId">@Model.HomeComparison.TeamName</a>
+            <dl>
+                <div><dt>Goals</dt><dd>@Model.HomeComparison.Goals</dd></div>
+                <div><dt>Yellow Cards</dt><dd>@Model.HomeComparison.YellowCards</dd></div>
+                <div><dt>Red Cards</dt><dd>@Model.HomeComparison.RedCards</dd></div>
+                <div><dt>Two-Min Suspensions</dt><dd>@Model.HomeComparison.TwoMinuteSuspensions</dd></div>
+            </dl>
+        </article>
+        <article class="comparison-card">
+            <a href="/Admin/Teams/Details/@Model.AwayComparison.TeamId">@Model.AwayComparison.TeamName</a>
+            <dl>
+                <div><dt>Goals</dt><dd>@Model.AwayComparison.Goals</dd></div>
+                <div><dt>Yellow Cards</dt><dd>@Model.AwayComparison.YellowCards</dd></div>
+                <div><dt>Red Cards</dt><dd>@Model.AwayComparison.RedCards</dd></div>
+                <div><dt>Two-Min Suspensions</dt><dd>@Model.AwayComparison.TwoMinuteSuspensions</dd></div>
+            </dl>
+        </article>
+    </div>
+</section>
+
+<section class="detail-section">
+    <div class="admin-panel__header">
+        <div>
+            <h2>Match Events</h2>
+            <p>Chronological timeline of goals and disciplinary events.</p>
+        </div>
+    </div>
+    <div class="event-timeline">
+        @foreach (var matchEvent in Model.Events)
+        {
+            <article class="event-card">
+                <span>@matchEvent.Minute'</span>
+                <div>
+                    <a href="/Admin/Players/Details/@matchEvent.PlayerId">@matchEvent.PlayerName</a>
+                    <p>
+                        <a href="/Admin/Teams/Details/@matchEvent.TeamId">@matchEvent.TeamName</a>
+                        <b>@matchEvent.EventType</b>
+                    </p>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+<section class="detail-section">
+    <div class="admin-panel__header">
+        <div>
+            <h2>Player Performances</h2>
+            <p>Per-player match totals for scoring and discipline.</p>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table player-performance-table">
+            <thead>
+                <tr>
+                    <th scope="col">Player</th>
+                    <th scope="col">Team</th>
+                    <th scope="col">Goals</th>
+                    <th scope="col">Yellow Cards</th>
+                    <th scope="col">Red Cards</th>
+                    <th scope="col">Two-Min Suspensions</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var player in Model.PlayerPerformances)
+                {
+                    <tr>
+                        <td data-label="Player"><a href="/Admin/Players/Details/@player.PlayerId">@player.PlayerName</a></td>
+                        <td data-label="Team"><a href="/Admin/Teams/Details/@player.TeamId">@player.TeamName</a></td>
+                        <td data-label="Goals">@player.Goals</td>
+                        <td data-label="Yellow Cards">@player.YellowCards</td>
+                        <td data-label="Red Cards">@player.RedCards</td>
+                        <td data-label="Two-Min Suspensions">@player.TwoMinuteSuspensions</td>
+                        <td data-label="Actions">
+                            <div class="admin-actions">
+                                <a href="/Admin/Players/Details/@player.PlayerId">View</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="detail-section">
+    <div class="admin-panel__header">
+        <div>
+            <h2>Match Administration</h2>
+            <p>Administrative readiness and result control surface.</p>
+        </div>
+    </div>
+    <div class="status-badge-grid">
+        <span class="admin-status">@((Model.HasAssignedReferee ? "Referee Assigned" : "Referee Not Assigned"))</span>
+        <span class="admin-status">@((Model.TeamSheetsSubmitted ? "Team Sheets Submitted" : "Team Sheets Pending"))</span>
+        <span class="admin-status">@((Model.MatchConfirmed ? "Match Confirmed" : "Match Not Confirmed"))</span>
+        <span class="admin-status">@((Model.StatisticsComplete ? "Statistics Complete" : "Statistics Pending"))</span>
+    </div>
+    <div class="admin-button-grid">
+        <button type="button" disabled>Edit Match</button>
+        <button type="button" disabled>Assign Referee</button>
+        <button type="button" disabled>Edit Result</button>
+        <button type="button" disabled>Reopen Match</button>
+    </div>
+
+    @* Future empty states:
+    <section class="admin-empty-state" hidden>No match events available.</section>
+    <section class="admin-empty-state" hidden>No player performances available.</section>
+    <section class="admin-empty-state" hidden>Referee has not been assigned.</section>
+    <section class="admin-empty-state" hidden>Match has not started.</section>
+    *@
+</section>

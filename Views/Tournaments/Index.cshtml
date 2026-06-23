@@ -1,0 +1,93 @@
+@model IReadOnlyList<HandballCompetitionManager.ViewModels.TournamentCardViewModel>
+
+@{
+    ViewData["Title"] = "Tournaments";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/tournaments.css" asp-append-version="true" />
+}
+
+<section class="tournaments-hero">
+    <div class="page-shell">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">/</span>
+            <span>Tournaments</span>
+        </nav>
+
+        <div class="tournaments-header">
+            <p class="eyebrow">PUBLIC TOURNAMENTS</p>
+            <h1>Browse handball tournaments</h1>
+            <p>Explore active and upcoming competitions, follow match schedules, results, standings, and player statistics.</p>
+        </div>
+
+        <section class="tournament-search" aria-labelledby="tournament-search-title">
+            <div>
+                <h2 id="tournament-search-title">Find a tournament</h2>
+                <p>Type to filter tournaments by name, location, or status.</p>
+            </div>
+            <label class="search-field">
+                <span class="visually-hidden">Search tournaments</span>
+                <input type="search" placeholder="Search tournaments by name, location, or status..." />
+            </label>
+        </section>
+    </div>
+</section>
+
+<section class="tournaments-section">
+    <div class="page-shell">
+        <div class="filter-chips" aria-label="Tournament filters">
+            <button class="filter-chip filter-chip--active" type="button">All</button>
+            <button class="filter-chip" type="button">Upcoming</button>
+            <button class="filter-chip" type="button">Active</button>
+            <button class="filter-chip" type="button">Completed</button>
+        </div>
+
+        <div class="tournament-grid">
+            @foreach (var tournament in Model)
+            {
+                <article class="tournament-card">
+                    <div class="tournament-card__header">
+                        <h2>@tournament.Name</h2>
+                        <span class="status-badge">@tournament.Status</span>
+                    </div>
+                    <dl class="tournament-meta">
+                        <div>
+                            <dt>Location</dt>
+                            <dd>@tournament.Location</dd>
+                        </div>
+                        <div>
+                            <dt>Start date</dt>
+                            <dd>@tournament.StartDate</dd>
+                        </div>
+                        <div>
+                            <dt>Teams</dt>
+                            <dd>@tournament.TeamCount</dd>
+                        </div>
+                        <div>
+                            <dt>Matches</dt>
+                            <dd>@tournament.MatchCount</dd>
+                        </div>
+                    </dl>
+                    <p>@tournament.Description</p>
+                    <a class="button button--primary" href="/Tournaments/Details/@tournament.Id">View Details</a>
+                </article>
+            }
+        </div>
+
+        @* Empty state for future search/filter behavior.
+        <section class="empty-state" hidden>
+            <h2>No tournaments found</h2>
+            <p>Try adjusting your search or check back later for new competitions.</p>
+        </section>
+        *@
+    </div>
+</section>
+
+<footer class="site-footer">
+    <div class="page-shell site-footer__inner">
+        <span>Handball Competition Manager</span>
+        <a href="/Tournaments">Tournaments</a>
+    </div>
+</footer>

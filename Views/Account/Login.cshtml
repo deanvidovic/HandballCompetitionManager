@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Sign In";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+}
+
+<div class="login-page">
+    <div class="page-shell">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">&rarr;</span>
+            <span aria-current="page">Sign In</span>
+        </nav>
+
+        <header class="login-header">
+            <h1>Sign in to your account</h1>
+            <p>Access your tournaments, matches, teams, and profile information.</p>
+        </header>
+
+        <section class="login-card" aria-label="Sign in to your account">
+            <form class="login-form">
+                <div class="form-field">
+                    <label for="email">Email Address</label>
+                    <input id="email" name="email" type="email" autocomplete="email" />
+                </div>
+
+                <div class="form-field">
+                    <div class="password-label-row">
+                        <label for="password">Password</label>
+                        <a href="#">Forgot password?</a>
+                    </div>
+                    <input id="password" name="password" type="password" autocomplete="current-password" />
+                </div>
+
+                <button class="button button--primary sign-in-button" type="button" disabled>Sign In</button>
+            </form>
+
+            <p class="sign-up-prompt">Don't have an account? <a href="/Account/Register">Sign Up</a></p>
+
+            <div class="oauth-divider"><span>or</span></div>
+
+            <button class="button google-button" type="button">
+                <span class="google-icon" aria-hidden="true">G</span>
+                Continue with Google
+            </button>
+
+            <aside class="role-hint">
+                Administrators, Coaches, and Referees can sign in to access their dashboards.
+            </aside>
+        </section>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="page-shell site-footer__inner">
+        <span>Handball Competition Manager</span>
+        <a href="/Tournaments">Tournaments</a>
+    </div>
+</footer>

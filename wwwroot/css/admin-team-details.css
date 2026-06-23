@@ -1,0 +1,590 @@
+.admin-body {
+  min-height: 100vh;
+  background: var(--canvas);
+}
+
+.admin-shell {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: 264px minmax(0, 1fr);
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  gap: 28px;
+  border-right: 1px solid var(--hairline);
+  background: #0f1011;
+  padding: 24px 16px;
+}
+
+.admin-brand,
+.admin-nav__link {
+  display: flex;
+  align-items: center;
+}
+
+.admin-brand {
+  gap: 10px;
+  padding: 0 8px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.admin-brand__mark {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 8px;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.admin-nav {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-nav__link {
+  min-height: 40px;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--ink-subtle);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin-nav__link:hover,
+.admin-nav__link--active {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.admin-nav__link--active {
+  border: 1px solid var(--hairline-strong);
+}
+
+.admin-nav__link--muted {
+  margin-top: auto;
+}
+
+.admin-workspace {
+  min-width: 0;
+}
+
+.admin-topbar {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--hairline);
+  background: rgba(1, 1, 2, 0.94);
+  padding: 18px 32px;
+}
+
+.admin-topbar h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.admin-topbar p {
+  margin: 6px 0 0;
+  color: var(--ink-subtle);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin-main {
+  padding: 32px;
+}
+
+.admin-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  color: var(--ink-subtle);
+  font-size: 14px;
+}
+
+.admin-breadcrumbs a:hover {
+  color: var(--ink);
+}
+
+.admin-details-hero,
+.admin-metric-grid article,
+.admin-panel {
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--surface-1);
+}
+
+.admin-details-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  padding: 24px;
+}
+
+.admin-kicker {
+  color: var(--ink-subtle);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.admin-details-hero h2 {
+  margin: 14px 0 0;
+  color: var(--ink);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.admin-hero-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 22px 0 0;
+}
+
+.admin-hero-meta div,
+.admin-info-list div {
+  border-top: 1px solid var(--hairline);
+  padding-top: 12px;
+}
+
+.admin-hero-meta dt,
+.admin-info-list dt {
+  margin-bottom: 4px;
+  color: var(--ink-subtle);
+  font-size: 12px;
+}
+
+.admin-hero-meta dd,
+.admin-info-list dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.admin-hero-actions {
+  display: flex;
+  min-width: 180px;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-hero-actions button,
+.admin-hero-actions a,
+.admin-actions a,
+.admin-actions button,
+.admin-panel-link {
+  min-height: 34px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 10px;
+  text-align: center;
+}
+
+.admin-hero-actions button:disabled,
+.admin-actions button:disabled {
+  color: var(--ink-tertiary, #62666d);
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.admin-hero-actions a:hover,
+.admin-actions a:hover,
+.admin-panel-link:hover {
+  border-color: var(--primary-focus);
+  color: #ffffff;
+}
+
+.admin-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.admin-metric-grid article,
+.admin-panel {
+  padding: 20px;
+}
+
+.admin-metric-grid article {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-metric-grid span,
+.admin-stat-card span {
+  color: var(--ink-subtle);
+  font-size: 12px;
+}
+
+.admin-metric-grid strong {
+  color: var(--ink);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.admin-section {
+  margin-top: 20px;
+}
+
+.admin-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.admin-panel__header--actions {
+  align-items: center;
+}
+
+.admin-panel__header h2,
+.admin-section-heading h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.admin-panel__header p {
+  margin: 6px 0 0;
+  color: var(--ink-subtle);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table-fit {
+  width: 100%;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: collapse;
+}
+
+.admin-table--wide {
+  min-width: 1080px;
+}
+
+.admin-table--players {
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.admin-table--players th,
+.admin-table--players td {
+  padding: 12px 8px;
+  overflow-wrap: anywhere;
+}
+
+.admin-table--players th:nth-child(1),
+.admin-table--players td:nth-child(1) {
+  width: 8%;
+}
+
+.admin-table--players th:nth-child(4),
+.admin-table--players td:nth-child(4),
+.admin-table--players th:nth-child(5),
+.admin-table--players td:nth-child(5) {
+  width: 7%;
+}
+
+.admin-table--players th:nth-child(6),
+.admin-table--players td:nth-child(6),
+.admin-table--players th:nth-child(7),
+.admin-table--players td:nth-child(7) {
+  width: 8%;
+}
+
+.admin-table--players th:nth-child(8),
+.admin-table--players td:nth-child(8) {
+  width: 11%;
+}
+
+.admin-table--players th:nth-child(2),
+.admin-table--players td:nth-child(2) {
+  width: 17%;
+}
+
+.admin-table--players th:nth-child(3),
+.admin-table--players td:nth-child(3) {
+  width: 10%;
+}
+
+.admin-table--players th:nth-child(9),
+.admin-table--players td:nth-child(9) {
+  width: 24%;
+}
+
+.admin-table--players .admin-actions {
+  min-width: 150px;
+  justify-content: flex-start;
+}
+
+.admin-table--players .admin-actions a,
+.admin-table--players .admin-actions button {
+  flex: 0 0 68px;
+  min-width: 68px;
+  padding-inline: 8px;
+  white-space: nowrap;
+}
+
+.admin-table th,
+.admin-table td {
+  border-bottom: 1px solid var(--hairline);
+  padding: 14px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-table th {
+  color: var(--ink-subtle);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin-table td {
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+
+.admin-table td strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-stat-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-info-list {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+
+.admin-status {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  border-radius: 9999px;
+  background: var(--surface-2);
+  color: var(--ink-muted);
+  font-size: 12px;
+  padding: 2px 8px;
+}
+
+.admin-status-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.admin-status-list div {
+  border-top: 1px solid var(--hairline);
+  padding-top: 12px;
+}
+
+.admin-status-list dt {
+  margin-bottom: 4px;
+  color: var(--ink-subtle);
+  font-size: 12px;
+}
+
+.admin-status-list dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.admin-stat-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 14px;
+}
+
+.admin-stat-card {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-stat-card a,
+.admin-stat-card strong {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.admin-stat-card small {
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+
+.admin-empty-state {
+  border: 1px dashed var(--hairline-strong);
+  border-radius: 12px;
+  padding: 28px;
+  text-align: center;
+}
+
+@media (max-width: 1120px) {
+  .admin-details-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-hero-meta,
+  .admin-metric-grid,
+  .admin-info-list,
+  .admin-status-list,
+  .admin-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .admin-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .admin-main {
+    padding: 20px;
+  }
+
+  .admin-details-hero,
+  .admin-metric-grid article,
+  .admin-panel {
+    padding: 18px;
+  }
+
+  .admin-details-hero h2 {
+    font-size: 28px;
+  }
+
+  .admin-hero-actions {
+    width: 100%;
+  }
+
+  .admin-hero-meta,
+  .admin-metric-grid,
+  .admin-info-list,
+  .admin-status-list,
+  .admin-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-table--players {
+    display: block;
+  }
+
+  .admin-table--players thead {
+    display: none;
+  }
+
+  .admin-table--players tbody,
+  .admin-table--players tr,
+  .admin-table--players td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-table--players tr {
+    border-bottom: 1px solid var(--hairline);
+    padding: 12px 0;
+  }
+
+  .admin-table--players td {
+    border-bottom: 0;
+    padding: 6px 0;
+  }
+
+  .admin-table--players td:nth-child(1)::before {
+    content: "Number: ";
+    color: var(--ink-subtle);
+  }
+
+  .admin-table--players td:nth-child(3)::before {
+    content: "Position: ";
+    color: var(--ink-subtle);
+  }
+
+  .admin-table--players td:nth-child(4)::before {
+    content: "Age: ";
+    color: var(--ink-subtle);
+  }
+
+  .admin-table--players td:nth-child(5)::before {
+    content: "Goals: ";
+    color: var(--ink-subtle);
+  }
+
+  .admin-table--players td:nth-child(6)::before {
+    content: "Yellow Cards: ";
+    color: var(--ink-subtle);
+  }
+
+  .admin-table--players td:nth-child(7)::before {
+    content: "Red Cards: ";
+    color: var(--ink-subtle);
+  }
+
+  .admin-table--players td:nth-child(8)::before {
+    content: "Two-Minute Suspensions: ";
+    color: var(--ink-subtle);
+  }
+}

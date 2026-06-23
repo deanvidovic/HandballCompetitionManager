@@ -1,0 +1,59 @@
+@model HandballCompetitionManager.ViewModels.RefereeProfileViewModel
+
+@{
+    Layout = "_RefereeLayout";
+    ViewData["Title"] = "Referee Profile";
+    ViewData["RefereeTitle"] = "My Profile";
+    ViewData["RefereeSubtitle"] = "View and manage your personal information.";
+    ViewData["RefereeActive"] = "Profile";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/referee-profile.css" asp-append-version="true" />
+}
+
+<section class="profile-summary" aria-label="Assignment summary">
+    <article><span>Assigned Matches</span><strong>@Model.AssignedMatches</strong></article>
+    <article><span>Upcoming Matches</span><strong>@Model.UpcomingMatches</strong></article>
+    <article><span>Completed Matches</span><strong>@Model.CompletedMatches</strong></article>
+    <article><span>Confirmed Reports</span><strong>@Model.ConfirmedReports</strong></article>
+</section>
+
+<div class="profile-grid">
+    <section class="profile-panel" aria-labelledby="profile-information-title">
+        <header><h2 id="profile-information-title">Profile Information</h2><p>Keep your contact and referee details up to date.</p></header>
+        <form class="profile-form">
+            <label><span>First Name</span><input type="text" value="@Model.Referee.FirstName" /></label>
+            <label><span>Last Name</span><input type="text" value="@Model.Referee.LastName" /></label>
+            <label><span>Email</span><input type="email" value="@Model.Referee.Email" /></label>
+            <label><span>Phone Number</span><input type="tel" value="@Model.Referee.PhoneLabel" /></label>
+            <label><span>City</span><input type="text" value="@Model.Referee.City" /></label>
+            <label><span>Referee Certification</span><input type="text" value="@Model.Referee.CertificationLevel" /></label>
+            <label class="profile-form__wide"><span>Short Biography</span><textarea rows="5">@Model.Referee.ProfileDescription</textarea></label>
+        </form>
+    </section>
+
+    <section class="profile-panel" aria-labelledby="account-information-title">
+        <header><h2 id="account-information-title">Account Information</h2><p>Read-only system and account details.</p></header>
+        <dl class="account-list">
+            <div><dt>User ID</dt><dd>@Model.Referee.Id</dd></div>
+            <div><dt>Role</dt><dd>@Model.Referee.Role</dd></div>
+            <div><dt>Account Status</dt><dd><span class="status-badge">@Model.Referee.Status</span></dd></div>
+            <div><dt>Created Date</dt><dd>@Model.Referee.CreatedDateLabel</dd></div>
+            <div><dt>Last Login</dt><dd>@Model.Referee.LastLoginLabel</dd></div>
+        </dl>
+    </section>
+</div>
+
+<section class="profile-actions" aria-label="Profile actions">
+    <button class="profile-button profile-button--primary" type="button" disabled>Save Changes</button>
+    <button class="profile-button" type="button" disabled>Cancel</button>
+    <button class="profile-button profile-button--danger" type="button" disabled>Delete Profile</button>
+</section>
+
+@* Empty state reserved for a future unavailable repository result.
+<section class="profile-empty-state" hidden>
+    <h2>Profile unavailable</h2>
+    <p>Profile information could not be loaded.</p>
+</section>
+*@

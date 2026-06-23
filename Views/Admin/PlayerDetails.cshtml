@@ -1,0 +1,173 @@
+@model HandballCompetitionManager.ViewModels.AdminPlayerDetailsViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = $"Admin Player Details - {Model.Player.FullName}";
+    ViewData["AdminTitle"] = "Player Details";
+    ViewData["AdminSubtitle"] = "Review profile, team assignment, tournament participation, match output, and performance.";
+    ViewData["AdminActive"] = "Players";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-player-details.css" asp-append-version="true" />
+}
+
+<nav class="admin-breadcrumbs" aria-label="Breadcrumb">
+    <a href="/Admin/Tournaments">Admin</a>
+    <span>/</span>
+    <a href="/Admin/Players">Players</a>
+    <span>/</span>
+    <span>Player Details</span>
+</nav>
+
+<section class="admin-details-hero" aria-labelledby="player-title">
+    <div>
+        <span class="admin-kicker">Player Overview</span>
+        <h2 id="player-title">@Model.Player.FullName</h2>
+        <dl class="admin-hero-meta">
+            <div><dt>Jersey Number</dt><dd>@Model.Player.ShirtNumber</dd></div>
+            <div><dt>Position</dt><dd>@Model.Player.Position</dd></div>
+            <div><dt>Age</dt><dd>@Model.Age</dd></div>
+            <div><dt>Team</dt><dd>@Model.Team.Name</dd></div>
+            <div><dt>Tournament</dt><dd>@Model.Tournament.Name</dd></div>
+            <div><dt>Status</dt><dd><span class="admin-status">@Model.Status</span></dd></div>
+        </dl>
+    </div>
+    <div class="admin-hero-actions">
+        <button type="button" disabled>Edit Player</button>
+        <button type="button" disabled>Transfer Player</button>
+        <a href="/Admin/Players">Back to Players</a>
+    </div>
+</section>
+
+<section class="admin-metric-grid" aria-label="Player summary">
+    <article><span>Goals</span><strong>@Model.Statistics.Goals</strong></article>
+    <article><span>Matches Played</span><strong>@Model.MatchesPlayed</strong></article>
+    <article><span>Yellow Cards</span><strong>@Model.Statistics.YellowCards</strong></article>
+    <article><span>Red Cards</span><strong>@Model.Statistics.RedCards</strong></article>
+    <article><span>Two-Minute Suspensions</span><strong>@Model.Statistics.TwoMinuteSuspensions</strong></article>
+    <article><span>Avg Goals / Match</span><strong>@Model.AverageGoalsPerMatch</strong></article>
+</section>
+
+<section class="admin-panel admin-section" aria-labelledby="team-info-title">
+    <div class="admin-panel__header admin-panel__header--actions">
+        <div>
+            <h2 id="team-info-title">Team Information</h2>
+            <p>Current team assignment and tournament record.</p>
+        </div>
+        <a class="admin-panel-link" href="/Admin/Teams/Details/@Model.Team.Id">View Team</a>
+    </div>
+    <dl class="admin-info-list">
+        <div><dt>Team Name</dt><dd>@Model.Team.Name</dd></div>
+        <div><dt>Coach</dt><dd>@Model.Team.CoachName</dd></div>
+        <div><dt>Tournament</dt><dd>@Model.Tournament.Name</dd></div>
+        <div><dt>Team Record</dt><dd>@Model.TeamPerformance.Record</dd></div>
+    </dl>
+</section>
+
+<section class="admin-section admin-panel" aria-labelledby="tournament-statistics-title">
+    <div class="admin-panel__header">
+        <div>
+            <h2 id="tournament-statistics-title">Tournament Statistics</h2>
+            <p>Competition-level player output for the current tournament.</p>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th scope="col">Competition</th>
+                    <th scope="col">Matches</th>
+                    <th scope="col">Goals</th>
+                    <th scope="col">Assists</th>
+                    <th scope="col">Yellow Cards</th>
+                    <th scope="col">Red Cards</th>
+                    <th scope="col">Two-Minute Suspensions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="Competition">@Model.Tournament.Name</td>
+                    <td data-label="Matches">@Model.MatchesPlayed</td>
+                    <td data-label="Goals">@Model.Statistics.Goals</td>
+                    <td data-label="Assists">@Model.Assists</td>
+                    <td data-label="Yellow Cards">@Model.Statistics.YellowCards</td>
+                    <td data-label="Red Cards">@Model.Statistics.RedCards</td>
+                    <td data-label="Two-Minute Suspensions">@Model.Statistics.TwoMinuteSuspensions</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    @* Empty state reserved for future tournament statistics.
+    <section class="admin-empty-state" hidden>
+        <h2>No tournament statistics</h2>
+        <p>Player statistics will appear after match reports are confirmed.</p>
+    </section>
+    *@
+</section>
+
+<section class="admin-section admin-panel" aria-labelledby="recent-matches-title">
+    <div class="admin-panel__header">
+        <div>
+            <h2 id="recent-matches-title">Recent Matches</h2>
+            <p>Completed tournament matches this player participated in.</p>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table admin-table--matches">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Opponent</th>
+                    <th scope="col">Phase</th>
+                    <th scope="col">Result</th>
+                    <th scope="col">Goals</th>
+                    <th scope="col">Cards</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var match in Model.RecentMatches)
+                {
+                    <tr>
+                        <td data-label="Date">@match.MatchDate.ToString("MMM d, yyyy")</td>
+                        <td data-label="Opponent">@match.OpponentName</td>
+                        <td data-label="Phase">@match.Phase</td>
+                        <td data-label="Result">@match.Result</td>
+                        <td data-label="Goals">@match.Goals</td>
+                        <td data-label="Cards">@match.CardsSummary</td>
+                        <td data-label="Actions">
+                            <div class="admin-actions">
+                                <a href="/Matches/Details/@match.MatchId">View</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @* Empty state reserved for future match participation gaps.
+    <section class="admin-empty-state" hidden>
+        <h2>No recent matches</h2>
+        <p>Matches will appear once this player participates in completed fixtures.</p>
+    </section>
+    *@
+</section>
+
+<section class="admin-section" aria-labelledby="performance-title">
+    <div class="admin-section-heading">
+        <h2 id="performance-title">Performance Overview</h2>
+    </div>
+    <div class="admin-stat-grid">
+        @foreach (var card in Model.PerformanceCards)
+        {
+            <article class="admin-panel admin-stat-card">
+                <span>@card.Label</span>
+                <strong>@card.Value</strong>
+                <small>@card.Detail</small>
+            </article>
+        }
+    </div>
+</section>

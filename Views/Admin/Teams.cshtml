@@ -1,0 +1,101 @@
+@model HandballCompetitionManager.ViewModels.AdminTeamManagementViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Teams";
+    ViewData["AdminTitle"] = "Team Management";
+    ViewData["AdminSubtitle"] = "Review teams, coaches, rosters, and tournament participation.";
+    ViewData["AdminActive"] = "Teams";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-teams.css" asp-append-version="true" />
+}
+
+<section class="admin-dashboard-grid" aria-label="Team summary">
+    <article class="admin-summary-card">
+        <span>Total Teams</span>
+        <strong>@Model.TotalTeams</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Active Teams</span>
+        <strong>@Model.ActiveTeams</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Total Players</span>
+        <strong>@Model.TotalPlayers</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Teams in Tournaments</span>
+        <strong>@Model.TeamsInTournaments</strong>
+    </article>
+</section>
+
+<section class="admin-content-grid">
+    <div class="admin-panel admin-panel--table" aria-labelledby="teams-table-title">
+        <div class="admin-panel__header admin-panel__header--actions">
+            <div>
+                <h2 id="teams-table-title">Teams</h2>
+                <p>Operational view of team status, roster size, and tournament participation.</p>
+            </div>
+            <button class="admin-create-button" type="button" disabled>Create Team</button>
+        </div>
+
+        <div class="admin-toolbar" aria-label="Team table controls">
+            <label class="admin-field admin-field--search">
+                <span class="visually-hidden">Search teams</span>
+                <input type="search" placeholder="Search teams by name, city, coach, or tournament..." />
+            </label>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Team</th>
+                        <th scope="col">City</th>
+                        <th scope="col">Coach</th>
+                        <th scope="col">Players</th>
+                        <th scope="col">Tournament</th>
+                        <th scope="col">Record</th>
+                        <th scope="col">Goals</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var team in Model.Teams)
+                    {
+                        <tr>
+                            <td>
+                                <div class="team-cell">
+                                    <strong>@team.Name</strong>
+                                    <span>ID @team.Id</span>
+                                </div>
+                            </td>
+                            <td>@team.City</td>
+                            <td>@team.CoachName</td>
+                            <td>@team.PlayerCount</td>
+                            <td>@team.TournamentName</td>
+                            <td><span class="admin-record">@team.Record</span></td>
+                            <td>@team.Goals</td>
+                            <td>
+                                <div class="admin-actions">
+                                    <a href="/Admin/Teams/Details/@team.Id">View</a>
+                                    <button type="button" disabled>Edit</button>
+                                    <button type="button" disabled>Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @* Empty state reserved for future search/filter behavior.
+        <section class="admin-empty-state" hidden>
+            <h2>No teams found</h2>
+            <p>Teams will appear here once they are added to tournaments.</p>
+        </section>
+        *@
+    </div>
+</section>

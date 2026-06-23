@@ -1,0 +1,269 @@
+@model HandballCompetitionManager.ViewModels.PlayerDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Player.FullName;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/player-details.css" asp-append-version="true" />
+}
+
+<section class="player-hero">
+    <div class="page-shell">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">/</span>
+            <a href="/Tournaments">Tournaments</a>
+            <span aria-hidden="true">/</span>
+            <a href="/Tournaments/Details/@Model.Tournament.Id">Tournament Details</a>
+            <span aria-hidden="true">/</span>
+            <a href="/Teams/Details/@Model.Team.Id">Team Details</a>
+            <span aria-hidden="true">/</span>
+            <span>Player Details</span>
+        </nav>
+
+        <div class="player-hero__grid">
+            <div class="player-hero__copy">
+                <span class="status-badge">#@Model.Player.ShirtNumber @Model.Player.Position</span>
+                <h1>@Model.Player.FullName</h1>
+                <p>@Model.Description</p>
+                <div class="hero-actions">
+                    <a class="button button--primary" href="/Teams/Details/@Model.Team.Id">Back to Team</a>
+                    <a class="button button--secondary" href="/Tournaments/Details/@Model.Tournament.Id">Back to Tournament</a>
+                </div>
+            </div>
+
+            <dl class="summary-panel">
+                <div>
+                    <dt>Shirt number</dt>
+                    <dd>@Model.Player.ShirtNumber</dd>
+                </div>
+                <div>
+                    <dt>Position</dt>
+                    <dd>@Model.Player.Position</dd>
+                </div>
+                <div>
+                    <dt>Team</dt>
+                    <dd>@Model.Team.Name</dd>
+                </div>
+                <div>
+                    <dt>Tournament</dt>
+                    <dd>@Model.Tournament.Name</dd>
+                </div>
+                <div>
+                    <dt>Age</dt>
+                    <dd>@Model.AgeDisplay</dd>
+                </div>
+                <div>
+                    <dt>Captain</dt>
+                    <dd>@(Model.Player.IsCaptain ? "Yes" : "No")</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</section>
+
+<main class="player-main">
+    <section class="player-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">OVERVIEW</p>
+                <h2>Player Overview</h2>
+            </div>
+
+            <div class="stat-grid">
+                <article>
+                    <span>Goals</span>
+                    <strong>@Model.Performance.Goals</strong>
+                </article>
+                <article>
+                    <span>Assists</span>
+                    <strong>@Model.Performance.Assists</strong>
+                </article>
+                <article>
+                    <span>Matches Played</span>
+                    <strong>@Model.Performance.MatchesPlayed</strong>
+                </article>
+                <article>
+                    <span>Yellow Cards</span>
+                    <strong>@Model.Performance.YellowCards</strong>
+                </article>
+                <article>
+                    <span>Red Cards</span>
+                    <strong>@Model.Performance.RedCards</strong>
+                </article>
+                <article>
+                    <span>2-Min Suspensions</span>
+                    <strong>@Model.Performance.TwoMinuteSuspensions</strong>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="player-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">TOURNAMENT</p>
+                <h2>Tournament Performance</h2>
+            </div>
+
+            <div class="performance-grid">
+                <article>
+                    <span>Goals scored</span>
+                    <strong>@Model.Performance.Goals</strong>
+                </article>
+                <article>
+                    <span>Matches played</span>
+                    <strong>@Model.Performance.MatchesPlayed</strong>
+                </article>
+                <article>
+                    <span>Average goals per match</span>
+                    <strong>@Model.Performance.AverageGoalsPerMatch</strong>
+                </article>
+                <article>
+                    <span>Yellow cards</span>
+                    <strong>@Model.Performance.YellowCards</strong>
+                </article>
+                <article>
+                    <span>Red cards</span>
+                    <strong>@Model.Performance.RedCards</strong>
+                </article>
+                <article>
+                    <span>Two-minute suspensions</span>
+                    <strong>@Model.Performance.TwoMinuteSuspensions</strong>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="player-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">MATCHES</p>
+                <h2>Tournament Match Performance</h2>
+            </div>
+
+            <div class="table-card">
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Opponent</th>
+                                <th>Goals</th>
+                                <th>Yellow</th>
+                                <th>Red</th>
+                                <th>2-Min</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var match in Model.MatchPerformances)
+                            {
+                                <tr>
+                                    <td><a href="/Matches/Details/@match.MatchId">@match.MatchDate.ToString("MMM d, yyyy")</a></td>
+                                    <td>@match.OpponentName</td>
+                                    <td>@match.Goals</td>
+                                    <td>@match.YellowCards</td>
+                                    <td>@match.RedCards</td>
+                                    <td>@match.TwoMinuteSuspensions</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="player-section">
+        <div class="page-shell">
+            <div class="section-heading">
+                <p class="eyebrow">RANKINGS</p>
+                <h2>Tournament Rankings</h2>
+            </div>
+
+            <div class="ranking-grid">
+                @foreach (var ranking in Model.Rankings)
+                {
+                    <article class="ranking-card">
+                        <span>@ranking.Label</span>
+                        <strong>#@ranking.Rank</strong>
+                        <p>@ranking.Value total</p>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="player-section player-section--last">
+        <div class="page-shell">
+            <div class="context-grid">
+                <section>
+                    <div class="section-heading">
+                        <p class="eyebrow">TEAM</p>
+                        <h2>Current Team</h2>
+                    </div>
+
+                    <a class="context-card" href="/Teams/Details/@Model.Team.Id">
+                        <dl>
+                            <div>
+                                <dt>Team name</dt>
+                                <dd>@Model.Team.Name</dd>
+                            </div>
+                            <div>
+                                <dt>Coach</dt>
+                                <dd>@Model.Team.CoachName</dd>
+                            </div>
+                            <div>
+                                <dt>Team record</dt>
+                                <dd>@Model.TeamPerformance.Record</dd>
+                            </div>
+                            <div>
+                                <dt>Tournament position</dt>
+                                <dd>@Model.TournamentPosition</dd>
+                            </div>
+                        </dl>
+                    </a>
+                </section>
+
+                <section>
+                    <div class="section-heading">
+                        <p class="eyebrow">CONTEXT</p>
+                        <h2>Current Tournament</h2>
+                    </div>
+
+                    <a class="context-card" href="/Tournaments/Details/@Model.Tournament.Id">
+                        <dl>
+                            <div>
+                                <dt>Tournament name</dt>
+                                <dd>@Model.Tournament.Name</dd>
+                            </div>
+                            <div>
+                                <dt>Status</dt>
+                                <dd>@Model.Tournament.Status</dd>
+                            </div>
+                            <div>
+                                <dt>Current phase</dt>
+                                <dd>@Model.Tournament.CurrentPhase</dd>
+                            </div>
+                        </dl>
+                    </a>
+                </section>
+            </div>
+
+            @* Future empty states:
+            <section class="empty-state" hidden>No tournament statistics available.</section>
+            <section class="empty-state" hidden>No matches played.</section>
+            <section class="empty-state" hidden>No disciplinary records.</section>
+            <section class="empty-state" hidden>Player not assigned to a team.</section>
+            *@
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="page-shell site-footer__inner">
+        <span>Handball Competition Manager</span>
+        <a href="/Tournaments">Tournaments</a>
+    </div>
+</footer>

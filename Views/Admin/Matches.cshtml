@@ -1,0 +1,133 @@
+@model HandballCompetitionManager.ViewModels.AdminMatchManagementViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Matches";
+    ViewData["AdminTitle"] = "Match Management";
+    ViewData["AdminSubtitle"] = "Manage tournament matches, referees, schedules, and match progress.";
+    ViewData["AdminActive"] = "Matches";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-matches.css" asp-append-version="true" />
+}
+
+<section class="admin-dashboard-grid" aria-label="Match summary">
+    <article class="admin-summary-card">
+        <span>Total Matches</span>
+        <strong>@Model.TotalMatches</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Upcoming Matches</span>
+        <strong>@Model.UpcomingMatches</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>In Progress Matches</span>
+        <strong>@Model.InProgressMatches</strong>
+    </article>
+    <article class="admin-summary-card">
+        <span>Completed Matches</span>
+        <strong>@Model.CompletedMatches</strong>
+    </article>
+</section>
+
+<section class="admin-content-grid">
+    <div class="admin-panel admin-panel--table" aria-labelledby="matches-table-title">
+        <div class="admin-panel__header admin-panel__header--actions">
+            <div>
+                <h2 id="matches-table-title">Matches</h2>
+                <p>Operational view of fixtures, referee assignments, scores, and progress.</p>
+            </div>
+            <button class="admin-create-button" type="button" disabled>Create Match</button>
+        </div>
+
+        <div class="admin-toolbar" aria-label="Match table controls">
+            <label class="admin-field admin-field--search">
+                <span class="visually-hidden">Search matches</span>
+                <input type="search" placeholder="Search by team, tournament, referee..." />
+            </label>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Match</th>
+                        <th scope="col">Tournament</th>
+                        <th scope="col">Phase</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Referee</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Score</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var match in Model.Matches)
+                    {
+                        <tr class="@(match.IsCompleted ? "match-row--completed" : "match-row--upcoming")">
+                            <td data-label="Match">
+                                <div class="match-cell">
+                                    <strong>@match.HomeTeamName vs @match.AwayTeamName</strong>
+                                    <span>@match.VenueName</span>
+                                </div>
+                            </td>
+                            <td data-label="Tournament">@match.TournamentName</td>
+                            <td data-label="Phase">@match.Phase</td>
+                            <td data-label="Date">
+                                <time datetime="@match.ScheduledAt.ToString("yyyy-MM-ddTHH:mm")">@match.ScheduledAt.ToString("MMM d, yyyy HH:mm")</time>
+                            </td>
+                            <td data-label="Referee">@match.RefereeName</td>
+                            <td data-label="Status">
+                                <span class="admin-status admin-status--@match.Status.ToLowerInvariant().Replace(" ", "-")">@match.Status</span>
+                            </td>
+                            <td data-label="Score"><span class="admin-score">@match.Score</span></td>
+                            <td data-label="Actions">
+                                <div class="admin-actions">
+                                    <a href="/Admin/Matches/Details/@match.Id">View</a>
+                                    <button type="button" disabled>Edit</button>
+                                    <button type="button" disabled>Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @* Empty state reserved for future search/filter behavior.
+        <section class="admin-empty-state" hidden>
+            <h2>No matches found</h2>
+            <p>Matches will appear here once tournaments generate fixtures.</p>
+        </section>
+        *@
+    </div>
+
+    <section class="admin-panel" aria-labelledby="schedule-overview-title">
+        <div class="admin-panel__header">
+            <div>
+                <h2 id="schedule-overview-title">Scheduling Overview</h2>
+                <p>Compact operational signals for fixture readiness.</p>
+            </div>
+        </div>
+
+        <div class="schedule-grid">
+            <article class="schedule-card">
+                <span>Upcoming matches today</span>
+                <strong>@Model.UpcomingToday</strong>
+            </article>
+            <article class="schedule-card">
+                <span>Upcoming matches this week</span>
+                <strong>@Model.UpcomingThisWeek</strong>
+            </article>
+            <article class="schedule-card">
+                <span>Matches without assigned referee</span>
+                <strong>@Model.MatchesWithoutAssignedReferee</strong>
+            </article>
+            <article class="schedule-card">
+                <span>Completed matches awaiting confirmation</span>
+                <strong>@Model.CompletedAwaitingConfirmation</strong>
+            </article>
+        </div>
+    </section>
+</section>

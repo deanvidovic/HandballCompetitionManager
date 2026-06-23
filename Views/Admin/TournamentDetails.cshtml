@@ -1,0 +1,300 @@
+@model HandballCompetitionManager.ViewModels.AdminTournamentDetailsViewModel
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = $"Admin - {Model.Details.Tournament.Name}";
+    ViewData["AdminTitle"] = "Tournament Management";
+    ViewData["AdminSubtitle"] = "Review tournament setup, progress, matches, teams, and statistics.";
+    ViewData["AdminActive"] = "Tournaments";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-tournament-details.css" asp-append-version="true" />
+}
+
+<nav class="admin-breadcrumbs" aria-label="Breadcrumb">
+    <a href="/Admin/Tournaments">Admin</a>
+    <span aria-hidden="true">/</span>
+    <a href="/Admin/Tournaments">Tournaments</a>
+    <span aria-hidden="true">/</span>
+    <span>Tournament Details</span>
+</nav>
+
+<section class="admin-details-hero">
+    <div>
+        <span class="admin-status">@Model.Details.Tournament.Status</span>
+        <h2>@Model.Details.Tournament.Name</h2>
+        <p>@Model.Details.Tournament.Description</p>
+        <dl class="admin-hero-meta">
+            <div>
+                <dt>Location</dt>
+                <dd>@Model.Details.Tournament.Location</dd>
+            </div>
+            <div>
+                <dt>Start</dt>
+                <dd>@Model.Details.Tournament.StartDate</dd>
+            </div>
+            <div>
+                <dt>End</dt>
+                <dd>@Model.Details.Tournament.EndDate</dd>
+            </div>
+            <div>
+                <dt>Phase</dt>
+                <dd>@Model.Details.Tournament.CurrentPhase</dd>
+            </div>
+        </dl>
+    </div>
+    <div class="admin-hero-actions">
+        <button type="button" disabled>Edit Tournament</button>
+        <button type="button" disabled>Generate Bracket</button>
+        <a href="/Admin/Tournaments">Back to Tournaments</a>
+    </div>
+</section>
+
+<section class="admin-metric-grid" aria-label="Tournament summary">
+    <article><span>Teams</span><strong>@Model.Details.Statistics.TotalTeams</strong></article>
+    <article><span>Matches</span><strong>@Model.Details.Statistics.TotalMatches</strong></article>
+    <article><span>Completed Matches</span><strong>@Model.Details.Statistics.CompletedMatches</strong></article>
+    <article><span>Upcoming Matches</span><strong>@Model.UpcomingMatches</strong></article>
+    <article><span>Total Goals</span><strong>@Model.Details.Statistics.TotalGoals</strong></article>
+    <article><span>Registered Players</span><strong>@Model.Details.Statistics.TotalPlayers</strong></article>
+</section>
+
+<section class="admin-panel admin-section">
+    <div class="admin-panel__header">
+        <div>
+            <h2>Status Panel</h2>
+            <p>Operational readiness and current tournament progress.</p>
+        </div>
+    </div>
+    <dl class="admin-status-list">
+        <div><dt>Tournament setup</dt><dd>@Model.SetupStatus</dd></div>
+        <div><dt>Teams registered</dt><dd>@Model.TeamsRegisteredStatus</dd></div>
+        <div><dt>Bracket generated</dt><dd>@Model.BracketStatus</dd></div>
+        <div><dt>Results confirmation</dt><dd>@Model.ResultsStatus</dd></div>
+        <div><dt>Current phase progress</dt><dd>@Model.PhaseProgress</dd></div>
+    </dl>
+</section>
+
+<section class="admin-panel admin-section">
+    <div class="admin-panel__header">
+        <div>
+            <h2>Teams in Tournament</h2>
+            <p>Registered teams, coaches, records, and roster counts.</p>
+        </div>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table admin-table--wide">
+            <thead>
+                <tr>
+                    <th>Team</th>
+                    <th>City</th>
+                    <th>Coach</th>
+                    <th>Players</th>
+                    <th>Record</th>
+                    <th>Goals For</th>
+                    <th>Goals Against</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var team in Model.Details.Teams)
+                {
+                    <tr>
+                        <td>@team.Name</td>
+                        <td>@team.City</td>
+                        <td>@team.CoachName</td>
+                        <td>@team.PlayerCount</td>
+                        <td>@team.Record</td>
+                        <td>@team.GoalsScored</td>
+                        <td>@team.GoalsConceded</td>
+                        <td>
+                            <div class="admin-actions">
+                                <a href="/Teams/Details/@team.Id">View</a>
+                                <button type="button" disabled>Manage</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="admin-section">
+    <div class="admin-section-heading">
+        <h2>Group Phase Standings</h2>
+    </div>
+    <div class="admin-group-grid">
+        @foreach (var group in Model.Details.Groups)
+        {
+            <article class="admin-panel">
+                <div class="admin-panel__header">
+                    <div>
+                        <h2>@group.Name</h2>
+                        <p>Top two teams are visually emphasized.</p>
+                    </div>
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Pos</th>
+                                <th>Team</th>
+                                <th>P</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>GF</th>
+                                <th>GA</th>
+                                <th>GD</th>
+                                <th>Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in group.Standings)
+                            {
+                                <tr class="@(row.Position <= 2 ? "is-qualifying" : null)">
+                                    <td>@row.Position</td>
+                                    <td>@row.Standing.TeamName</td>
+                                    <td>@row.Standing.Played</td>
+                                    <td>@row.Standing.Won</td>
+                                    <td>@row.Standing.Drawn</td>
+                                    <td>@row.Standing.Lost</td>
+                                    <td>@row.Standing.GoalsFor</td>
+                                    <td>@row.Standing.GoalsAgainst</td>
+                                    <td>@row.GoalDifference</td>
+                                    <td>@row.Standing.Points</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+<section class="admin-panel admin-section">
+    <div class="admin-panel__header">
+        <div>
+            <h2>Tournament Matches</h2>
+            <p>Completed and upcoming fixtures separated by group and elimination phase.</p>
+        </div>
+    </div>
+
+    <section class="admin-match-phase" aria-labelledby="group-matches-title">
+        <h3 id="group-matches-title">Group Phase Matches</h3>
+        @foreach (var group in Model.Details.GroupMatches.GroupBy(match => match.RoundName).OrderBy(group => group.Key))
+        {
+            <article class="admin-match-group">
+                <h4>@group.Key</h4>
+                <div class="admin-table-wrap">
+                    <table class="admin-table admin-table--wide">
+                        <thead>
+                            <tr>
+                                <th>Match</th>
+                                <th>Phase</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Score</th>
+                                <th>Referee</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var match in group.OrderBy(match => match.ScheduledAt))
+                            {
+                                <tr>
+                                    <td>@match.HomeTeamName vs @match.AwayTeamName</td>
+                                    <td>@match.RoundName</td>
+                                    <td>@match.ScheduledAt.ToString("MMM d, yyyy HH:mm")</td>
+                                    <td><span class="admin-status">@match.Status</span></td>
+                                    <td>@(match.HomeScore.HasValue ? $"{match.HomeScore} - {match.AwayScore}" : "vs")</td>
+                                    <td>@match.RefereeName</td>
+                                    <td>
+                                        <div class="admin-actions">
+                                            <a href="/Matches/Details/@match.Id">View</a>
+                                            <button type="button" disabled>Manage Result</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        }
+    </section>
+
+    <section class="admin-match-phase" aria-labelledby="elimination-matches-title">
+        <h3 id="elimination-matches-title">Elimination Phase Matches</h3>
+        <div class="admin-table-wrap">
+            <table class="admin-table admin-table--wide">
+                <thead>
+                    <tr>
+                        <th>Match</th>
+                        <th>Phase</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Score</th>
+                        <th>Referee</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var match in Model.Details.EliminationMatches)
+                    {
+                        <tr>
+                            <td>@match.HomeTeamName vs @match.AwayTeamName</td>
+                            <td>@match.RoundName</td>
+                            <td>@match.ScheduledAt.ToString("MMM d, yyyy HH:mm")</td>
+                            <td><span class="admin-status">@match.Status</span></td>
+                            <td>@(match.HomeScore.HasValue ? $"{match.HomeScore} - {match.AwayScore}" : "vs")</td>
+                            <td>@match.RefereeName</td>
+                            <td>
+                                <div class="admin-actions">
+                                    <a href="/Matches/Details/@match.Id">View</a>
+                                    <button type="button" disabled>Manage Result</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</section>
+
+<section class="admin-section">
+    <div class="admin-section-heading">
+        <h2>Tournament Leaders</h2>
+    </div>
+    <div class="admin-leader-grid">
+        @foreach (var leaderboard in Model.Details.PlayerLeaderboards)
+        {
+            <article class="admin-panel admin-leader-card">
+                <h3>@leaderboard.Title</h3>
+                <ol>
+                    @foreach (var leader in leaderboard.Leaders)
+                    {
+                        <li>
+                            <span>@leader.Rank</span>
+                            <a href="/Players/Details/@leader.PlayerId">@leader.PlayerName</a>
+                            <small>@leader.TeamName</small>
+                            <strong>@leader.Value</strong>
+                        </li>
+                    }
+                </ol>
+                <p>@leaderboard.StatLabel</p>
+            </article>
+        }
+    </div>
+</section>
+
+@* Future empty states:
+<section class="admin-empty-state" hidden>No teams assigned to this tournament.</section>
+<section class="admin-empty-state" hidden>No matches generated yet.</section>
+<section class="admin-empty-state" hidden>No bracket available.</section>
+<section class="admin-empty-state" hidden>No statistics available.</section>
+*@
